@@ -84,9 +84,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, processName: '请假审批流程', processNo: 'PROC-2024-001', applicant: '张三', startTime: '2024-01-15 10:00', currentNode: '部门经理审批', status: 2, statusText: '审批中' },
-      { id: 2, processName: '会议室预定流程', processNo: 'PROC-2024-002', applicant: '李四', startTime: '2024-01-14 09:00', currentNode: '已完成', status: 3, statusText: '已完成' },
-      { id: 3, processName: '用车申请流程', processNo: 'PROC-2024-003', applicant: '王五', startTime: '2024-01-13 14:30', currentNode: '行政审批', status: 2, statusText: '审批中' }
+      { id: 1, processName: '请假审批流程', processNo: 'PROC-2026-001', applicant: '张三', startTime: '2026-01-15 10:00', currentNode: '部门经理审批', status: 2, statusText: '审批中' },
+      { id: 2, processName: '会议室预定流程', processNo: 'PROC-2026-002', applicant: '李四', startTime: '2026-01-14 09:00', currentNode: '已完成', status: 3, statusText: '已完成' },
+      { id: 3, processName: '用车申请流程', processNo: 'PROC-2026-003', applicant: '王五', startTime: '2026-01-13 14:30', currentNode: '行政审批', status: 2, statusText: '审批中' }
     ]
     pagination.total = tableData.value.length
     loading.value = false
@@ -96,7 +96,7 @@ const loadData = () => {
 const handleView = (row) => {
   currentProcess.value = {
     nodes: [
-      { name: '发起申请', description: '张三 - 2024-01-15 10:00', status: 'completed' },
+      { name: '发起申请', description: '张三 - 2026-01-15 10:00', status: 'completed' },
       { name: '部门经理审批', description: '李四 - 已同意', status: 'completed' },
       { name: '人事审批', description: '待审批', status: 'processing' },
       { name: '归档', description: '', status: 'pending' }

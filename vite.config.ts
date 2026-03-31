@@ -1,15 +1,26 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = fileURLToPath(new URL('./', import.meta.url))
 
 export default defineConfig({
     plugins: [vue()],
     base: '/',
     server: {
-        port: 3000,
+        port: 8088,
         cors: true,
         headers: {
             'Access-Control-Allow-Origin': '*'
+        },
+        proxy: {
+            '/x_organization_assemble_surface': {
+                target: 'http://localhost:20080',
+                changeOrigin: true,
+                secure: false,
+                ws: true
+            }
         }
     },
     build: {

@@ -121,8 +121,8 @@
         <el-form-item label="归档部门" prop="department">
           <el-select v-model="formData.department" placeholder="请选择部门">
             <el-option label="办公室" value="办公室" />
-            <el-option label="技术部" value="技术部" />
-            <el-option label="人事部" value="人事部" />
+            <el-option label="科技部" value="科技部" />
+            <el-option label="资金部" value="资金部" />
             <el-option label="财务部" value="财务部" />
           </el-select>
         </el-form-item>
@@ -165,8 +165,8 @@
         <el-form-item label="借阅部门">
           <el-select v-model="borrowForm.department" placeholder="请选择部门">
             <el-option label="办公室" value="办公室" />
-            <el-option label="技术部" value="技术部" />
-            <el-option label="人事部" value="人事部" />
+            <el-option label="科技部" value="科技部" />
+            <el-option label="资金部" value="资金部" />
           </el-select>
         </el-form-item>
         <el-form-item label="借阅用途">
@@ -276,7 +276,7 @@ const loadData = () => {
         name: 'XX 项目合同协议',
         type: 'contract',
         typeName: '合同协议',
-        department: '技术部',
+        department: '科技部',
         keeper: '李四',
         archiveTime: '2026-01-14 09:00',
         status: 1

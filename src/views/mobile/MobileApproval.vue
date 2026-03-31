@@ -178,14 +178,14 @@ const loadData = () => {
         typeName: '请假',
         title: '张三的请假申请',
         applicant: '张三',
-        department: '技术部',
-        applyTime: '2024-01-15 10:00',
-        content: '因个人原因，需请假 3 天，时间：2024 年 1 月 20 日至 1 月 22 日',
+        department: '科技部',
+        applyTime: '2026-01-15 10:00',
+        content: '因个人原因，需请假 3 天，时间：2026 年 1 月 20 日至 1 月 22 日',
         status: 1,
         statusText: '待审批',
         attachments: ['请假条.pdf'],
         approvalFlow: [
-          { name: '部门经理审批', approver: '李四', time: '2024-01-15 11:00', status: 1, comment: '同意' }
+          { name: '部门经理审批', approver: '李四', time: '2026-01-15 11:00', status: 1, comment: '同意' }
         ]
       },
       {
@@ -195,13 +195,13 @@ const loadData = () => {
         title: '会议室预定申请',
         applicant: '王五',
         department: '市场部',
-        applyTime: '2024-01-14 09:00',
-        content: '申请使用第一会议室，时间：2024 年 1 月 18 日下午 2 点',
+        applyTime: '2026-01-14 09:00',
+        content: '申请使用第一会议室，时间：2026 年 1 月 18 日下午 2 点',
         status: 2,
         statusText: '已审批',
         attachments: [],
         approvalFlow: [
-          { name: '行政审批', approver: '赵六', time: '2024-01-14 10:00', status: 1, comment: '已安排' }
+          { name: '行政审批', approver: '赵六', time: '2026-01-14 10:00', status: 1, comment: '已安排' }
         ]
       }
     ]

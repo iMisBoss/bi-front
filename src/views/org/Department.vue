@@ -94,13 +94,13 @@ const loadData = () => {
   setTimeout(() => {
     tableData.value = [
       { id: 1, name: '总公司', code: 'HEAD', parentName: '-', manager: '张三', order: 1, status: 1 },
-      { id: 2, name: '技术部', code: 'TECH', parentName: '总公司', manager: '李四', order: 1, status: 1 },
-      { id: 3, name: '人事部', code: 'HR', parentName: '总公司', manager: '王五', order: 2, status: 1 }
+      { id: 2, name: '科技部', code: 'TECH', parentName: '总公司', manager: '李四', order: 1, status: 1 },
+      { id: 3, name: '资金部', code: 'HR', parentName: '总公司', manager: '王五', order: 2, status: 1 }
     ]
     treeData.value = [
       { id: 1, label: '总公司', children: [
-          { id: 2, label: '技术部' },
-          { id: 3, label: '人事部' }
+          { id: 2, label: '科技部' },
+          { id: 3, label: '资金部' }
         ]}
     ]
     loading.value = false

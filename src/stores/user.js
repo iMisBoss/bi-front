@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', () => {
                 currentUser.value = {
                     name: '管理员',
                     username: 'admin',
-                    department: '技术部',
+                    department: '科技部',
                     role: 'admin'
                 }
             }

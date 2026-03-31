@@ -102,9 +102,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, items: 'A4 纸、签字笔', quantity: 10, applicant: '张三', department: '技术部', applyTime: '2024-01-15 10:00', status: 2, statusText: '已发放' },
-      { id: 2, items: '笔记本', quantity: 5, applicant: '李四', department: '人事部', applyTime: '2024-01-14 09:00', status: 2, statusText: '已发放' },
-      { id: 3, items: '文件夹', quantity: 20, applicant: '王五', department: '财务部', applyTime: '2024-01-13 14:30', status: 1, statusText: '待审批' }
+      { id: 1, items: 'A4 纸、签字笔', quantity: 10, applicant: '张三', department: '科技部', applyTime: '2026-01-15 10:00', status: 2, statusText: '已发放' },
+      { id: 2, items: '笔记本', quantity: 5, applicant: '李四', department: '资金部', applyTime: '2026-01-14 09:00', status: 2, statusText: '已发放' },
+      { id: 3, items: '文件夹', quantity: 20, applicant: '王五', department: '财务部', applyTime: '2026-01-13 14:30', status: 1, statusText: '待审批' }
     ]
     loading.value = false
   }, 500)

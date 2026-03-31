@@ -204,9 +204,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, title: '关于 2024 年春节放假的通知', type: 'system', typeName: '系统通知', target: '全体员工', pushTime: '2024-01-15 10:00', sentCount: 1256, readCount: 890, status: 3, statusText: '已推送' },
-      { id: 2, title: '您有待审批事项', type: 'approval', typeName: '审批提醒', target: '管理层', pushTime: '2024-01-14 09:00', sentCount: 50, readCount: 45, status: 3, statusText: '已推送' },
-      { id: 3, title: '会议通知', type: 'meeting', typeName: '会议通知', target: '指定人员', pushTime: '2024-01-13 14:30', sentCount: 10, readCount: 8, status: 3, statusText: '已推送' }
+      { id: 1, title: '关于 2026 年春节放假的通知', type: 'system', typeName: '系统通知', target: '全体员工', pushTime: '2026-01-15 10:00', sentCount: 1256, readCount: 890, status: 3, statusText: '已推送' },
+      { id: 2, title: '您有待审批事项', type: 'approval', typeName: '审批提醒', target: '管理层', pushTime: '2026-01-14 09:00', sentCount: 50, readCount: 45, status: 3, statusText: '已推送' },
+      { id: 3, title: '会议通知', type: 'meeting', typeName: '会议通知', target: '指定人员', pushTime: '2026-01-13 14:30', sentCount: 10, readCount: 8, status: 3, statusText: '已推送' }
     ]
     pagination.total = tableData.value.length
     loading.value = false

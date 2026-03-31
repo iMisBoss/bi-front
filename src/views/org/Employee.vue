@@ -65,10 +65,10 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     activeData.value = [
-      { id: 1, name: '张三', department: '技术部', position: '前端工程师', entryDate: '2026-01-01', status: 1 }
+      { id: 1, name: '张三', department: '科技部', position: '前端工程师', entryDate: '2026-01-01', status: 1 }
     ]
     resignedData.value = [
-      { id: 2, name: '李四', department: '技术部', position: '后端工程师', entryDate: '2023-01-01', resignDate: '2026-01-01', reason: '个人发展' }
+      { id: 2, name: '李四', department: '科技部', position: '后端工程师', entryDate: '2023-01-01', resignDate: '2026-01-01', reason: '个人发展' }
     ]
     loading.value = false
   }, 500)

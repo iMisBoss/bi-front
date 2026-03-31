@@ -209,9 +209,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, type: 'contract', typeName: '合同到期', title: 'XX 项目合同即将到期，请及时处理续签事宜', level: 'high', levelName: '紧急', remindTime: '2024-01-15 10:00', deadline: '2024-01-20', relatedPerson: '张三', isRead: false, content: 'XX 项目合同将于 2024 年 1 月 20 日到期，请提前准备续签材料。' },
-      { id: 2, type: 'certificate', typeName: '证书年审', title: '公司营业执照需要进行年审', level: 'medium', levelName: '重要', remindTime: '2024-01-14 09:00', deadline: '2024-01-25', relatedPerson: '李四', isRead: false, content: '公司营业执照年审时间为 1 月 25 日，请准备相关材料。' },
-      { id: 3, type: 'meeting', typeName: '会议提醒', title: '下午 3 点召开部门例会', level: 'low', levelName: '一般', remindTime: '2024-01-13 14:00', relatedPerson: '', isRead: true, content: '今天下午 3 点在会议室召开部门例会，请准时参加。' }
+      { id: 1, type: 'contract', typeName: '合同到期', title: 'XX 项目合同即将到期，请及时处理续签事宜', level: 'high', levelName: '紧急', remindTime: '2026-01-15 10:00', deadline: '2026-01-20', relatedPerson: '张三', isRead: false, content: 'XX 项目合同将于 2026 年 1 月 20 日到期，请提前准备续签材料。' },
+      { id: 2, type: 'certificate', typeName: '证书年审', title: '公司营业执照需要进行年审', level: 'medium', levelName: '重要', remindTime: '2026-01-14 09:00', deadline: '2026-01-25', relatedPerson: '李四', isRead: false, content: '公司营业执照年审时间为 1 月 25 日，请准备相关材料。' },
+      { id: 3, type: 'meeting', typeName: '会议提醒', title: '下午 3 点召开部门例会', level: 'low', levelName: '一般', remindTime: '2026-01-13 14:00', relatedPerson: '', isRead: true, content: '今天下午 3 点在会议室召开部门例会，请准时参加。' }
     ]
     pagination.total = tableData.value.length
     loading.value = false

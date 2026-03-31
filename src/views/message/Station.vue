@@ -162,8 +162,8 @@ const loadData = () => {
   setTimeout(() => {
     tableData.value = [
       { id: 1, title: '关于 2026 年春节放假的通知', sender: '办公室', sendTime: '2026-01-15 10:00', type: 'notice', typeName: '通知', isRead: false, content: '根据公司安排，2026 年春节放假时间为...' },
-      { id: 2, title: '系统升级维护通知', sender: '技术部', sendTime: '2026-01-14 09:00', type: 'remind', typeName: '提醒', isRead: false, content: '系统将于本周末进行升级维护...' },
-      { id: 3, title: '会议通知', sender: '人事部', sendTime: '2026-01-13 14:30', type: 'normal', typeName: '普通', isRead: true, content: '请于明天上午 9 点参加月度工作会议...' }
+      { id: 2, title: '系统升级维护通知', sender: '科技部', sendTime: '2026-01-14 09:00', type: 'remind', typeName: '提醒', isRead: false, content: '系统将于本周末进行升级维护...' },
+      { id: 3, title: '会议通知', sender: '资金部', sendTime: '2026-01-13 14:30', type: 'normal', typeName: '普通', isRead: true, content: '请于明天上午 9 点参加月度工作会议...' }
     ]
     pagination.total = tableData.value.length
     loading.value = false

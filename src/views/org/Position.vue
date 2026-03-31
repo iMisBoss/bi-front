@@ -41,8 +41,8 @@
         </el-form-item>
         <el-form-item label="所属部门" prop="department">
           <el-select v-model="formData.department" placeholder="请选择部门">
-            <el-option label="技术部" value="技术部" />
-            <el-option label="人事部" value="人事部" />
+            <el-option label="科技部" value="科技部" />
+            <el-option label="资金部" value="资金部" />
           </el-select>
         </el-form-item>
         <el-form-item label="职级" prop="level">
@@ -101,8 +101,8 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, name: '前端工程师', code: 'FE001', department: '技术部', level: 'P2', headcount: 10, currentCount: 8, status: 1 },
-      { id: 2, name: '后端工程师', code: 'BE001', department: '技术部', level: 'P2', headcount: 15, currentCount: 12, status: 1 }
+      { id: 1, name: '前端工程师', code: 'FE001', department: '科技部', level: 'P2', headcount: 10, currentCount: 8, status: 1 },
+      { id: 2, name: '后端工程师', code: 'BE001', department: '科技部', level: 'P2', headcount: 15, currentCount: 12, status: 1 }
     ]
     loading.value = false
   }, 500)

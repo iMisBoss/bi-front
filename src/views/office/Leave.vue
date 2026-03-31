@@ -139,9 +139,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, type: 'personal', typeName: '事假', reason: '家里有事', startDate: '2024-01-20 09:00', endDate: '2024-01-22 18:00', days: 3, status: 2, statusText: '已批准' },
-      { id: 2, type: 'sick', typeName: '病假', reason: '身体不适', startDate: '2024-01-15 09:00', endDate: '2024-01-15 18:00', days: 1, status: 2, statusText: '已批准' },
-      { id: 3, type: 'annual', typeName: '年假', reason: '年假休息', startDate: '2024-02-01 09:00', endDate: '2024-02-05 18:00', days: 5, status: 1, statusText: '待审批' }
+      { id: 1, type: 'personal', typeName: '事假', reason: '家里有事', startDate: '2026-01-20 09:00', endDate: '2026-01-22 18:00', days: 3, status: 2, statusText: '已批准' },
+      { id: 2, type: 'sick', typeName: '病假', reason: '身体不适', startDate: '2026-01-15 09:00', endDate: '2026-01-15 18:00', days: 1, status: 2, statusText: '已批准' },
+      { id: 3, type: 'annual', typeName: '年假', reason: '年假休息', startDate: '2026-02-01 09:00', endDate: '2026-02-05 18:00', days: 5, status: 1, statusText: '待审批' }
     ]
     loading.value = false
   }, 500)

@@ -105,7 +105,7 @@ const loadData = () => {
   setTimeout(() => {
     tableData.value = [
       { id: 1, name: '公司管理制度.pdf', category: '管理制度', size: '2.5MB', uploader: '办公室', uploadTime: '2026-01-15 10:00', downloads: 120, type: 'pdf' },
-      { id: 2, name: '技术架构设计.docx', category: '技术文档', size: '1.8MB', uploader: '技术部', uploadTime: '2026-01-14 09:00', downloads: 85, type: 'docx' },
+      { id: 2, name: '技术架构设计.docx', category: '技术文档', size: '1.8MB', uploader: '科技部', uploadTime: '2026-01-14 09:00', downloads: 85, type: 'docx' },
       { id: 3, name: '财务报表.xlsx', category: '财务', size: '3.2MB', uploader: '财务部', uploadTime: '2026-01-13 14:30', downloads: 50, type: 'xlsx' }
     ]
     pagination.total = tableData.value.length

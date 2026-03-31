@@ -253,11 +253,11 @@ const loadData = () => {
 
     // 模拟打卡记录
     attendanceRecords.value = [
-      { id: 1, date: '2024-01-15', weekday: '一', onDutyTime: '08:55:30', offDutyTime: '18:05:20', status: 1, statusText: '正常' },
-      { id: 2, date: '2024-01-14', weekday: '日', onDutyTime: '08:55:30', offDutyTime: '18:05:20', status: 1, statusText: '正常' },
-      { id: 3, date: '2024-01-13', weekday: '六', onDutyTime: '09:05:30', offDutyTime: '18:05:20', status: 2, statusText: '迟到' },
-      { id: 4, date: '2024-01-12', weekday: '五', onDutyTime: '08:55:30', offDutyTime: '17:30:20', status: 3, statusText: '早退' },
-      { id: 5, date: '2024-01-11', weekday: '四', onDutyTime: '-', offDutyTime: '-', status: 4, statusText: '缺卡' }
+      { id: 1, date: '2026-01-15', weekday: '一', onDutyTime: '08:55:30', offDutyTime: '18:05:20', status: 1, statusText: '正常' },
+      { id: 2, date: '2026-01-14', weekday: '日', onDutyTime: '08:55:30', offDutyTime: '18:05:20', status: 1, statusText: '正常' },
+      { id: 3, date: '2026-01-13', weekday: '六', onDutyTime: '09:05:30', offDutyTime: '18:05:20', status: 2, statusText: '迟到' },
+      { id: 4, date: '2026-01-12', weekday: '五', onDutyTime: '08:55:30', offDutyTime: '17:30:20', status: 3, statusText: '早退' },
+      { id: 5, date: '2026-01-11', weekday: '四', onDutyTime: '-', offDutyTime: '-', status: 4, statusText: '缺卡' }
     ]
 
     loading.value = false

@@ -118,9 +118,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, purpose: '拜访客户', car: '京 A·12345', driver: '张师傅', startTime: '2024-01-15 09:00', endTime: '2024-01-15 17:00', destination: '北京市朝阳区', status: 2, statusText: '已完成' },
-      { id: 2, purpose: '参加会议', car: '京 A·67890', driver: '李师傅', startTime: '2024-01-16 08:00', endTime: '2024-01-16 18:00', destination: '北京市海淀区', status: 1, statusText: '已批准' },
-      { id: 3, purpose: '公务出行', car: '京 A·11111', driver: '王师傅', startTime: '2024-01-17 10:00', endTime: '2024-01-17 15:00', destination: '北京市东城区', status: 1, statusText: '待审批' }
+      { id: 1, purpose: '拜访客户', car: '京 A·12345', driver: '张师傅', startTime: '2026-01-15 09:00', endTime: '2026-01-15 17:00', destination: '北京市朝阳区', status: 2, statusText: '已完成' },
+      { id: 2, purpose: '参加会议', car: '京 A·67890', driver: '李师傅', startTime: '2026-01-16 08:00', endTime: '2026-01-16 18:00', destination: '北京市海淀区', status: 1, statusText: '已批准' },
+      { id: 3, purpose: '公务出行', car: '京 A·11111', driver: '王师傅', startTime: '2026-01-17 10:00', endTime: '2026-01-17 15:00', destination: '北京市东城区', status: 1, statusText: '待审批' }
     ]
     loading.value = false
   }, 500)

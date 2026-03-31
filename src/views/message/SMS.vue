@@ -147,9 +147,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, phone: '138****1234', content: '【会议通知】您好，请于明天上午 9 点在公司会议室参加会议，请准时出席。', sender: '张三', sendTime: '2024-01-15 10:00', status: 'success', statusText: '发送成功' },
-      { id: 2, phone: '139****5678', content: '【系统提醒】您有待办事项需要处理，请及时登录系统查看。', sender: '系统', sendTime: '2024-01-14 09:00', status: 'success', statusText: '发送成功' },
-      { id: 3, phone: '137****9012', content: '测试短信内容', sender: '李四', sendTime: '2024-01-13 14:30', status: 'failed', statusText: '发送失败' }
+      { id: 1, phone: '138****1234', content: '【会议通知】您好，请于明天上午 9 点在公司会议室参加会议，请准时出席。', sender: '张三', sendTime: '2026-01-15 10:00', status: 'success', statusText: '发送成功' },
+      { id: 2, phone: '139****5678', content: '【系统提醒】您有待办事项需要处理，请及时登录系统查看。', sender: '系统', sendTime: '2026-01-14 09:00', status: 'success', statusText: '发送成功' },
+      { id: 3, phone: '137****9012', content: '测试短信内容', sender: '李四', sendTime: '2026-01-13 14:30', status: 'failed', statusText: '发送失败' }
     ]
     pagination.total = tableData.value.length
     loading.value = false

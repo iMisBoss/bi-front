@@ -151,7 +151,7 @@ const loadData = () => {
   setTimeout(() => {
     tableData.value = [
       { id: 1, title: '公司召开 2026 年度工作会议', type: 'company', typeName: '公司新闻', author: '办公室', publishTime: '2026-01-15 10:00', views: 120, status: 1 },
-      { id: 2, title: '关于春节放假的通知', type: 'notice', typeName: '通知公告', author: '人事部', publishTime: '2026-01-10 09:00', views: 350, status: 1 },
+      { id: 2, title: '关于春节放假的通知', type: 'notice', typeName: '通知公告', author: '资金部', publishTime: '2026-01-10 09:00', views: 350, status: 1 },
       { id: 3, title: '行业发展趋势分析', type: 'industry', typeName: '行业资讯', author: '市场部', publishTime: '2026-01-08 14:30', views: 89, status: 1 }
     ]
     pagination.total = tableData.value.length

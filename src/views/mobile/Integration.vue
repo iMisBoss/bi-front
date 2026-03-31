@@ -209,9 +209,9 @@ const functions = ref([
 ])
 
 const versions = ref([
-  { id: 1, version: 'v2.1.0', platform: 'iOS', releaseTime: '2024-01-15 10:00', size: '45MB', updateLog: '1.优化审批流程 2.修复已知问题 3.提升系统稳定性', status: 1 },
-  { id: 2, version: 'v2.1.0', platform: 'Android', releaseTime: '2024-01-14 09:00', size: '42MB', updateLog: '1.优化审批流程 2.修复已知问题 3.提升系统稳定性', status: 1 },
-  { id: 3, version: 'v2.0.9', platform: 'iOS', releaseTime: '2024-01-01 10:00', size: '43MB', updateLog: '1.新增消息推送功能 2.优化界面体验', status: 2 }
+  { id: 1, version: 'v2.1.0', platform: 'iOS', releaseTime: '2026-01-15 10:00', size: '45MB', updateLog: '1.优化审批流程 2.修复已知问题 3.提升系统稳定性', status: 1 },
+  { id: 2, version: 'v2.1.0', platform: 'Android', releaseTime: '2026-01-14 09:00', size: '42MB', updateLog: '1.优化审批流程 2.修复已知问题 3.提升系统稳定性', status: 1 },
+  { id: 3, version: 'v2.0.9', platform: 'iOS', releaseTime: '2026-01-01 10:00', size: '43MB', updateLog: '1.新增消息推送功能 2.优化界面体验', status: 2 }
 ])
 
 const releaseForm = ref({

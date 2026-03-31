@@ -156,9 +156,9 @@ const loadData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, sealType: 'official', sealTypeName: '公章', purpose: '签订合同', fileName: '业务合同.pdf', fileCount: 3, applicant: '张三', department: '技术部', applyTime: '2024-01-15 10:00', status: 2, statusText: '已批准' },
-      { id: 2, sealType: 'contract', sealTypeName: '合同章', purpose: '合作协议盖章', fileName: '合作协议.pdf', fileCount: 2, applicant: '李四', department: '市场部', applyTime: '2024-01-14 09:00', status: 1, statusText: '待审批' },
-      { id: 3, sealType: 'finance', sealTypeName: '财务章', purpose: '财务报表', fileName: '财务报表.xlsx', fileCount: 1, applicant: '王五', department: '财务部', applyTime: '2024-01-13 14:30', status: 2, statusText: '已批准' }
+      { id: 1, sealType: 'official', sealTypeName: '公章', purpose: '签订合同', fileName: '业务合同.pdf', fileCount: 3, applicant: '张三', department: '科技部', applyTime: '2026-01-15 10:00', status: 2, statusText: '已批准' },
+      { id: 2, sealType: 'contract', sealTypeName: '合同章', purpose: '合作协议盖章', fileName: '合作协议.pdf', fileCount: 2, applicant: '李四', department: '市场部', applyTime: '2026-01-14 09:00', status: 1, statusText: '待审批' },
+      { id: 3, sealType: 'finance', sealTypeName: '财务章', purpose: '财务报表', fileName: '财务报表.xlsx', fileCount: 1, applicant: '王五', department: '财务部', applyTime: '2026-01-13 14:30', status: 2, statusText: '已批准' }
     ]
     loading.value = false
   }, 500)

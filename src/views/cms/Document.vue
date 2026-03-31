@@ -77,8 +77,8 @@
             <el-form-item label="发文单位" prop="department">
               <el-select v-model="formData.department" placeholder="请选择部门">
                 <el-option label="办公室" value="办公室" />
-                <el-option label="技术部" value="技术部" />
-                <el-option label="人事部" value="人事部" />
+                <el-option label="科技部" value="科技部" />
+                <el-option label="资金部" value="资金部" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -96,8 +96,8 @@
         <el-form-item label="主送单位" prop="mainSend">
           <el-select v-model="formData.mainSend" multiple placeholder="请选择主送单位">
             <el-option label="各部门" value="all" />
-            <el-option label="技术部" value="tech" />
-            <el-option label="人事部" value="hr" />
+            <el-option label="科技部" value="tech" />
+            <el-option label="资金部" value="hr" />
           </el-select>
         </el-form-item>
 
@@ -187,7 +187,7 @@ const loadData = () => {
   setTimeout(() => {
     tableData.value = [
       { id: 1, docNumber: '公司发〔2026〕1 号', title: '关于 2026 年工作安排的通知', type: '通知', department: '办公室', createTime: '2026-01-15 10:00', status: 1, statusText: '待办理' },
-      { id: 2, docNumber: '公司发〔2026〕2 号', title: '第一季度工作报告', type: '报告', department: '技术部', createTime: '2026-01-14 09:00', status: 1, statusText: '已办理' }
+      { id: 2, docNumber: '公司发〔2026〕2 号', title: '第一季度工作报告', type: '报告', department: '科技部', createTime: '2026-01-14 09:00', status: 1, statusText: '已办理' }
     ]
     pagination.total = tableData.value.length
     loading.value = false

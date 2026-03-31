@@ -15,8 +15,8 @@
         </el-form-item>
         <el-form-item label="部门">
           <el-select v-model="searchForm.department" placeholder="请选择部门" clearable>
-            <el-option label="技术部" value="技术部" />
-            <el-option label="人事部" value="人事部" />
+            <el-option label="科技部" value="科技部" />
+            <el-option label="资金部" value="资金部" />
             <el-option label="财务部" value="财务部" />
           </el-select>
         </el-form-item>
@@ -86,8 +86,8 @@
         </el-form-item>
         <el-form-item label="部门" prop="department">
           <el-select v-model="formData.department" placeholder="请选择部门">
-            <el-option label="技术部" value="技术部" />
-            <el-option label="人事部" value="人事部" />
+            <el-option label="科技部" value="科技部" />
+            <el-option label="资金部" value="资金部" />
             <el-option label="财务部" value="财务部" />
           </el-select>
         </el-form-item>
@@ -145,6 +145,118 @@ const rules = {
   position: [{ required: true, message: '请输入岗位', trigger: 'blur' }]
 }
 
+// 静态数据
+const mockData = [
+  {
+    id: 1,
+    name: '张三',
+    gender: '男',
+    department: '科技部',
+    position: '前端工程师',
+    entryDate: '2024-03-15',
+    status: '在职'
+  },
+  {
+    id: 2,
+    name: '李四',
+    gender: '女',
+    department: '资金部',
+    position: '资金专员',
+    entryDate: '2024-05-20',
+    status: '在职'
+  },
+  {
+    id: 3,
+    name: '王五',
+    gender: '男',
+    department: '财务部',
+    position: '会计',
+    entryDate: '2024-01-10',
+    status: '在职'
+  },
+  {
+    id: 4,
+    name: '赵六',
+    gender: '女',
+    department: '科技部',
+    position: '后端工程师',
+    entryDate: '2024-07-01',
+    status: '在职'
+  },
+  {
+    id: 5,
+    name: '孙七',
+    gender: '男',
+    department: '资金部',
+    position: '风控经理',
+    entryDate: '2023-11-15',
+    status: '在职'
+  },
+  {
+    id: 6,
+    name: '周八',
+    gender: '女',
+    department: '财务部',
+    position: '出纳',
+    entryDate: '2024-02-28',
+    status: '在职'
+  },
+  {
+    id: 7,
+    name: '吴九',
+    gender: '男',
+    department: '科技部',
+    position: '测试工程师',
+    entryDate: '2024-06-10',
+    status: '在职'
+  },
+  {
+    id: 8,
+    name: '郑十',
+    gender: '女',
+    department: '科技部',
+    position: '产品经理',
+    entryDate: '2023-09-01',
+    status: '在职'
+  },
+  {
+    id: 9,
+    name: '钱十一',
+    gender: '男',
+    department: '资金部',
+    position: '投资顾问',
+    entryDate: '2024-04-15',
+    status: '在职'
+  },
+  {
+    id: 10,
+    name: '冯十二',
+    gender: '女',
+    department: '财务部',
+    position: '财务主管',
+    entryDate: '2023-08-20',
+    status: '在职'
+  },
+  {
+    id: 11,
+    name: '陈十三',
+    gender: '男',
+    department: '科技部',
+    position: '架构师',
+    entryDate: '2023-05-10',
+    status: '在职'
+  },
+  {
+    id: 12,
+    name: '褚十四',
+    gender: '女',
+    department: '资金部',
+    position: '结算专员',
+    entryDate: '2024-08-01',
+    status: '在职'
+  }
+]
+
 onMounted(() => {
   loadData()
 })
@@ -152,13 +264,13 @@ onMounted(() => {
 const loadData = async () => {
   loading.value = true
   try {
-    // 调用实际 API
-    const res = await fetch('/x_organization_assemble_surface/jaxrs/person/list')
-    if (res.ok) {
-      const data = await res.json()
-      tableData.value = data.list || []
-      pagination.total = data.count || 0
-    }
+    // 使用静态数据
+    await new Promise(resolve => setTimeout(resolve, 300))
+    tableData.value = mockData.slice(
+        (pagination.page - 1) * pagination.pageSize,
+        pagination.page * pagination.pageSize
+    )
+    pagination.total = mockData.length
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
@@ -198,8 +310,8 @@ const handleEdit = (row) => {
 }
 
 const handleView = (row) => {
-  // 查看详情逻辑
   console.log('查看:', row)
+  ElMessage.info(`查看 ${row.name} 的详细信息`)
 }
 
 const handleDelete = async (row) => {
@@ -209,9 +321,13 @@ const handleDelete = async (row) => {
       cancelButtonText: '取消',
       type: 'warning'
     })
-    // 调用删除 API
-    ElMessage.success('删除成功')
-    loadData()
+    const index = mockData.findIndex(item => item.id === row.id)
+    if (index !== -1) {
+      mockData.splice(index, 1)
+      pagination.total = mockData.length
+      loadData()
+      ElMessage.success('删除成功')
+    }
   } catch {
     // 取消删除
   }
@@ -221,7 +337,25 @@ const handleSubmit = async () => {
   if (!formRef.value) return
   await formRef.value.validate(async (valid) => {
     if (valid) {
-      // 调用新增/编辑 API
+      if (dialogTitle.value === '新增档案') {
+        const newId = mockData.length > 0 ? Math.max(...mockData.map(item => item.id)) + 1 : 1
+        mockData.push({
+          id: newId,
+          ...formData.value,
+          entryDate: new Date(formData.value.entryDate).toISOString().split('T')[0],
+          status: '在职'
+        })
+      } else {
+        const index = mockData.findIndex(item => item.id === formData.value.id)
+        if (index !== -1) {
+          mockData[index] = {
+            ...mockData[index],
+            ...formData.value,
+            entryDate: new Date(formData.value.entryDate).toISOString().split('T')[0]
+          }
+        }
+      }
+      pagination.total = mockData.length
       ElMessage.success('保存成功')
       dialogVisible.value = false
       loadData()

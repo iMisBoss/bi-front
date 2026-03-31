@@ -186,7 +186,7 @@ const loadData = () => {
   setTimeout(() => {
     tableData.value = [
       { id: 1, title: 'Vue3 开发规范', category: '技术文档', author: '张三', createTime: '2026-01-15', views: 120, downloads: 25 },
-      { id: 2, title: '员工考勤管理制度', category: '管理制度', author: '人事部', createTime: '2026-01-10', views: 350, downloads: 80 },
+      { id: 2, title: '员工考勤管理制度', category: '管理制度', author: '资金部', createTime: '2026-01-10', views: 350, downloads: 80 },
       { id: 3, title: '新员工入职培训', category: '培训资料', author: '李四', createTime: '2026-01-08', views: 200, downloads: 50 }
     ]
     pagination.total = tableData.value.length
