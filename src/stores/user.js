@@ -3,8 +3,8 @@ import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
     const currentUser = ref(null)
-    const token = ref(localStorage.getItem('o2_token') || '')
-    const isLoggedIn = ref(!!localStorage.getItem('o2_token'))
+    const token = ref(localStorage.getItem('bi_token') || '')
+    const isLoggedIn = ref(!!localStorage.getItem('bi_token'))
 
     const loadUserInfo = async () => {
         if (!token.value) {
@@ -44,7 +44,7 @@ export const useUserStore = defineStore('user', () => {
 
     const setToken = (newToken) => {
         token.value = newToken
-        localStorage.setItem('o2_token', newToken)
+        localStorage.setItem('bi_token', newToken)
         isLoggedIn.value = true
     }
 
@@ -53,7 +53,7 @@ export const useUserStore = defineStore('user', () => {
         token.value = ''
         currentUser.value = null
         isLoggedIn.value = false
-        localStorage.removeItem('o2_token')
+        localStorage.removeItem('bi_token')
         localStorage.removeItem('remembered_username')
     }
 

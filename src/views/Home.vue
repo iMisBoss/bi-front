@@ -206,12 +206,12 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const quickAccessList = ref([
-  { name: '流程设计', path: '/process/designer', icon: 'Connection', color: '#409EFF' },
-  { name: '我的待办', path: '/process/todo', icon: 'Document', color: '#67C23A' },
+  { name: '发起审批', path: '/process/approval/start', icon: 'Plus', color: '#409EFF' },
+  { name: '我的待办', path: '/process/approval/todo', icon: 'Bell', color: '#67C23A' },
   { name: '考勤打卡', path: '/office/attendance', icon: 'Clock', color: '#E6A23C' },
   { name: '会议管理', path: '/office/meeting', icon: 'VideoCamera', color: '#909399' },
   { name: '公文管理', path: '/cms/document', icon: 'Folder', color: '#F56C6C' },
-  { name: 'AI 问答', path: '/ai/qa', icon: 'ChatDotRound', color: '#1890ff' }
+  { name: 'AI 问答客服', path: '/ai/qa', icon: 'ChatDotRound', color: '#1890ff' }
 ])
 
 const orgFunctions = ref([
@@ -224,12 +224,14 @@ const orgFunctions = ref([
 ])
 
 const processFunctions = ref([
-  { name: '流程设计器', status: '已上线' },
-  { name: '表单设计器', status: '已上线' },
+  { name: '发起审批', status: '已上线' },
   { name: '我的待办', status: '已上线' },
   { name: '我已处理', status: '已上线' },
-  { name: '流程监控', status: '已上线' },
-  { name: '超时督办', status: '规划中' }
+  { name: '我发起的', status: '已上线' },
+  { name: '抄送我的', status: '已上线' },
+  { name: '审批委托', status: '已上线' },
+  { name: '流程进度查询', status: '已上线' },
+  { name: '办理查阅', status: '已上线' }
 ])
 
 const cmsFunctions = ref([

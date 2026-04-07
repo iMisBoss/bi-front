@@ -44,16 +44,113 @@
           <el-sub-menu index="process">
             <template #title>
               <el-icon><Document /></el-icon>
-              <span>流程审批中心</span>
+              <span>工作台</span>
             </template>
-            <el-menu-item index="/process/designer">流程设计器</el-menu-item>
-            <el-menu-item index="/process/form">表单设计器</el-menu-item>
-            <el-menu-item index="/process/todo">我的待办</el-menu-item>
-            <el-menu-item index="/process/done">我已处理</el-menu-item>
-            <el-menu-item index="/process/monitor">流程监控</el-menu-item>
-            <el-menu-item index="/process/supervise">超时督办</el-menu-item>
+            <el-menu-item index="/process/approval/start">
+              <el-icon><Plus /></el-icon>
+              <span>发起审批</span>
+            </el-menu-item>
+            <el-menu-item index="/process/approval/todo">
+              <el-icon><Bell /></el-icon>
+              <span>我的待办</span>
+            </el-menu-item>
+            <el-menu-item index="/process/approval/done">
+              <el-icon><CircleCheck /></el-icon>
+              <span>我已处理</span>
+            </el-menu-item>
+            <el-menu-item index="/process/approval/launched">
+              <el-icon><Promotion /></el-icon>
+              <span>我发起的</span>
+            </el-menu-item>
+            <el-menu-item index="/process/approval/cced">
+              <el-icon><Message /></el-icon>
+              <span>抄送我的</span>
+            </el-menu-item>
+            <el-menu-item index="/process/approval/delegate">
+              <el-icon><UserFilled /></el-icon>
+              <span>审批委托</span>
+            </el-menu-item>
+            <el-menu-item index="/process/approval/progress">
+              <el-icon><Connection /></el-icon>
+              <span>流程进度查询</span>
+            </el-menu-item>
           </el-sub-menu>
+          <el-sub-menu index="process-center">
+            <template #title>
+              <el-icon><Document /></el-icon>
+              <span>流程中心</span>
+            </template>
 
+            <!-- 全局流程管理（原"我的流程"位置） -->
+            <el-menu-item index="/process/approval/handle-query">
+              <el-icon><Monitor /></el-icon>
+              <span>全局流程管理</span>
+            </el-menu-item>
+
+            <!-- 流程设计中心（管理员设计态入口） -->
+            <el-sub-menu index="process-center-design">
+              <template #title>
+                <span>流程设计中心</span>
+              </template>
+              <!-- 基础能力配置 -->
+              <el-sub-menu index="process-design-basic">
+                <template #title>
+                  <span>基础能力配置</span>
+                </template>
+                <el-menu-item index="/process/design/business-object">业务对象管理</el-menu-item>
+                <el-menu-item index="/process/design/auto-number">自动编号规则配置</el-menu-item>
+                <el-menu-item index="/process/design/approver-rules">审批人规则引擎</el-menu-item>
+                <el-menu-item index="/process/design/params">全局流程参数</el-menu-item>
+                <el-menu-item index="/process/design/variables">系统变量库</el-menu-item>
+              </el-sub-menu>
+
+              <!-- 低代码表单设计器 -->
+              <el-sub-menu index="process-design-form">
+                <template #title>
+                  <span>低代码表单设计器</span>
+                </template>
+                <el-menu-item index="/process/design/form/design">表单设计</el-menu-item>
+                <el-menu-item index="/process/design/form/template">表单模板</el-menu-item>
+                <el-menu-item index="/process/design/form/permission">字段权限</el-menu-item>
+                <el-menu-item index="/process/design/form/linkage">联动规则</el-menu-item>
+              </el-sub-menu>
+
+              <!-- Flowable 流程设计器 -->
+              <el-sub-menu index="process-design-flowable">
+                <template #title>
+                  <span>Flowable 流程设计器</span>
+                </template>
+                <el-menu-item index="/process/design/flowable/bpmn">BPMN 可视化设计</el-menu-item>
+                <el-menu-item index="/process/design/flowable/form-bind">流程 - 表单绑定</el-menu-item>
+                <el-menu-item index="/process/design/flowable/node-config">节点属性配置</el-menu-item>
+                <el-menu-item index="/process/design/flowable/version">流程版本管理</el-menu-item>
+              </el-sub-menu>
+
+              <!-- 模板发布管理 -->
+              <el-sub-menu index="process-design-template">
+                <template #title>
+                  <span>模板发布管理</span>
+                </template>
+                <el-menu-item index="/process/design/template/process">流程模板管理</el-menu-item>
+                <el-menu-item index="/process/design/template/notification">通知模板</el-menu-item>
+                <el-menu-item index="/process/design/template/opinion">审批意见模板</el-menu-item>
+                <el-menu-item index="/process/design/template/print">打印模板</el-menu-item>
+              </el-sub-menu>
+            </el-sub-menu>
+
+            <!-- 流程监控与运维（管理员运行态入口） -->
+            <el-sub-menu index="process-center-monitor">
+              <template #title>
+                <span>流程监控与运维</span>
+              </template>
+              <el-menu-item index="/process/monitor/instances">流程实例监控</el-menu-item>
+              <el-menu-item index="/process/monitor/tasks">待办任务全局管理</el-menu-item>
+              <el-menu-item index="/process/monitor/proxy">审批代理管理</el-menu-item>
+              <el-menu-item index="/process/monitor/urge">催办与提醒</el-menu-item>
+              <el-menu-item index="/process/monitor/logs">流程操作审计日志</el-menu-item>
+              <el-menu-item index="/process/monitor/exceptions">异常流程处理</el-menu-item>
+            </el-sub-menu>
+          </el-sub-menu>
           <el-sub-menu index="cms">
             <template #title>
               <el-icon><Folder /></el-icon>
@@ -163,7 +260,9 @@
 
         <!-- 主内容区 -->
         <el-main class="app-main">
-          <router-view />
+          <div class="app-main-wrapper">
+            <router-view />
+          </div>
         </el-main>
       </el-container>
     </el-container>
@@ -177,7 +276,8 @@ import { useUserStore } from '@/stores/user'
 import {
   HomeFilled, User, Document, Folder, Briefcase,
   ChatDotRound, Bell, Setting, Cellphone, Fold, Expand,
-  OfficeBuilding
+  OfficeBuilding, Plus, CircleCheck, Promotion, Message,
+  UserFilled, Connection, Monitor
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -209,12 +309,49 @@ const currentRouteName = computed(() => {
     '/org/role': '角色权限',
     '/org/level': '职级体系',
     '/org/employee': '员工入职离职',
-    '/process/designer': '流程设计器',
-    '/process/form': '表单设计器',
-    '/process/todo': '我的待办',
-    '/process/done': '我已处理',
-    '/process/monitor': '流程监控',
-    '/process/supervise': '超时督办',
+    '/process/approval/start': '发起审批',
+    '/process/approval/todo': '我的待办',
+    '/process/approval/done': '我已处理',
+    '/process/approval/launched': '我发起的',
+    '/process/approval/cced': '抄送我的',
+    '/process/approval/delegate': '审批委托',
+    '/process/approval/progress': '流程进度查询',
+    // 流程中心 - 全局流程管理
+    '/process/approval/handle-query': '全局流程管理',
+
+    // 流程中心 - 基础能力配置
+    '/process/design/business-object': '业务对象管理',
+    '/process/design/auto-number': '自动编号规则配置',
+    '/process/design/approver-rules': '审批人规则引擎',
+    '/process/design/params': '全局流程参数',
+    '/process/design/variables': '系统变量库',
+
+    // 流程中心 - 低代码表单设计器
+    '/process/design/form/design': '表单设计',
+    '/process/design/form/template': '表单模板',
+    '/process/design/form/permission': '字段权限',
+    '/process/design/form/linkage': '联动规则',
+
+    // 流程中心 - Flowable 流程设计器
+    '/process/design/flowable/bpmn': 'BPMN 可视化设计',
+    '/process/design/flowable/form-bind': '流程 - 表单绑定',
+    '/process/design/flowable/node-config': '节点属性配置',
+    '/process/design/flowable/version': '流程版本管理',
+
+    // 流程中心 - 模板发布管理
+    '/process/design/template/process': '流程模板管理',
+    '/process/design/template/notification': '通知模板',
+    '/process/design/template/opinion': '审批意见模板',
+    '/process/design/template/print': '打印模板',
+
+    // 流程中心 - 流程监控与运维
+    '/process/monitor/instances': '流程实例监控',
+    '/process/monitor/tasks': '待办任务全局管理',
+    '/process/monitor/proxy': '审批代理管理',
+    '/process/monitor/urge': '催办与提醒',
+    '/process/monitor/logs': '流程操作审计日志',
+    '/process/monitor/exceptions': '异常流程处理',
+
     '/cms/news': '新闻公告',
     '/cms/document': '公文管理',
     '/cms/knowledge': '知识库',
@@ -304,7 +441,26 @@ const loadUnreadCount = async () => {
 .app-aside {
   background: #001529;
   transition: width 0.3s;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+  /* 自定义滚动条样式 */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
+  &::-webkit-scrollbar-track {
+    background: #001529;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
   .logo-wrapper {
     height: 60px;
     display: flex;
@@ -312,6 +468,7 @@ const loadUnreadCount = async () => {
     justify-content: center;
     gap: 10px;
     background: #002140;
+    flex-shrink: 0;
 
     img {
       height: 32px;
@@ -327,6 +484,10 @@ const loadUnreadCount = async () => {
 
   .side-menu {
     border-right: none;
+
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .el-sub-menu__title:hover {
       background-color: rgba(255, 255, 255, 0.08);
@@ -391,6 +552,30 @@ const loadUnreadCount = async () => {
 .app-main {
   background: #f0f2f5;
   padding: 20px;
-  overflow: auto;
+  overflow-y: auto;
+  height: calc(100vh - 60px);
+
+  /* 自定义滚动条样式 */
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f0f2f5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .app-main-wrapper {
+    min-height: 100%;
+  }
 }
 </style>
