@@ -1,10 +1,31 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
     const currentUser = ref(null)
     const token = ref(localStorage.getItem('bi_token') || '')
     const isLoggedIn = ref(!!localStorage.getItem('bi_token'))
+
+    const userRoles = computed(() => {
+        return currentUser.value?.roles || []
+    })
+
+    const isAdmin = computed(() => {
+        return userRoles.value.includes('admin') || userRoles.value.includes('super_admin')
+    })
+
+    const hasRole = (role) => {
+        return userRoles.value.includes(role)
+    }
+
+    const hasAnyRole = (roles) => {
+        return roles.some(role => userRoles.value.includes(role))
+    }
+
+    const hasPermission = (permission) => {
+        const permissions = currentUser.value?.permissions || []
+        return permissions.includes(permission)
+    }
 
     const loadUserInfo = async () => {
         if (!token.value) {
@@ -31,7 +52,8 @@ export const useUserStore = defineStore('user', () => {
                     name: '管理员',
                     username: 'admin',
                     department: '科技部',
-                    role: 'admin'
+                    roles: ['admin', 'user'],
+                    permissions: ['all']
                 }
             }
             isLoggedIn.value = true
@@ -61,6 +83,11 @@ export const useUserStore = defineStore('user', () => {
         currentUser,
         token,
         isLoggedIn,
+        userRoles,
+        isAdmin,
+        hasRole,
+        hasAnyRole,
+        hasPermission,
         loadUserInfo,
         setToken,
         logout

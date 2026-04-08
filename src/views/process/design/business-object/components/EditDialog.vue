@@ -39,43 +39,29 @@
       <!-- 顶部基本信息 -->
       <div class="basic-info">
         <el-form :model="formData" :rules="formRules" ref="formRef" :label-width="isVersionEdit ? '110px' : '100px'" class="basic-form">
-          <!-- 版本说明（仅版本编辑模式显示） -->
-          <el-form-item v-if="isVersionEdit" label="版本说明" prop="versionDescription" class="version-description-item">
-            <el-input
-                v-model="versionDescription"
-                type="textarea"
-                :rows="2"
-                placeholder="请详细描述本次版本修改内容"
-                maxlength="500"
-                show-word-limit
-                class="version-textarea"
-            />
-            <span class="version-tip">必填项，发布前必须填写</span>
-          </el-form-item>
-
-          <div class="form-row">
-            <el-form-item label="业务对象名称" prop="name">
-              <el-input v-model="formData.name" placeholder="请输入业务对象名称" style="width: 280px" />
+          <!-- 版本编辑模式：基本信息在一行 -->
+          <div v-if="isVersionEdit" class="form-row version-edit-row">
+            <el-form-item label="业务对象名称" prop="name" class="compact-item">
+              <el-input v-model="formData.name" placeholder="请输入业务对象名称" />
             </el-form-item>
 
-            <el-form-item label="数据库表名" prop="tableName" class="table-name-item">
+            <el-form-item label="数据库表名" prop="tableName" class="compact-item">
               <el-input
                   v-model="formData.tableName"
-                  :disabled="isVersionEdit"
-                  :class="{ 'locked-input': isVersionEdit }"                  style="width: 280px"
-              >
-              </el-input>
-              <el-tooltip v-if="isVersionEdit" content="表名锁定，版本发布后不可修改" placement="top">
+                  disabled
+                  class="locked-input"
+              />
+              <el-tooltip content="表名锁定，版本发布后不可修改" placement="top">
                 <el-icon class="tip-icon"><InfoFilled /></el-icon>
               </el-tooltip>
             </el-form-item>
 
-            <el-form-item label="所属业务域" prop="domain" class="domain-item">
+            <el-form-item label="所属业务域" prop="domain" class="compact-item">
               <el-select
                   v-model="formData.domain"
                   placeholder="请选择业务域"
-                  :disabled="isVersionEdit"
-                  :class="{ 'locked-input': isVersionEdit }"                  style="width: 200px"
+                  disabled
+                  class="locked-input"
                   @change="handleDomainChange"
               >
                 <el-option label="人事类" value="hr" />
@@ -84,13 +70,75 @@
                 <el-option label="风控类" value="risk" />
                 <el-option label="信贷类" value="loan" />
               </el-select>
-              <el-tooltip v-if="isVersionEdit" content="业务域锁定，版本迭代中禁止跨域修改" placement="top">
+              <el-tooltip content="业务域锁定，版本迭代中禁止跨域修改" placement="top">
                 <el-icon class="tip-icon"><InfoFilled /></el-icon>
               </el-tooltip>
             </el-form-item>
           </div>
 
-          <el-form-item label="备注" prop="remark" class="remark-item">
+          <!-- 普通编辑模式：保持原有布局 -->
+          <template v-else>
+            <div class="form-row">
+              <el-form-item label="业务对象名称" prop="name">
+                <el-input v-model="formData.name" placeholder="请输入业务对象名称" style="width: 280px" />
+              </el-form-item>
+
+              <el-form-item label="数据库表名" prop="tableName" class="table-name-item">
+                <el-input
+                    v-model="formData.tableName"                    style="width: 280px"
+                >
+                </el-input>
+              </el-form-item>
+
+              <el-form-item label="所属业务域" prop="domain" class="domain-item">
+                <el-select
+                    v-model="formData.domain"
+                    placeholder="请选择业务域"                    style="width: 200px"
+                    @change="handleDomainChange"
+                >
+                  <el-option label="人事类" value="hr" />
+                  <el-option label="财务类" value="finance" />
+                  <el-option label="行政类" value="admin" />
+                  <el-option label="风控类" value="risk" />
+                  <el-option label="信贷类" value="loan" />
+                </el-select>
+              </el-form-item>
+            </div>
+          </template>
+
+          <!-- 备注和版本说明在同一行（版本编辑模式） -->
+          <div v-if="isVersionEdit" class="remark-version-row">
+            <el-form-item label="备注" prop="remark" class="remark-item half-width">
+              <el-input
+                  v-model="formData.remark"
+                  type="textarea"
+                  :rows="1"
+                  autosize
+                  placeholder="请输入备注信息"
+                  class="remark-textarea"
+              />
+            </el-form-item>
+
+            <el-form-item class="version-description-item half-width">
+              <template #label>
+                <span>版本说明</span>
+                <span class="required-star">*</span>
+                <el-tooltip content="必填项，发布前必须填写" placement="top">
+                  <el-icon class="tip-icon"><QuestionFilled /></el-icon>
+                </el-tooltip>
+              </template>
+              <el-input
+                  v-model="versionDescription"
+                  placeholder="请详细描述本次版本修改内容"
+                  maxlength="200"
+                  show-word-limit
+                  clearable
+              />
+            </el-form-item>
+          </div>
+
+          <!-- 备注（普通编辑模式，独占一行） -->
+          <el-form-item v-else label="备注" prop="remark" class="remark-item">
             <el-input
                 v-model="formData.remark"
                 type="textarea"
@@ -293,18 +341,18 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  Check, CircleCheck, Document, View, Lock, Connection, Menu, Tickets, Notebook, Share, Clock, ScaleToOriginal, InfoFilled
+  Check, CircleCheck, Document, View, Lock, Connection, Menu, Tickets, Notebook, Share, Clock, ScaleToOriginal, InfoFilled, QuestionFilled
 } from '@element-plus/icons-vue'
 import FieldDefinition from './field-definition/FieldDefinition.vue'
-import RelationManagement from './relation-edit/RelationManagement.vue'
-import IndexManagement from './tabs/IndexManagement.vue'
-import FieldPermission from './tabs/FieldPermission.vue'
-import DataRule from './tabs/DataRule.vue'
-import DataPreview from './tabs/DataPreview.vue'
-import SqlPreview from './tabs/SqlPreview.vue'
-import DependencyManagement from './tabs/DependencyManagement.vue'
-import VersionHistory from './tabs/VersionHistory.vue'
-import VersionDiff from './tabs/VersionDiff.vue'
+import RelationManagement from './relation-edit-dialog/RelationManagement.vue'
+import IndexManagement from './index-management/IndexManagement.vue'
+import FieldPermission from './field-permission/FieldPermission.vue'
+import DataRule from './data-rule/DataRule.vue'
+import DataPreview from './data-preview/DataPreview.vue'
+import SqlPreview from './sql-preview/SqlPreview.vue'
+import DependencyManagement from './dependency-management/DependencyManagement.vue'
+import VersionHistory from './version-history/VersionHistory.vue'
+import VersionDiff from './version-diff/VersionDiff.vue'
 import FieldEditDialog from './field-definition/FieldEditDialog.vue'
 
 const props = defineProps({
@@ -726,8 +774,76 @@ const getFieldDialogSubtitle = () => {
   }
 
   .dialog-content {
+    // 版本编辑模式：备注和版本说明在同一行
+    .remark-version-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 0;
+
+      .half-width {
+        flex: 1;
+        margin-bottom: 0;
+        min-width: 0;
+
+        :deep(.el-form-item__content) {
+          width: 100%;
+        }
+      }
+
+      .remark-item {
+        .remark-textarea {
+          width: 100%;
+
+          :deep(.el-textarea__inner) {
+            resize: vertical;
+            min-height: 32px;
+            line-height: 1.5;
+          }
+        }
+      }
+
+      .version-description-item {
+        :deep(.el-form-item__label) {
+          font-weight: 600;
+          color: #303133;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        :deep(.el-form-item__content) {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        :deep(.el-input__wrapper) {
+          padding: 0 12px;
+        }
+
+        .required-star {
+          color: #f56c6c;
+          font-size: 14px;
+          font-weight: bold;
+          margin-left: 2px;
+        }
+
+        .tip-icon {
+          color: #909399;
+          font-size: 14px;
+          cursor: pointer;
+          margin-left: 4px;
+
+          &:hover {
+            color: #606266;
+          }
+        }
+      }
+    }
+
+    // 普通版本说明样式（兼容旧版）
     .version-description-item {
-      margin-bottom: 24px;
+      margin-bottom: 16px;
 
       :deep(.el-form-item__label) {
         font-weight: 600;
@@ -753,7 +869,10 @@ const getFieldDialogSubtitle = () => {
       }
     }
 
+    // 备注样式（普通模式）
     .remark-item {
+      margin-bottom: 16px;
+
       :deep(.el-form-item__content) {
         width: 100%;
       }
@@ -765,7 +884,7 @@ const getFieldDialogSubtitle = () => {
   }
 
   .basic-info {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     padding: 0 8px;
 
     .basic-form {
@@ -774,13 +893,46 @@ const getFieldDialogSubtitle = () => {
         gap: 24px;
         flex-wrap: nowrap;
         align-items: flex-start;
+        margin-bottom: 16px;
 
         :deep(.el-form-item) {
-          margin-bottom: 18px;
+          margin-bottom: 0;
           flex-shrink: 0;
 
           .el-form-item__label {
             white-space: nowrap;
+          }
+        }
+
+        .compact-item {
+          flex: 0 0 auto;
+
+          :deep(.el-form-item__content) {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+
+          :deep(.el-input),
+          :deep(.el-select) {
+            width: 200px;
+          }
+
+          .locked-input {
+            :deep(.el-input__wrapper) {
+              background-color: #f5f7fa;
+              cursor: not-allowed;
+            }
+          }
+
+          .tip-icon {
+            color: #909399;
+            font-size: 14px;
+            cursor: pointer;
+
+            &:hover {
+              color: #606266;
+            }
           }
         }
 
@@ -941,3 +1093,4 @@ const getFieldDialogSubtitle = () => {
   }
 }
 </style>
+

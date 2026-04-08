@@ -23,203 +23,114 @@
             :router="false"
             @select="handleMenuSelect"
         >
-          <el-menu-item index="home">
-            <el-icon><HomeFilled /></el-icon>
-            <span>首页</span>
-          </el-menu-item>
-
-          <el-sub-menu index="org">
-            <template #title>
-              <el-icon><User /></el-icon>
-              <span>组织人事管理</span>
-            </template>
-            <el-menu-item index="/org/staff">人员档案管理</el-menu-item>
-            <el-menu-item index="/org/department">部门管理</el-menu-item>
-            <el-menu-item index="/org/position">岗位管理</el-menu-item>
-            <el-menu-item index="/org/role">角色权限</el-menu-item>
-            <el-menu-item index="/org/level">职级体系</el-menu-item>
-            <el-menu-item index="/org/employee">员工入职离职</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="process">
-            <template #title>
-              <el-icon><Document /></el-icon>
-              <span>工作台</span>
-            </template>
-            <el-menu-item index="/process/approval/start">
-              <el-icon><Plus /></el-icon>
-              <span>发起审批</span>
-            </el-menu-item>
-            <el-menu-item index="/process/approval/todo">
-              <el-icon><Bell /></el-icon>
-              <span>我的待办</span>
-            </el-menu-item>
-            <el-menu-item index="/process/approval/done">
-              <el-icon><CircleCheck /></el-icon>
-              <span>我已处理</span>
-            </el-menu-item>
-            <el-menu-item index="/process/approval/launched">
-              <el-icon><Promotion /></el-icon>
-              <span>我发起的</span>
-            </el-menu-item>
-            <el-menu-item index="/process/approval/cced">
-              <el-icon><Message /></el-icon>
-              <span>抄送我的</span>
-            </el-menu-item>
-            <el-menu-item index="/process/approval/delegate">
-              <el-icon><UserFilled /></el-icon>
-              <span>审批委托</span>
-            </el-menu-item>
-            <el-menu-item index="/process/approval/progress">
-              <el-icon><Connection /></el-icon>
-              <span>流程进度查询</span>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-sub-menu index="process-center">
-            <template #title>
-              <el-icon><Document /></el-icon>
-              <span>流程中心</span>
-            </template>
-
-            <!-- 全局流程管理（原"我的流程"位置） -->
-            <el-menu-item index="/process/approval/handle-query">
-              <el-icon><Monitor /></el-icon>
-              <span>全局流程管理</span>
+          <!-- 动态渲染前台工作台菜单 -->
+          <template v-for="menu in frontendMenus" :key="menu.id">
+            <!-- 普通菜单项 -->
+            <el-menu-item v-if="menu.type === 'item'" :index="menu.path || menu.id">
+              <el-icon><component :is="menu.icon" /></el-icon>
+              <span>{{ menu.title }}</span>
             </el-menu-item>
 
-            <!-- 流程设计中心（管理员设计态入口） -->
-            <el-sub-menu index="process-center-design">
+            <!-- 子菜单 -->
+            <el-sub-menu v-else-if="menu.type === 'submenu'" :index="menu.id">
               <template #title>
-                <span>流程设计中心</span>
+                <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
+                <span>{{ menu.title }}</span>
               </template>
-              <!-- 基础能力配置 -->
-              <el-sub-menu index="process-design-basic">
-                <template #title>
-                  <span>基础能力配置</span>
-                </template>
-                <el-menu-item index="/process/design/business-object">业务对象管理</el-menu-item>
-                <el-menu-item index="/process/design/auto-number">自动编号规则配置</el-menu-item>
-                <el-menu-item index="/process/design/approver-rules">审批人规则引擎</el-menu-item>
-                <el-menu-item index="/process/design/params">全局流程参数</el-menu-item>
-                <el-menu-item index="/process/design/variables">系统变量库</el-menu-item>
-              </el-sub-menu>
 
-              <!-- 低代码表单设计器 -->
-              <el-sub-menu index="process-design-form">
-                <template #title>
-                  <span>低代码表单设计器</span>
-                </template>
-                <el-menu-item index="/process/design/form/design">表单设计</el-menu-item>
-                <el-menu-item index="/process/design/form/template">表单模板</el-menu-item>
-                <el-menu-item index="/process/design/form/permission">字段权限</el-menu-item>
-                <el-menu-item index="/process/design/form/linkage">联动规则</el-menu-item>
-              </el-sub-menu>
+              <!-- 二级菜单项 -->
+              <template v-for="child in menu.children" :key="child.id">
+                <el-menu-item v-if="child.type === 'item'" :index="child.path">
+                  <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
+                  <span>{{ child.title }}</span>
+                </el-menu-item>
 
-              <!-- Flowable 流程设计器 -->
-              <el-sub-menu index="process-design-flowable">
-                <template #title>
-                  <span>Flowable 流程设计器</span>
-                </template>
-                <el-menu-item index="/process/design/flowable/bpmn">BPMN 可视化设计</el-menu-item>
-                <el-menu-item index="/process/design/flowable/form-bind">流程 - 表单绑定</el-menu-item>
-                <el-menu-item index="/process/design/flowable/node-config">节点属性配置</el-menu-item>
-                <el-menu-item index="/process/design/flowable/version">流程版本管理</el-menu-item>
-              </el-sub-menu>
+                <!-- 三级菜单 -->
+                <el-sub-menu v-else-if="child.type === 'submenu'" :index="child.id">
+                  <template #title>
+                    <span>{{ child.title }}</span>
+                  </template>
 
-              <!-- 模板发布管理 -->
-              <el-sub-menu index="process-design-template">
-                <template #title>
-                  <span>模板发布管理</span>
-                </template>
-                <el-menu-item index="/process/design/template/process">流程模板管理</el-menu-item>
-                <el-menu-item index="/process/design/template/notification">通知模板</el-menu-item>
-                <el-menu-item index="/process/design/template/opinion">审批意见模板</el-menu-item>
-                <el-menu-item index="/process/design/template/print">打印模板</el-menu-item>
-              </el-sub-menu>
+                  <!-- 四级菜单项 -->
+                  <template v-for="grandChild in child.children" :key="grandChild.id">
+                    <el-menu-item v-if="grandChild.type === 'item'" :index="grandChild.path">
+                      {{ grandChild.title }}
+                    </el-menu-item>
+
+                    <!-- 五级菜单（如果需要） -->
+                    <el-sub-menu v-else-if="grandChild.type === 'submenu'" :index="grandChild.id">
+                      <template #title>
+                        <span>{{ grandChild.title }}</span>
+                      </template>
+                      <el-menu-item
+                          v-for="greatGrandChild in grandChild.children"
+                          :key="greatGrandChild.id"
+                          :index="greatGrandChild.path"
+                      >
+                        {{ greatGrandChild.title }}
+                      </el-menu-item>
+                    </el-sub-menu>
+                  </template>
+                </el-sub-menu>
+              </template>
             </el-sub-menu>
+          </template>
 
-            <!-- 流程监控与运维（管理员运行态入口） -->
-            <el-sub-menu index="process-center-monitor">
+          <!-- 分隔线（如果有后台菜单） -->
+          <el-divider v-if="backendMenus.length > 0" style="margin: 10px 0; border-color: rgba(255,255,255,0.1);" />
+
+          <!-- 动态渲染后台管理中心菜单 -->
+          <template v-for="menu in backendMenus" :key="menu.id">
+            <!-- 普通菜单项 -->
+            <el-menu-item v-if="menu.type === 'item'" :index="menu.path || menu.id">
+              <el-icon><component :is="menu.icon" /></el-icon>
+              <span>{{ menu.title }}</span>
+            </el-menu-item>
+
+            <!-- 子菜单 -->
+            <el-sub-menu v-else-if="menu.type === 'submenu'" :index="menu.id">
               <template #title>
-                <span>流程监控与运维</span>
+                <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
+                <span>{{ menu.title }}</span>
               </template>
-              <el-menu-item index="/process/monitor/instances">流程实例监控</el-menu-item>
-              <el-menu-item index="/process/monitor/tasks">待办任务全局管理</el-menu-item>
-              <el-menu-item index="/process/monitor/proxy">审批代理管理</el-menu-item>
-              <el-menu-item index="/process/monitor/urge">催办与提醒</el-menu-item>
-              <el-menu-item index="/process/monitor/logs">流程操作审计日志</el-menu-item>
-              <el-menu-item index="/process/monitor/exceptions">异常流程处理</el-menu-item>
+
+              <!-- 二级菜单项 -->
+              <template v-for="child in menu.children" :key="child.id">
+                <el-menu-item v-if="child.type === 'item'" :index="child.path">
+                  <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
+                  <span>{{ child.title }}</span>
+                </el-menu-item>
+
+                <!-- 三级菜单 -->
+                <el-sub-menu v-else-if="child.type === 'submenu'" :index="child.id">
+                  <template #title>
+                    <span>{{ child.title }}</span>
+                  </template>
+
+                  <!-- 四级菜单项 -->
+                  <template v-for="grandChild in child.children" :key="grandChild.id">
+                    <el-menu-item v-if="grandChild.type === 'item'" :index="grandChild.path">
+                      {{ grandChild.title }}
+                    </el-menu-item>
+
+                    <!-- 五级菜单（如果需要） -->
+                    <el-sub-menu v-else-if="grandChild.type === 'submenu'" :index="grandChild.id">
+                      <template #title>
+                        <span>{{ grandChild.title }}</span>
+                      </template>
+                      <el-menu-item
+                          v-for="greatGrandChild in grandChild.children"
+                          :key="greatGrandChild.id"
+                          :index="greatGrandChild.path"
+                      >
+                        {{ greatGrandChild.title }}
+                      </el-menu-item>
+                    </el-sub-menu>
+                  </template>
+                </el-sub-menu>
+              </template>
             </el-sub-menu>
-          </el-sub-menu>
-          <el-sub-menu index="cms">
-            <template #title>
-              <el-icon><Folder /></el-icon>
-              <span>内容管理中心</span>
-            </template>
-            <el-menu-item index="/cms/news">新闻公告</el-menu-item>
-            <el-menu-item index="/cms/document">公文管理</el-menu-item>
-            <el-menu-item index="/cms/knowledge">知识库</el-menu-item>
-            <el-menu-item index="/cms/archive-library">档案库</el-menu-item>
-            <el-menu-item index="/cms/regulation">规章制度</el-menu-item>
-            <el-menu-item index="/cms/culture">企业文化</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="office">
-            <template #title>
-              <el-icon><Briefcase /></el-icon>
-              <span>日常办公</span>
-            </template>
-            <el-menu-item index="/office/attendance">考勤打卡</el-menu-item>
-            <el-menu-item index="/office/leave">请假休假</el-menu-item>
-            <el-menu-item index="/office/meeting">会议管理</el-menu-item>
-            <el-menu-item index="/office/vehicle">车辆申请</el-menu-item>
-            <el-menu-item index="/office/supplies">用品申领</el-menu-item>
-            <el-menu-item index="/office/seal">用印申请</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="ai">
-            <template #title>
-              <el-icon><ChatDotRound /></el-icon>
-              <span>AI 智能助手</span>
-            </template>
-            <el-menu-item index="/ai/qa">AI 问答客服</el-menu-item>
-            <el-menu-item index="/ai/writing">智能写作</el-menu-item>
-            <el-menu-item index="/ai/summary">文档摘要</el-menu-item>
-            <el-menu-item index="/ai/meeting">会议纪要</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="message">
-            <template #title>
-              <el-icon><Bell /></el-icon>
-              <span>消息中心</span>
-            </template>
-            <el-menu-item index="/message/station">站内消息</el-menu-item>
-            <el-menu-item index="/message/sms">短信通知</el-menu-item>
-            <el-menu-item index="/message/email">邮件推送</el-menu-item>
-            <el-menu-item index="/message/remind">建行员工提醒</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="system">
-            <template #title>
-              <el-icon><Setting /></el-icon>
-              <span>系统管理</span>
-            </template>
-            <el-menu-item index="/system/config">参数配置</el-menu-item>
-            <el-menu-item index="/system/log">日志审计</el-menu-item>
-            <el-menu-item index="/system/backup">数据备份</el-menu-item>
-            <el-menu-item index="/system/version">版本管理</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="mobile">
-            <template #title>
-              <el-icon><Cellphone /></el-icon>
-              <span>移动端</span>
-            </template>
-            <el-menu-item index="/mobile/integration">移动端集成</el-menu-item>
-            <el-menu-item index="/mobile/approval">移动审批</el-menu-item>
-            <el-menu-item index="/mobile/attendance">移动考勤</el-menu-item>
-            <el-menu-item index="/mobile/push">消息推送</el-menu-item>
-          </el-sub-menu>
+          </template>
         </el-menu>
       </el-aside>
 
@@ -245,6 +156,7 @@
               <el-dropdown>
                 <span class="user-name">
                   {{ currentUser?.name || '用户' }}
+                  <el-tag v-if="isAdmin" size="small" type="danger" style="margin-left: 8px;">管理员</el-tag>
                   <el-icon><arrow-down /></el-icon>
                 </span>
                 <template #dropdown>
@@ -273,32 +185,50 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import {
-  HomeFilled, User, Document, Folder, Briefcase,
-  ChatDotRound, Bell, Setting, Cellphone, Fold, Expand,
-  OfficeBuilding, Plus, CircleCheck, Promotion, Message,
-  UserFilled, Connection, Monitor
-} from '@element-plus/icons-vue'
+import { getFrontendMenus, getBackendMenus } from '@/config/menu'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
 const currentUser = computed(() => userStore.currentUser)
+const isAdmin = computed(() => userStore.isAdmin)
 const collapsed = ref(false)
+
+// 动态获取菜单
+const frontendMenus = computed(() => {
+  const roles = userStore.userRoles
+  return getFrontendMenus(roles)
+})
+
+const backendMenus = computed(() => {
+  const roles = userStore.userRoles
+  return getBackendMenus(roles)
+})
+
+// 合并所有菜单用于计算激活状态
+const allMenus = computed(() => [...frontendMenus.value, ...backendMenus.value])
 
 const activeMenu = computed(() => {
   const path = route.path
-  if (path === '/') return 'home'
-  if (path.startsWith('/org')) return 'org'
-  if (path.startsWith('/process')) return 'process'
-  if (path.startsWith('/cms')) return 'cms'
-  if (path.startsWith('/office')) return 'office'
-  if (path.startsWith('/ai')) return 'ai'
-  if (path.startsWith('/message')) return 'message'
-  if (path.startsWith('/system')) return 'system'
-  if (path.startsWith('/mobile')) return 'mobile'
-  return 'home'
+  if (path === '/') return '/'
+
+  // 遍历所有菜单找到匹配的路径
+  const findActiveMenu = (menus) => {
+    for (const menu of menus) {
+      if (menu.path === path) {
+        return menu.path
+      }
+      if (menu.children) {
+        const found = findActiveMenu(menu.children)
+        if (found) return found
+      }
+    }
+    return null
+  }
+
+  return findActiveMenu(allMenus.value) || 'home'
 })
 
 const currentRouteName = computed(() => {
@@ -387,7 +317,7 @@ const currentRouteName = computed(() => {
 const unreadCount = ref(5)
 
 const handleMenuSelect = (index) => {
-  if (index !== 'home') {
+  if (index && index !== 'home') {
     router.push(index)
   } else {
     router.push('/')
@@ -540,6 +470,8 @@ const loadUnreadCount = async () => {
       .user-name {
         cursor: pointer;
         color: #606266;
+        display: flex;
+        align-items: center;
 
         &:hover {
           color: #1890ff;
