@@ -170,7 +170,7 @@
                       plain
                       class="action-btn"
                   >
-                    编辑新版本
+                    编辑
                   </el-button>
 
                   <!-- 发布按钮：仅草稿显示 -->

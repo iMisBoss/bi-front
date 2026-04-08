@@ -120,6 +120,7 @@
               :business-domain="getDomainText(formData.domain)"
               @add-field="handleAddField"
               @edit-field="handleEditField"
+              @edit-non-core-property="handleEditNonCoreProperty"
           />
         </el-tab-pane>
 
@@ -131,7 +132,13 @@
               <span>关联关系</span>
             </span>
           </template>
-          <RelationManagement :is-version-edit="isVersionEdit" />
+          <RelationManagement
+              :is-version-edit="isVersionEdit"
+              :business-object-status="formData.status"
+              :business-object-name="formData.name"
+              :business-domain="getDomainText(formData.domain)"
+              @change="handleRelationChange"
+          />
         </el-tab-pane>
 
         <!-- 3. 字段权限（高优先级） -->
@@ -232,15 +239,16 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
-        <el-button v-if="isVersionEdit" @click="handleSaveDraft" :loading="saving">保存草稿</el-button>
-        <el-button v-if="isVersionEdit" type="info" @click="handleViewDiff" icon="View">查看差异</el-button>
+        <el-button @click="handleClose" size="default">取消</el-button>
+        <el-button v-if="isVersionEdit" @click="handleSaveDraft" :loading="saving" size="default">保存草稿</el-button>
+        <el-button v-if="isVersionEdit" type="info" @click="handleViewDiff" icon="View" size="default">查看差异</el-button>
         <el-button
             v-if="!isVersionEdit"
             type="primary"
             @click="handleSave"
             :loading="saving"
             icon="Check"
+            size="default"
         >
           保存
         </el-button>
@@ -250,6 +258,7 @@
             @click="handlePublish"
             :loading="publishing"
             icon="CircleCheck"
+            size="default"
         >
           保存并发布
         </el-button>
@@ -259,6 +268,8 @@
             @click="handlePublish"
             :loading="publishing"
             icon="CircleCheck"
+            size="default"
+            class="publish-btn"
         >
           发布新版本
         </el-button>
@@ -266,91 +277,15 @@
     </template>
 
     <!-- 字段编辑弹窗 -->
-    <el-dialog
+    <FieldEditDialog
         v-model="fieldDialogVisible"
-        width="550px"
-        :close-on-click-modal="false"
-        @close="handleFieldDialogClose"
-        class="field-dialog"
-        append-to-parent
-    >
-      <div class="field-dialog-header">
-        <el-icon class="header-icon"><Document /></el-icon>
-        <div class="header-text">
-          <div class="header-title">{{ fieldDialogTitle }}</div>
-          <div class="header-subtitle">配置字段属性</div>
-        </div>
-      </div>
-
-      <el-form
-          ref="fieldFormRef"
-          :model="fieldForm"
-          :rules="fieldRules"
-          label-width="110px"
-          class="field-form"
-      >
-        <el-form-item label="字段名称" prop="fieldName">
-          <el-input v-model="fieldForm.fieldName" placeholder="如：申请人" />
-        </el-form-item>
-
-        <el-form-item label="数据库列名" prop="fieldCode">
-          <el-input v-model="fieldForm.fieldCode" placeholder="如：applicant" :disabled="editingField?.system || (isVersionEdit && !editingField?.isNewField)" />
-        </el-form-item>
-
-        <el-form-item label="字段类型" prop="dataType">
-          <el-select v-model="fieldForm.dataType" style="width: 100%" :disabled="isVersionEdit && !editingField?.isNewField">
-            <el-option label="BIGINT - 长整型" value="BIGINT" />
-            <el-option label="VARCHAR(64) - 字符串 (64)" value="VARCHAR(64)" />
-            <el-option label="VARCHAR(128) - 字符串 (128)" value="VARCHAR(128)" />
-            <el-option label="VARCHAR(255) - 字符串 (255)" value="VARCHAR(255)" />
-            <el-option label="TEXT - 长文本" value="TEXT" />
-            <el-option label="DATETIME - 日期时间" value="DATETIME" />
-            <el-option label="DATE - 日期" value="DATE" />
-            <el-option label="INT - 整型" value="INT" />
-            <el-option label="DECIMAL(10,2) - 金额" value="DECIMAL(10,2)" />
-            <el-option label="BOOLEAN - 布尔值" value="BOOLEAN" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="长度">
-          <el-input-number
-              v-model="fieldForm.length"
-              :min="1"
-              :max="9999"
-              :disabled="!isLengthEditable || (isVersionEdit && !editingField?.isNewField)"
-              style="width: 100%"
-          />
-        </el-form-item>
-
-        <el-form-item label="默认值">
-          <el-input v-model="fieldForm.defaultValue" placeholder="字段默认值" />
-        </el-form-item>
-
-        <el-form-item label="字段属性">
-          <el-space>
-            <el-checkbox v-model="fieldForm.required">必填</el-checkbox>
-            <el-checkbox v-model="fieldForm.unique" :disabled="isVersionEdit && !editingField?.isNewField">唯一</el-checkbox>
-            <el-checkbox v-model="fieldForm.listVisible">列表显示</el-checkbox>
-          </el-space>
-        </el-form-item>
-
-        <el-form-item label="敏感等级">
-          <el-radio-group v-model="fieldForm.sensitiveLevel">
-            <el-radio label="normal">普通</el-radio>
-            <el-radio label="general">一般敏感</el-radio>
-            <el-radio label="high">高度敏感</el-radio>
-            <el-radio label="core">核心敏感</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <div class="field-dialog-footer">
-          <el-button @click="fieldDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleFieldConfirm" :loading="fieldLoading">确定</el-button>
-        </div>
-      </template>
-    </el-dialog>
+        :title="fieldDialogTitle"
+        :subtitle="getFieldDialogSubtitle()"
+        :field-data="editingField"
+        :is-non-core-edit="isNonCoreEdit"
+        :is-version-edit="isVersionEdit"
+        @confirm="handleFieldConfirm"
+    />
   </el-dialog>
 </template>
 
@@ -358,11 +293,10 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  Check, CircleCheck, CircleCheckFilled, Document, Setting, Plus, Upload, Download,
-  Edit, Delete, View, Lock, Connection, Top, Menu, Tickets, Notebook, Share, Clock, ScaleToOriginal, InfoFilled
+  Check, CircleCheck, Document, View, Lock, Connection, Menu, Tickets, Notebook, Share, Clock, ScaleToOriginal, InfoFilled
 } from '@element-plus/icons-vue'
-import FieldDefinition from './tabs/FieldDefinition.vue'
-import RelationManagement from './tabs/RelationManagement.vue'
+import FieldDefinition from './field-definition/FieldDefinition.vue'
+import RelationManagement from './relation-edit/RelationManagement.vue'
 import IndexManagement from './tabs/IndexManagement.vue'
 import FieldPermission from './tabs/FieldPermission.vue'
 import DataRule from './tabs/DataRule.vue'
@@ -371,6 +305,7 @@ import SqlPreview from './tabs/SqlPreview.vue'
 import DependencyManagement from './tabs/DependencyManagement.vue'
 import VersionHistory from './tabs/VersionHistory.vue'
 import VersionDiff from './tabs/VersionDiff.vue'
+import FieldEditDialog from './field-definition/FieldEditDialog.vue'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -389,7 +324,6 @@ const dialogVisible = computed({
 })
 
 const formRef = ref(null)
-const fieldFormRef = ref(null)
 const versionHistoryRef = ref(null)
 const versionDiffRef = ref(null)
 const saving = ref(false)
@@ -430,47 +364,24 @@ const diffList = ref([])
 
 // 字段编辑弹窗
 const fieldDialogVisible = ref(false)
-const fieldLoading = ref(false)
 const fieldDialogTitle = ref('新增字段')
 const editingField = ref(null)
+const isNonCoreEdit = ref(false)
 
-const fieldForm = reactive({
-  fieldName: '',
-  fieldCode: '',
-  dataType: 'VARCHAR(64)',
-  length: null,
-  defaultValue: '',
-  required: false,
-  unique: false,
-  listVisible: false,
-  sensitiveLevel: 'normal'
-})
-
-const fieldRules = {
-  fieldName: [
-    { required: true, message: '请输入字段名称', trigger: 'blur' }
-  ],
-  fieldCode: [
-    { required: true, message: '请输入数据库列名', trigger: 'blur' },
-    { pattern: /^[a-z_][a-z0-9_]*$/, message: '只能包含小写字母、数字和下划线', trigger: 'blur' }
-  ],
-  dataType: [
-    { required: true, message: '请选择字段类型', trigger: 'change' }
-  ]
-}
-
-// 判断长度字段是否可编辑
-const isLengthEditable = computed(() => {
-  const editableTypes = ['VARCHAR(64)', 'VARCHAR(128)', 'VARCHAR(255)', 'BIGINT', 'INT']
-  return editableTypes.includes(fieldForm.dataType)
-})
-
-// 监听弹窗打开，初始化数据
+// 并在初始化时获取 fieldList
 watch(dialogVisible, (newVal) => {
   if (newVal) {
     initForm()
+    // 延迟获取 fieldList
+    setTimeout(() => {
+      if (fieldDefinitionRef.value) {
+        fieldList.value = fieldDefinitionRef.value.fieldList
+      }
+    }, 100)
   }
 })
+
+const fieldDefinitionRef = ref(null)
 
 // 处理弹窗关闭事件
 const handleDialogClose = () => {
@@ -482,7 +393,6 @@ const handleDialogClose = () => {
 // 重置表单
 const resetForm = () => {
   formRef.value?.resetFields()
-  fieldFormRef.value?.resetFields()
 }
 
 // 初始化数据
@@ -615,6 +525,7 @@ const handlePublish = async () => {
     }
   } catch (error) {
     console.error('发布失败:', error)
+    publishing.value = false
   }
 }
 
@@ -623,7 +534,9 @@ const doPublish = () => {
     publishing.value = false
     ElMessage.success('发布成功')
     emit('confirm', { ...formData, action: 'publish', isVersionEdit: props.isVersionEdit, version: newVersion.value })
-    handleClose()
+
+    // 直接关闭弹窗，不触发 handleDialogClose
+    dialogVisible.value = false
   }, 1500)
 }
 
@@ -648,56 +561,59 @@ const handleRefreshDiff = () => {
 
 // 字段编辑相关
 const handleAddField = () => {
-  // 版本编辑模式下，允许新增字段
   fieldDialogTitle.value = '新增字段'
   editingField.value = null
-  resetFieldForm()
+  isNonCoreEdit.value = false
   fieldDialogVisible.value = true
 }
 
 const handleEditField = (row) => {
-  // 版本编辑模式下，原字段禁止编辑核心属性
-  if (props.isVersionEdit && !row.isNewField) {
-    ElMessage.info('原字段仅可调整列表显示、敏感等级等非核心配置')
-    return
-  }
-
+  isNonCoreEdit.value = false
   fieldDialogTitle.value = '编辑字段'
-  editingField.value = row
-  fieldForm.fieldName = row.fieldName
-  fieldForm.fieldCode = row.fieldCode
-  fieldForm.dataType = row.dataType
-  fieldForm.defaultValue = row.defaultValue || ''
-  fieldForm.required = row.required
-  fieldForm.unique = row.unique
-  fieldForm.listVisible = row.listVisible
-  fieldForm.sensitiveLevel = row.sensitiveLevel
-  fieldForm.length = row.length
+  editingField.value = { ...row }
   fieldDialogVisible.value = true
 }
 
-const handleFieldDialogClose = () => {
-  fieldFormRef.value?.resetFields()
-  editingField.value = null
+const handleEditNonCoreProperty = (row) => {
+  isNonCoreEdit.value = true
+  fieldDialogTitle.value = '编辑非核心属性'
+  editingField.value = { ...row }
+  fieldDialogVisible.value = true
 }
 
-const handleFieldConfirm = async () => {
-  try {
-    await fieldFormRef.value.validate()
-    fieldLoading.value = true
-
-    setTimeout(() => {
-      fieldLoading.value = false
-      ElMessage.success(editingField.value ? '修改成功' : '新增成功')
-      fieldDialogVisible.value = false
-      if (props.isVersionEdit) {
-        generateDiffList()
+const handleFieldConfirm = (fieldData) => {
+  if (editingField.value && editingField.value.id) {
+    // 编辑模式：更新现有字段
+    const index = fieldList.value.findIndex(f => f.id === editingField.value.id)
+    if (index !== -1) {
+      Object.assign(fieldList.value[index], fieldData)
+      if (props.isVersionEdit && !fieldList.value[index].isNewField) {
+        fieldList.value[index].changeType = '修改'
       }
-    }, 500)
-  } catch (error) {
-    console.error('验证失败:', error)
+    }
+    ElMessage.success('修改成功')
+  } else {
+    // 新增模式：添加新字段
+    const newField = {
+      id: Date.now(),
+      ...fieldData,
+      system: false,
+      isNewField: true,
+      status: 'active',
+      sort: fieldList.value.length + 1,
+      changeType: '新增'
+    }
+    fieldList.value.push(newField)
+    ElMessage.success('新增成功')
+  }
+
+  if (props.isVersionEdit) {
+    generateDiffList()
   }
 }
+
+// 获取字段列表（通过 ref）
+const fieldList = ref([])
 
 // 获取业务域文本
 const getDomainText = (domain) => {
@@ -711,16 +627,18 @@ const getDomainText = (domain) => {
   return domainMap[domain] || '未知'
 }
 
-const resetFieldForm = () => {
-  fieldForm.fieldName = ''
-  fieldForm.fieldCode = ''
-  fieldForm.dataType = 'VARCHAR(64)'
-  fieldForm.length = null
-  fieldForm.defaultValue = ''
-  fieldForm.required = false
-  fieldForm.unique = false
-  fieldForm.listVisible = false
-  fieldForm.sensitiveLevel = 'normal'
+// 获取字段编辑弹窗副标题
+const getFieldDialogSubtitle = () => {
+  if (isNonCoreEdit.value) {
+    return '仅可调整列表显示、敏感等级、字段说明等非核心配置'
+  }
+  if (props.isVersionEdit && editingField.value?.isNewField) {
+    return '本次新版本新增字段，所有属性均可自由编辑'
+  }
+  if (props.isVersionEdit && !editingField.value?.isNewField) {
+    return '原字段核心属性已锁定'
+  }
+  return '配置字段属性'
 }
 </script>
 
@@ -989,63 +907,37 @@ const resetFieldForm = () => {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    padding: 16px 24px 0;
+    padding: 20px 24px 0;
     border-top: 1px solid #ebeef5;
-  }
-}
+    background: linear-gradient(to bottom, #ffffff, #fafbfc);
 
-.field-dialog {
-  .el-dialog__header {
-    padding: 0;
-    border-bottom: none;
-  }
+    .el-button {
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      transition: all 0.3s;
 
-  .field-dialog-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px 24px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px 8px 0 0;
-    margin: -24px -24px 20px;
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
 
-    .header-icon {
-      font-size: 28px;
+    .publish-btn {
+      background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+      border: none;
       color: #fff;
-      flex-shrink: 0;
-    }
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(103, 194, 58, 0.3);
 
-    .header-text {
-      flex: 1;
-
-      .header-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #fff;
-        margin-bottom: 4px;
+      &:hover {
+        box-shadow: 0 6px 16px rgba(103, 194, 58, 0.4);
+        transform: translateY(-2px);
       }
 
-      .header-subtitle {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.9);
+      &:active {
+        transform: translateY(0);
       }
     }
-  }
-
-  .field-form {
-    padding: 10px 20px;
-
-    .el-form-item {
-      margin-bottom: 18px;
-    }
-  }
-
-  .field-dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 16px 24px 0;
-    border-top: 1px solid #ebeef5;
   }
 }
 </style>

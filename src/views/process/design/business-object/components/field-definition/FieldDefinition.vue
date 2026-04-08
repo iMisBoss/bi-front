@@ -160,59 +160,105 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" :width="isVersionEdit ? '280' : '320'" align="center" fixed="right">
+      <el-table-column label="操作" :width="isVersionEdit ? '420' : '360'" align="center" fixed="right">
         <template #default="{ row, $index }">
           <div class="action-buttons">
+            <!-- 新增字段：完全开放编辑 -->
             <el-button
                 v-if="canEditField(row)"
                 size="small"
                 type="primary"
+                plain
                 icon="Edit"
                 @click="handleEditField(row)"
-                class="action-btn"
+                class="action-btn edit-btn"
             >
               编辑
             </el-button>
 
+            <!-- 原历史字段：限制编辑按钮（仅可编辑非核心属性） -->
+            <el-button
+                v-if="!canEditField(row) && canEditNonCoreProperty(row) && !row.system"
+                size="small"
+                type="primary"
+                plain
+                icon="Edit"
+                @click="handleEditNonCoreProperty(row)"
+                class="action-btn edit-btn limited-edit-btn"
+            >
+              编辑
+            </el-button>
+
+            <!-- 系统字段锁定标识 -->
+            <el-tag
+                v-if="row.system"
+                size="small"
+                type="info"
+                effect="plain"
+                class="lock-tag"
+            >
+              <el-icon><Lock /></el-icon>
+              <span>锁定</span>
+            </el-tag>
+
+            <!-- 删除按钮：物理删除 -->
             <el-button
                 v-if="!row.system && canDeleteField(row)"
                 size="small"
                 type="danger"
+                plain
                 icon="Delete"
                 @click="handleDeleteField(row)"
-                class="action-btn"
+                class="action-btn delete-btn"
             >
               删除
             </el-button>
 
+            <!-- 删除按钮：禁用状态（原字段/已归档） -->
             <el-button
                 v-if="!row.system && !canDeleteField(row) && row.status !== 'deprecated'"
                 size="small"
+                disabled
+                icon="Delete"
+                class="action-btn disabled-btn"
+            >
+              删除
+            </el-button>
+
+            <!-- 废弃按钮：软删除 -->
+            <el-button
+                v-if="!row.system && canDeprecateField(row)"
+                size="small"
                 type="warning"
-                icon="Close"
+                plain
+                icon="CircleClose"
                 @click="handleDeprecateField(row)"
-                class="action-btn"
+                class="action-btn deprecate-btn"
             >
               废弃
             </el-button>
 
+            <!-- 废弃按钮：禁用状态（原字段/已归档/已废弃） -->
             <el-button
-                size="small"
-                icon="Connection"
-                @click="handleViewReferences(row)"
-                class="action-btn"
-            >
-              引用查看
-            </el-button>
-
-            <el-button
-                v-if="row.system || (!canEditField(row) && row.status !== 'deprecated')"
+                v-if="!row.system && !canDeprecateField(row) && row.status !== 'deprecated'"
                 size="small"
                 disabled
-                icon="Lock"
-                class="action-btn"
+                icon="CircleClose"
+                class="action-btn disabled-btn"
             >
-              锁定
+              废弃
+            </el-button>
+
+            <!-- 引用查看按钮 -->
+            <el-button
+                size="small"
+                type="info"
+                plain
+                icon="Connection"
+                @click="handleViewReferences(row)"
+                class="action-btn reference-btn"
+            >
+              引用
             </el-button>
           </div>
         </template>
@@ -347,7 +393,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Top, Bottom, CircleCheckFilled, Download, Upload } from '@element-plus/icons-vue'
+import { Top, Bottom, CircleCheckFilled, Download, Upload, Lock, CircleClose, WarningFilled, InfoFilled } from '@element-plus/icons-vue'
 import BatchSettingsDialog from './BatchSettingsDialog.vue'
 import ImportDialog from './ImportDialog.vue'
 import CustomExportDialog from './CustomExportDialog.vue'
@@ -359,7 +405,7 @@ const props = defineProps({
   },
   businessObjectStatus: {
     type: String,
-    default: 'draft' // draft, published, deprecated, archived
+    default: 'draft'
   },
   businessObjectName: {
     type: String,
@@ -375,7 +421,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['add-field', 'edit-field', 'change', 'deprecate-field'])
+const emit = defineEmits(['add-field', 'edit-field', 'edit-non-core-property', 'change', 'deprecate-field'])
 
 // 批量设置弹窗
 const batchSettingsVisible = ref(false)
@@ -399,7 +445,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 1,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 2,
@@ -415,7 +462,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 2,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 3,
@@ -431,7 +479,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 3,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 4,
@@ -447,7 +496,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 4,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 5,
@@ -463,7 +513,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 5,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 6,
@@ -479,7 +530,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 6,
-    changeType: null
+    changeType: null,
+    description: '车辆的品牌类型，如轿车、SUV、商务车等'
   },
   {
     id: 7,
@@ -495,7 +547,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 7,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 8,
@@ -511,7 +564,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 8,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 9,
@@ -527,7 +581,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 9,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 10,
@@ -543,7 +598,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 10,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 11,
@@ -559,7 +615,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 11,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 12,
@@ -575,7 +632,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 12,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 13,
@@ -591,7 +649,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 13,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 14,
@@ -607,7 +666,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 14,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 15,
@@ -623,7 +683,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 15,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 16,
@@ -639,7 +700,8 @@ const fieldList = ref([
     isNewField: false,
     status: 'active',
     sort: 16,
-    changeType: null
+    changeType: null,
+    description: ''
   },
   {
     id: 17,
@@ -655,7 +717,60 @@ const fieldList = ref([
     isNewField: false,
     status: 'deprecated',
     sort: 17,
-    changeType: null
+    changeType: null,
+    description: ''
+  },
+  // 新增字段模拟数据（版本编辑模式下展示）
+  {
+    id: 101,
+    fieldName: '加班抵扣时长',
+    fieldCode: 'overtime_offset_hours',
+    dataType: 'DECIMAL(10,2)',
+    length: 10,
+    required: false,
+    unique: false,
+    listVisible: true,
+    sensitiveLevel: 'normal',
+    system: false,
+    isNewField: true,
+    status: 'active',
+    sort: 18,
+    changeType: '新增',
+    description: '加班抵扣的时长，单位：小时'
+  },
+  {
+    id: 102,
+    fieldName: '发票类型',
+    fieldCode: 'invoice_type',
+    dataType: 'VARCHAR(64)',
+    length: 64,
+    required: true,
+    unique: false,
+    listVisible: true,
+    sensitiveLevel: 'normal',
+    system: false,
+    isNewField: true,
+    status: 'active',
+    sort: 19,
+    changeType: '新增',
+    description: '报销发票类型：增值税普票、增值税专票、电子发票等'
+  },
+  {
+    id: 103,
+    fieldName: '是否跨域',
+    fieldCode: 'is_cross_domain',
+    dataType: 'BOOLEAN',
+    length: null,
+    required: true,
+    unique: false,
+    listVisible: true,
+    sensitiveLevel: 'normal',
+    system: false,
+    isNewField: true,
+    status: 'active',
+    sort: 20,
+    changeType: '新增',
+    description: '标识本次用车是否跨域（跨城市）'
   }
 ])
 
@@ -685,14 +800,14 @@ const references = ref({
   reports: []
 })
 
-// 判断字段是否可编辑（非系统字段且非已废弃）
+// 判断字段是否可编辑（新增字段完全开放，原字段禁止）
 const canEditField = (row) => {
   if (row.system) return false
   if (row.status === 'deprecated') return false
 
-  // 版本编辑模式下，原版本字段仅可编辑非核心属性
+  // 版本编辑模式下，仅新增字段可完全编辑
   if (props.isVersionEdit && !row.isNewField) {
-    return false // 核心属性编辑在 handleEditField 中单独控制
+    return false
   }
 
   return true
@@ -701,7 +816,7 @@ const canEditField = (row) => {
 // 判断是否可编辑核心属性（类型、长度、必填、唯一等）
 const canEditCoreProperty = (row) => {
   if (row.system) return false
-  // 版本编辑模式下，原字段的核心属性永久锁定
+  // 版本编辑模式下，仅新增字段可编辑核心属性
   if (props.isVersionEdit && !row.isNewField) return false
   if (row.status === 'deprecated') return false
   return true
@@ -711,25 +826,43 @@ const canEditCoreProperty = (row) => {
 const canEditNonCoreProperty = (row) => {
   if (row.system) return false
   if (row.status === 'deprecated') return false
+  // 版本编辑模式下，原字段也可编辑非核心属性
   return true
 }
 
-// 判断字段是否可删除
+// 判断字段是否可删除（物理删除）
 const canDeleteField = (row) => {
   if (row.system) return false
-  // 版本编辑模式下，仅新增字段可删除
-  if (props.isVersionEdit && !row.isNewField) return false
-  if (props.businessObjectStatus === 'archived') return false
   if (row.status === 'deprecated') return false
+
+  // 草稿状态：所有非系统字段可删除
+  if (props.businessObjectStatus === 'draft') return true
+
+  // 已归档状态：禁止删除
+  if (props.businessObjectStatus === 'archived') return false
+
+  // 已发布/编辑新版本：仅新增字段可删除
+  if (props.isVersionEdit && !row.isNewField) return false
+  if (props.businessObjectStatus === 'published' && !row.isNewField) return false
+
   return true
 }
 
-// 判断字段是否可废弃
+// 判断字段是否可废弃（软删除）
 const canDeprecateField = (row) => {
   if (row.system) return false
-  // 版本编辑模式下，仅新增字段可废弃
-  if (props.isVersionEdit && !row.isNewField) return false
   if (row.status === 'deprecated') return false
+
+  // 草稿状态：所有非系统字段可废弃
+  if (props.businessObjectStatus === 'draft') return true
+
+  // 已归档状态：禁止废弃
+  if (props.businessObjectStatus === 'archived') return false
+
+  // 已发布/编辑新版本：仅新增字段可废弃
+  if (props.isVersionEdit && !row.isNewField) return false
+  if (props.businessObjectStatus === 'published' && !row.isNewField) return false
+
   return true
 }
 
@@ -738,14 +871,16 @@ const handleAddField = () => {
   emit('add-field')
 }
 
-// 编辑字段
+// 编辑字段（新增字段完全开放）
 const handleEditField = (row) => {
-  // 版本编辑模式下，原字段仅允许编辑非核心属性
-  if (props.isVersionEdit && !row.isNewField) {
-    ElMessage.info('原字段仅可调整列表显示、敏感等级等非核心配置')
-  }
   emit('edit-field', row)
 }
+
+// 编辑非核心属性（原历史字段限制开放）
+const handleEditNonCoreProperty = (row) => {
+  emit('edit-non-core-property', row)
+}
+
 // 删除字段（带引用校验）
 const handleDeleteField = async (row) => {
   // 执行全链路引用校验
@@ -789,7 +924,7 @@ const handleDeleteField = async (row) => {
 
 // 废弃字段
 const handleDeprecateField = (row) => {
-  // 版本编辑模式下，禁止废弃原字段
+  // 版本编辑模式下，禁止废弃原字段（双重保障）
   if (props.isVersionEdit && !row.isNewField) {
     ElMessageBox.alert(
         '原正式版本的字段禁止废弃，否则会导致历史数据丢失、归档凭证失效。\n\n如需隐藏该字段，请关闭"列表显示"或在表单设计器中隐藏。',
@@ -802,13 +937,49 @@ const handleDeprecateField = (row) => {
     return
   }
 
+  // 已发布状态，禁止废弃原字段（双重保障）
+  if (props.businessObjectStatus === 'published' && !row.isNewField) {
+    ElMessageBox.alert(
+        '已发布状态的字段禁止废弃，否则会导致历史数据丢失。\n\n如需隐藏该字段，请关闭"列表显示"或在表单设计器中隐藏。',
+        '禁止废弃原字段',
+        {
+          confirmButtonText: '我知道了',
+          type: 'error'
+        }
+    )
+    return
+  }
+
   ElMessageBox.confirm(
-      `废弃字段"${row.fieldName}"后，该字段将：\n1. 禁止新增数据\n2. 表单中隐藏\n3. 历史数据保留可查看\n\n确定要废弃该字段吗？`,
+      `<div class="deprecate-confirm-content">
+        <div class="confirm-header">
+          <el-icon class="header-icon"><WarningFilled /></el-icon>
+          <span class="header-title">废弃字段确认</span>
+        </div>
+        <div class="confirm-body">
+          <p class="field-info">确定要废弃字段 <span class="field-name">"${row.fieldName}"</span> 吗？</p>
+          <div class="impact-list">
+            <p class="impact-title">废弃后该字段将：</p>
+            <ul class="impact-items">
+              <li><span class="impact-icon">🚫</span> 禁止新增数据</li>
+              <li><span class="impact-icon">👁️</span> 表单中隐藏显示</li>
+              <li><span class="impact-icon">📦</span> 历史数据保留可查看</li>
+            </ul>
+          </div>
+          <div class="risk-tip">
+            <el-icon><InfoFilled /></el-icon>
+            <span>此操作可恢复，但建议谨慎操作</span>
+          </div>
+        </div>
+      </div>`,
       '废弃确认',
       {
+        dangerouslyUseHTMLString: true,
         confirmButtonText: '确定废弃',
         cancelButtonText: '取消',
-        type: 'warning'
+        confirmButtonClass: 'deprecate-confirm-btn',
+        cancelButtonClass: 'deprecate-cancel-btn',
+        customClass: 'deprecate-confirm-dialog'
       }
   ).then(() => {
     row.status = 'deprecated'
@@ -1291,18 +1462,102 @@ defineExpose({
     font-style: italic;
   }
 
+  // 新增字段行高亮
+  :deep(.el-table__row) {
+    &.new-field-row {
+      background-color: rgba(103, 194, 58, 0.06) !important;
+
+      &:hover {
+        background-color: rgba(103, 194, 58, 0.1) !important;
+      }
+    }
+  }
+
+  // 操作按钮统一样式
   .action-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     white-space: nowrap;
     flex-wrap: nowrap;
 
     .action-btn {
       margin: 0;
-      padding: 5px 8px;
-      font-size: 12px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.3s;
+
+      &.edit-btn {
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+        }
+      }
+
+      &.delete-btn {
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(245, 108, 108, 0.3);
+        }
+      }
+
+      &.deprecate-btn {
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(230, 162, 60, 0.3);
+        }
+      }
+
+      &.reference-btn {
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(144, 147, 153, 0.3);
+        }
+      }
+
+      // 禁用按钮样式（与锁定标签一致）
+      &.disabled-btn {
+        background-color: #f5f7fa;
+        border-color: #e4e7ed;
+        color: #c0c4cc;
+        cursor: not-allowed;
+
+        &:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+
+    // 受限编辑按钮样式优化
+    .limited-edit-btn {
+      background-color: #f5f7fa;
+      border-color: #dcdfe6;
+      color: #606266;
+
+      &:hover {
+        background-color: #ecf5ff;
+        border-color: #409eff;
+        color: #409eff;
+      }
+    }
+
+    // 锁定标签样式
+    .lock-tag {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      background-color: #f5f7fa;
+      border: 1px solid #e4e7ed;
+
+      .el-icon {
+        font-size: 12px;
+      }
     }
   }
 
@@ -1326,6 +1581,163 @@ defineExpose({
         font-size: 14px;
         color: #909399;
         margin-left: 8px;
+      }
+    }
+  }
+}
+</style>
+
+// 全局样式（废弃确认弹窗）
+<style lang="scss">.deprecate-confirm-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+
+  .el-message-box__header {
+    padding: 20px 24px 16px;
+    background: linear-gradient(135deg, #fef0f0 0%, #fff 100%);
+    border-bottom: 1px solid #fbc4c4;
+  }
+
+  .el-message-box__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #303133;
+  }
+
+  .el-message-box__content {
+    padding: 24px;
+
+    .deprecate-confirm-content {
+      .confirm-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #ebeef5;
+
+        .header-icon {
+          font-size: 24px;
+          color: #e6a23c;
+        }
+
+        .header-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #303133;
+        }
+      }
+
+      .confirm-body {
+        .field-info {
+          font-size: 14px;
+          color: #606266;
+          margin-bottom: 16px;
+          line-height: 1.6;
+
+          .field-name {
+            font-weight: 600;
+            color: #409eff;
+            background: #ecf5ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+          }
+        }
+
+        .impact-list {
+          margin-bottom: 16px;
+
+          .impact-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 12px;
+          }
+
+          .impact-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 8px 12px;
+              margin-bottom: 8px;
+              background: #f5f7fa;
+              border-radius: 6px;
+              font-size: 14px;
+              color: #606266;
+              line-height: 1.5;
+
+              .impact-icon {
+                font-size: 16px;
+                flex-shrink: 0;
+              }
+            }
+          }
+        }
+
+        .risk-tip {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 16px;
+          background: #ecf5ff;
+          border-left: 3px solid #409eff;
+          border-radius: 6px;
+          font-size: 13px;
+          color: #409eff;
+
+          .el-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .el-message-box__btns {
+    padding: 16px 24px 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+
+    .deprecate-cancel-btn {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: 1px solid #dcdfe6;
+      background: #fff;
+      color: #606266;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: #409eff;
+        color: #409eff;
+      }
+    }
+
+    .deprecate-confirm-btn {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: none;
+      background: linear-gradient(135deg, #e6a23c 0%, #f0c78a 100%);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(230, 162, 60, 0.3);
+      transition: all 0.3s;
+
+      &:hover {
+        box-shadow: 0 6px 16px rgba(230, 162, 60, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
       }
     }
   }
