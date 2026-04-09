@@ -6,20 +6,23 @@ export const useUserStore = defineStore('user', () => {
     const token = ref(localStorage.getItem('bi_token') || '')
     const isLoggedIn = ref(!!localStorage.getItem('bi_token'))
 
+    // 用户角色：'normal' 普通用户, 'admin' 系统管理员
+    const userRole = ref(localStorage.getItem('bi_user_role') || 'normal')
+
     const userRoles = computed(() => {
         return currentUser.value?.roles || []
     })
 
     const isAdmin = computed(() => {
-        return userRoles.value.includes('admin') || userRoles.value.includes('super_admin')
+        return userRole.value === 'admin' || userRoles.value.includes('admin') || userRoles.value.includes('super_admin')
     })
 
     const hasRole = (role) => {
-        return userRoles.value.includes(role)
+        return userRole.value === role || userRoles.value.includes(role)
     }
 
     const hasAnyRole = (roles) => {
-        return roles.some(role => userRoles.value.includes(role))
+        return roles.some(role => userRole.value === role || userRoles.value.includes(role))
     }
 
     const hasPermission = (permission) => {
@@ -34,26 +37,24 @@ export const useUserStore = defineStore('user', () => {
         }
 
         try {
-            // // 调用现有 API 获取用户信息
-            // const response = await fetch('/x_desktop/jaxrs/user/current', {
-            //     headers: {
-            //         'Authorization': `Bearer ${token.value}`
-            //     }
-            // })
-
-            // if (response.ok) {
-            //     currentUser.value = await response.json()
-            //     isLoggedIn.value = true
-            // }
-
-            // 模拟用户信息（从 token 中解析或默认）
             if (!currentUser.value) {
-                currentUser.value = {
-                    name: '管理员',
-                    username: 'admin',
-                    department: '科技部',
-                    roles: ['admin', 'user'],
-                    permissions: ['all']
+                // 根据角色设置不同的用户信息
+                if (userRole.value === 'admin') {
+                    currentUser.value = {
+                        name: '系统管理员',
+                        username: 'admin',
+                        department: '科技部',
+                        roles: ['admin', 'super_admin'],
+                        permissions: ['all']
+                    }
+                } else {
+                    currentUser.value = {
+                        name: '张三',
+                        username: 'zhangsan',
+                        department: '人事部',
+                        roles: ['user'],
+                        permissions: ['read', 'write']
+                    }
                 }
             }
             isLoggedIn.value = true
@@ -70,12 +71,18 @@ export const useUserStore = defineStore('user', () => {
         isLoggedIn.value = true
     }
 
+    const setUserRole = (role) => {
+        userRole.value = role
+        localStorage.setItem('bi_user_role', role)
+    }
+
     const logout = async () => {
-        // TODO: 调用实际登出 API
         token.value = ''
         currentUser.value = null
         isLoggedIn.value = false
+        userRole.value = 'normal'
         localStorage.removeItem('bi_token')
+        localStorage.removeItem('bi_user_role')
         localStorage.removeItem('remembered_username')
     }
 
@@ -83,6 +90,7 @@ export const useUserStore = defineStore('user', () => {
         currentUser,
         token,
         isLoggedIn,
+        userRole,
         userRoles,
         isAdmin,
         hasRole,
@@ -90,6 +98,7 @@ export const useUserStore = defineStore('user', () => {
         hasPermission,
         loadUserInfo,
         setToken,
+        setUserRole,
         logout
     }
 })

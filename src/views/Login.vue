@@ -37,6 +37,18 @@
             />
           </el-form-item>
 
+          <el-form-item prop="role">
+            <el-select
+                v-model="loginForm.role"
+                placeholder="选择登录角色"
+                size="large"
+                style="width: 100%"
+            >
+              <el-option label="普通用户（前台菜单）" value="normal" />
+              <el-option label="系统管理员（后台菜单）" value="admin" />
+            </el-select>
+          </el-form-item>
+
           <el-form-item>
             <el-checkbox v-model="loginForm.remember">记住密码</el-checkbox>
           </el-form-item>
@@ -55,13 +67,13 @@
 
           <el-alert
               v-if="showDefaultAccount"
-              title="默认账户"
+              title="测试账户"
               type="info"
               :closable="false"
               class="default-account-tip"
           >
-            <p>用户名：admin</p>
-            <p>密码：123456</p>
+            <p><strong>普通用户：</strong>用户名 user / 密码 123456 / 角色：普通用户</p>
+            <p><strong>系统管理员：</strong>用户名 admin / 密码 123456 / 角色：系统管理员</p>
           </el-alert>
         </el-form>
 
@@ -90,6 +102,7 @@ const showDefaultAccount = ref(true)
 const loginForm = ref({
   username: '',
   password: '',
+  role: 'normal',
   remember: false
 })
 
@@ -100,13 +113,16 @@ const rules = {
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, message: '密码长度至少 6 位', trigger: 'blur' }
+  ],
+  role: [
+    { required: true, message: '请选择登录角色', trigger: 'change' }
   ]
 }
 
 // 默认账户
-const DEFAULT_ACCOUNT = {
-  username: 'admin',
-  password: '123456'
+const DEFAULT_ACCOUNTS = {
+  normal: { username: 'user', password: '123456' },
+  admin: { username: 'admin', password: '123456' }
 }
 
 // 检查是否有记住的用户名
@@ -125,23 +141,38 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
       try {
-        // 验证默认账户
-        if (loginForm.value.username === DEFAULT_ACCOUNT.username &&
-            loginForm.value.password === DEFAULT_ACCOUNT.password) {
+        const accountType = loginForm.value.role
+        const defaultAccount = DEFAULT_ACCOUNTS[accountType]
+
+        // 验证账户
+        if (loginForm.value.username === defaultAccount.username &&
+            loginForm.value.password === defaultAccount.password) {
 
           // 模拟登录 API 调用
           await new Promise(resolve => setTimeout(resolve, 800))
 
           // 设置 token
-          const mockToken = 'o2_token_admin_' + Date.now()
+          const mockToken = `o2_token_${accountType}_${Date.now()}`
           await userStore.setToken(mockToken)
 
+          // 设置角色
+          userStore.setUserRole(accountType)
+
           // 保存用户信息
-          userStore.currentUser = {
-            name: '管理员',
-            username: 'admin',
-            department: '科技部',
-            role: 'admin'
+          if (accountType === 'admin') {
+            userStore.currentUser = {
+              name: '系统管理员',
+              username: 'admin',
+              department: '科技部',
+              role: 'admin'
+            }
+          } else {
+            userStore.currentUser = {
+              name: '张三',
+              username: 'zhangsan',
+              department: '人事部',
+              role: 'user'
+            }
           }
           userStore.isLoggedIn = true
 
@@ -152,7 +183,7 @@ const handleLogin = async () => {
             localStorage.removeItem('remembered_username')
           }
 
-          ElMessage.success('登录成功')
+          ElMessage.success(`登录成功，欢迎 ${userStore.currentUser.name}`)
 
           // 跳转到首页
           setTimeout(() => {
@@ -161,7 +192,7 @@ const handleLogin = async () => {
 
         } else {
           // 非默认账户，提示错误
-          ElMessage.error('用户名或密码错误，默认账户：admin / 123456')
+          ElMessage.error(`用户名或密码错误，请使用测试账户登录`)
         }
       } catch (error) {
         console.error('登录失败:', error)
