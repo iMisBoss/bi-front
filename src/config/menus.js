@@ -9,13 +9,7 @@ export const frontMenus = [
             { title: '我的消息', path: '/message/station' },
             { title: '我已处理', path: '/process/approval/done' },
             { title: '我发起的', path: '/process/approval/launched' },
-            {
-                title: '抄送管理',
-                children: [
-                    { title: '抄送我的', path: '/process/approval/cced' },
-                    { title: '我抄送的', path: '/workbench/cced-by-me' }
-                ]
-            },
+            { title: '抄送管理', path: '/process/approval/cced' },
             { title: '我的日程', path: '/workbench/my-schedule' }
         ]
     },
@@ -24,13 +18,7 @@ export const frontMenus = [
         icon: 'DocumentChecked',
         children: [
             { title: '发起审批', path: '/process/approval/start' },
-            {
-                title: '审批委托',
-                children: [
-                    { title: '我发起的委托', path: '/process/approval/delegate' },
-                    { title: '我收到的委托', path: '/process/approval/delegate/received' }
-                ]
-            },
+            { title: '审批委托',path: '/process/approval/delegate' },
             { title: '流程进度查询', path: '/process/approval/progress' },
             { title: '流程归档查询', path: '/process/approval/archive' }
         ]
@@ -71,15 +59,10 @@ export const frontMenus = [
             {
                 title: '公文管理',
                 children: [
-                    { title: '公文办理', path: '/cms/document/handle' },
-                    { title: '发起公文', path: '/cms/document/create' },
-                    { title: '我的公文', path: '/cms/document/my-documents' },
-                    { title: '公文查询', path: '/cms/document/search' },
-                    { title: '公文传阅', path: '/cms/document/circulation' },
-                    { title: '已归档公文', path: '/cms/document/archived' },
-                    { title: '收文管理', path: '/cms/document/incoming' },
-                    { title: '发文管理', path: '/cms/document/outgoing' },
-                    { title: '公文督办', path: '/cms/document/supervision' },
+                    { title: '个人公文中心', path: '/cms/document/personal' },
+                    { title: '收发文管理', path: '/cms/document/send-receive' },
+                    { title: '流转与督办', path: '/cms/document/circulation' },
+                    { title: '查询与归档', path: '/cms/document/query-archive' },
                     { title: '文号管理', path: '/cms/document/document-number' }
                 ]
             },
@@ -122,6 +105,11 @@ export const frontMenus = [
 
 // 后台菜单配置（系统管理员）
 export const backMenus = [
+    {
+        title: '后台首页',
+        icon: 'HomeFilled',
+        path: '/admin/home'
+    },
     {
         title: '低代码设计平台',
         icon: 'Tools',

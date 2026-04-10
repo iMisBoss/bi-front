@@ -21,7 +21,8 @@ const menus = computed(() => {
 
 const activeMenu = computed(() => {
   const path = route.path
-  if (path === '/') return '/'
+  if (path === '/') return isAdmin.value ? '/admin/home' : '/'
+  if (path === '/admin/home') return '/admin/home'
 
   const findActiveMenu = (menuList) => {
     for (const menu of menuList) {
@@ -36,11 +37,12 @@ const activeMenu = computed(() => {
     return null
   }
 
-  return findActiveMenu(menus.value) || '/'
+  return findActiveMenu(menus.value) || (isAdmin.value ? '/admin/home' : '/')
 })
 
 const currentRouteName = computed(() => {
   const routeMap = {
+    '/admin/home': '后台首页',
     '/': '首页看板',
     '/org/staff': '组织用户管理',
     '/org/department': '部门架构维护',
@@ -52,8 +54,8 @@ const currentRouteName = computed(() => {
     '/process/approval/todo': '我的待办',
     '/process/approval/done': '我已处理',
     '/process/approval/launched': '我发起的',
-    '/process/approval/cced': '抄送我的',
-    '/process/approval/delegate': '我发起的委托',
+    '/process/approval/cced': '抄送管理',
+    '/process/approval/delegate': '审批委托',
     '/process/approval/delegate/received': '我收到的委托',
     '/process/approval/progress': '流程进度查询',
     '/process/approval/handle-query': '全局流程管理',
@@ -72,7 +74,11 @@ const currentRouteName = computed(() => {
     '/process/design/flowable/node-config': '节点属性配置',
     '/process/design/flowable/version': '流程版本管理',
     '/cms/news': '新闻公告',
-    '/cms/document': '公文管理',
+    '/cms/document/personal': '个人公文中心',
+    '/cms/document/send-receive': '收发文管理',
+    '/cms/document/circulation': '流转与督办',
+    '/cms/document/query-archive': '查询与归档',
+    '/cms/document/document-number': '文号管理',
     '/cms/knowledge': '企业知识库',
     '/cms/archive-library': '文档中心',
     '/cms/regulation': '规章制度',
@@ -100,6 +106,8 @@ const unreadCount = ref(5)
 const handleMenuSelect = (index) => {
   if (index && index !== '/') {
     router.push(index)
+  } else if (isAdmin.value) {
+    router.push('/admin/home')
   } else {
     router.push('/')
   }
@@ -222,11 +230,11 @@ const loadUnreadCount = async () => {
                 <el-icon v-else><Expand /></el-icon>
               </el-button>
 
-              <!-- 门户切换器 -->
-              <PortalSwitcher @portal-change="handlePortalChange" />
+              <!-- 门户切换器（仅普通用户显示） -->
+              <PortalSwitcher v-if="!isAdmin" @portal-change="handlePortalChange" />
 
               <el-breadcrumb separator="/">
-                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{ path: isAdmin ? '/admin/home' : '/' }">{{ isAdmin ? '后台首页' : '首页' }}</el-breadcrumb-item>
                 <el-breadcrumb-item v-if="currentRouteName">{{ currentRouteName }}</el-breadcrumb-item>
               </el-breadcrumb>
             </div>

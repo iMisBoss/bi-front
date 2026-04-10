@@ -20,6 +20,46 @@
       </div>
     </div>
 
+    <!-- 搜索筛选区域 -->
+    <el-card class="filter-card" shadow="hover">
+      <el-form :inline="true" :model="filterForm" size="default">
+        <el-form-item label="流程类型">
+          <el-select v-model="filterForm.processType" placeholder="全部流程" clearable style="width: 180px">
+            <el-option label="全部流程" value="" />
+            <el-option label="请假申请" value="leave" />
+            <el-option label="费用报销" value="expense" />
+            <el-option label="会议申请" value="meeting" />
+            <el-option label="采购申请" value="purchase" />
+            <el-option label="用印申请" value="seal" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="流程状态">
+          <el-select v-model="filterForm.status" placeholder="全部状态" clearable style="width: 150px">
+            <el-option label="全部状态" value="" />
+            <el-option label="处理中" value="processing" />
+            <el-option label="已完成" value="completed" />
+            <el-option label="已终止" value="terminated" />
+            <el-option label="已超时" value="timeout" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="发起时间">
+          <el-date-picker
+              v-model="filterForm.dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="YYYY-MM-DD"
+              style="width: 240px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleFilter" icon="Search">查询</el-button>
+          <el-button @click="handleResetFilter" icon="Refresh">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
     <!-- Tab 页签 -->
     <el-card class="tab-card" shadow="never">
       <el-tabs v-model="activeTab" @tab-change="handleTabChange">
@@ -28,27 +68,26 @@
         <el-tab-pane label="我参与的流程" name="involved" />
       </el-tabs>
 
-      <!-- 流程列表 -->
+      <!-- 列表内容区 -->
       <el-table
           :data="filteredProcessList"
           style="width: 100%"
           border
           v-loading="loading"
-          @row-click="handleRowClick"
       >
         <el-table-column prop="processNo" label="流程编号" width="160" />
-        <el-table-column prop="processName" label="流程名称" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="title" label="流程标题" min-width="250" show-overflow-tooltip />
+        <el-table-column prop="processName" label="流程名称" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="title" label="流程标题" min-width="220" show-overflow-tooltip />
         <el-table-column prop="startTime" label="发起时间" width="160" sortable />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)" size="small">
+            <el-tag :type="getStatusType(row.status)" size="small" effect="plain">
               {{ getStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="currentNode" label="当前节点" width="150" />
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right" align="center">
           <template #default="{ row }">
             <el-button
                 size="small"
@@ -73,12 +112,17 @@
 
       <!-- 分页 -->
       <div class="table-footer">
+        <span class="total">共 {{ filteredProcessList.length }} 条</span>
+        <el-select v-model="pageSize" size="small" style="width: 100px; margin: 0 10px;">
+          <el-option label="10条/页" :value="10" />
+          <el-option label="20条/页" :value="20" />
+          <el-option label="50条/页" :value="50" />
+        </el-select>
         <el-pagination
             v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
-            :total="total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
+            :page-size="pageSize"
+            :total="filteredProcessList.length"
+            layout="prev, pager, next, jumper"
         />
       </div>
     </el-card>
@@ -254,8 +298,14 @@ const progressDialogVisible = ref(false)
 const searchText = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
-const total = ref(0)
 const currentProcess = ref(null)
+
+// 筛选表单
+const filterForm = reactive({
+  processType: '',
+  status: '',
+  dateRange: null
+})
 
 // 流程列表数据
 const processList = ref([
@@ -343,6 +393,15 @@ const filteredProcessList = computed(() => {
     result = processList.value
   }
 
+  // 筛选过滤
+  if (filterForm.processType) {
+    result = result.filter(item => item.processName.includes(getProcessTypeName(filterForm.processType)))
+  }
+
+  if (filterForm.status) {
+    result = result.filter(item => item.status === filterForm.status)
+  }
+
   // 搜索过滤
   if (searchText.value) {
     const text = searchText.value.toLowerCase()
@@ -355,6 +414,17 @@ const filteredProcessList = computed(() => {
 
   return result
 })
+
+const getProcessTypeName = (type) => {
+  const map = {
+    'leave': '请假',
+    'expense': '费用报销',
+    'meeting': '会议申请',
+    'purchase': '采购申请',
+    'seal': '用印申请'
+  }
+  return map[type] || ''
+}
 
 const getStatusType = (status) => {
   const typeMap = {
@@ -445,9 +515,21 @@ const handleSearch = () => {
   console.log('搜索:', searchText.value)
 }
 
-// 行点击
-const handleRowClick = (row) => {
-  // 可以设置为双击查看详情，单击选中
+// 筛选查询
+const handleFilter = () => {
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+  }, 500)
+}
+
+// 重置筛选
+const handleResetFilter = () => {
+  filterForm.processType = ''
+  filterForm.status = ''
+  filterForm.dateRange = null
+  searchText.value = ''
+  handleFilter()
 }
 
 // 查看进度
@@ -561,10 +643,8 @@ const handleUrge = (row) => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    // 模拟催办操作
     ElMessage.success('催办通知已发送')
 
-    // 添加催办日志
     operationLogs.value.unshift({
       type: 'urge',
       operator: row.initiator,
@@ -586,7 +666,6 @@ const handleUrgeAll = () => {
   }).then(() => {
     ElMessage.success(`已向 ${timeoutNodes.value.length} 个节点发送催办通知`)
 
-    // 添加催办日志
     timeoutNodes.value.forEach(node => {
       operationLogs.value.unshift({
         type: 'urge',
@@ -602,28 +681,29 @@ const handleUrgeAll = () => {
 }
 
 onMounted(() => {
-  // 加载数据
-  total.value = processList.value.length
+  handleFilter()
 })
 </script>
 
 <style scoped lang="scss">
 .progress-container {
   padding: 20px;
-  background: #fff;
-  border-radius: 4px;
-  min-height: calc(100vh - 140px);
+  background: #f0f2f5;
+  min-height: calc(100vh - 60px);
 
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    background: #fff;
+    padding: 16px 20px;
+    border-radius: 4px;
 
     .header-left {
       h2 {
-        font-size: 20px;
-        color: #333;
+        font-size: 18px;
+        color: #303133;
         margin: 0;
         font-weight: 600;
       }
@@ -635,21 +715,30 @@ onMounted(() => {
     }
   }
 
+  .filter-card {
+    margin-bottom: 16px;
+
+    :deep(.el-form-item) {
+      margin-bottom: 0;
+      margin-right: 16px;
+    }
+  }
+
   .tab-card {
     :deep(.el-card__body) {
-      padding: 0;
+      padding: 0 20px 20px;
     }
 
     :deep(.el-tabs__header) {
-      padding: 0 20px;
-      margin-bottom: 0;
-      background-color: #fafafa;
+      padding: 0;
+      margin-bottom: 16px;
+      background-color: transparent;
       border-bottom: 1px solid #e8e8e8;
     }
 
     :deep(.el-tabs__item) {
-      height: 50px;
-      line-height: 50px;
+      height: 48px;
+      line-height: 48px;
       font-size: 15px;
       color: #606266;
 
@@ -661,10 +750,15 @@ onMounted(() => {
   }
 
   .table-footer {
-    margin-top: 20px;
-    padding: 0 20px 20px;
+    margin-top: 16px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+
+    .total {
+      font-size: 14px;
+      color: #606266;
+    }
   }
 }
 

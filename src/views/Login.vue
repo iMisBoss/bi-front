@@ -185,9 +185,13 @@ const handleLogin = async () => {
 
           ElMessage.success(`登录成功，欢迎 ${userStore.currentUser.name}`)
 
-          // 跳转到首页
+          // 跳转到首页（管理员跳转后台首页，普通用户跳转普通首页）
           setTimeout(() => {
-            router.push('/')
+            if (accountType === 'admin') {
+              router.push('/admin/home')
+            } else {
+              router.push('/')
+            }
           }, 500)
 
         } else {

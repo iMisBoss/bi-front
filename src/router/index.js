@@ -19,6 +19,13 @@ const routes = [
         component: () => import('@/views/Empty.vue')
     },
 
+    {
+        path: '/admin/home',
+        name: 'AdminHome',
+        component: () => import('@/views/AdminHome.vue'),
+        meta: { requiresAuth: true, title: '后台管理首页' }
+    },
+
     // ========== 工作台 ==========
     {
         path: '/workbench/cced-by-me',
@@ -148,11 +155,6 @@ const routes = [
         path: '/process/approval/delegate',
         name: 'ProcessApprovalDelegate',
         component: () => import('@/views/process/approval/delegate/index.vue')
-    },
-    {
-        path: '/process/approval/delegate/received',
-        name: 'ProcessApprovalDelegateReceived',
-        component: () => import('@/views/Empty.vue')
     },
     {
         path: '/process/approval/progress',
@@ -403,6 +405,31 @@ const routes = [
         component: () => import('@/views/cms/Document.vue')
     },
     {
+        path: '/cms/document/personal',
+        name: 'CmsDocumentPersonal',
+        component: () => import('@/views/cms/document/Personal.vue')
+    },
+    {
+        path: '/cms/document/send-receive',
+        name: 'CmsDocumentSendReceive',
+        component: () => import('@/views/cms/document/SendReceive.vue')
+    },
+    {
+        path: '/cms/document/circulation',
+        name: 'CmsDocumentCirculation',
+        component: () => import('@/views/cms/document/Circulation.vue')
+    },
+    {
+        path: '/cms/document/query-archive',
+        name: 'CmsDocumentQueryArchive',
+        component: () => import('@/views/cms/document/QueryArchive.vue')
+    },
+    {
+        path: '/cms/document/document-number',
+        name: 'CmsDocumentNumber',
+        component: () => import('@/views/cms/document/DocumentNumber.vue')
+    },
+    {
         path: '/cms/document/handle',
         name: 'CmsDocumentHandle',
         component: () => import('@/views/Empty.vue')
@@ -423,11 +450,6 @@ const routes = [
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/cms/document/circulation',
-        name: 'CmsDocumentCirculation',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
         path: '/cms/document/archived',
         name: 'CmsDocumentArchived',
         component: () => import('@/views/Empty.vue')
@@ -445,11 +467,6 @@ const routes = [
     {
         path: '/cms/document/supervision',
         name: 'CmsDocumentSupervision',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/document-number',
-        name: 'CmsDocumentNumber',
         component: () => import('@/views/Empty.vue')
     },
     {
@@ -769,10 +786,16 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('bi_token')
+    const userRole = localStorage.getItem('bi_user_role')
 
     if (to.path === '/login') {
         if (token) {
-            next('/')
+            // 已登录的管理员访问登录页，重定向到后台首页
+            if (userRole === 'admin') {
+                next('/admin/home')
+            } else {
+                next('/')
+            }
         } else {
             next()
         }
@@ -780,7 +803,12 @@ router.beforeEach((to, from, next) => {
         if (!token) {
             next('/login')
         } else {
-            next()
+            // 管理员访问普通首页，重定向到后台首页
+            if (to.path === '/' && userRole === 'admin') {
+                next('/admin/home')
+            } else {
+                next()
+            }
         }
     }
 })

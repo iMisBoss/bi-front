@@ -17,6 +17,7 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "pinia": "^2.1.0",
+    "pinyin-pro": "^3.28.0",
     "qiankun": "^2.10.0",
     "sortablejs": "^1.15.7",
     "vue": "^3.4.0",

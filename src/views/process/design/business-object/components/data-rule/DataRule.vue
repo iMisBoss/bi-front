@@ -17,7 +17,7 @@
         @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="ruleName" label="规则名称" min-width="200" />   <el-table-column prop="ruleName" label="规则名称" min-width="200" />
+      <el-table-column prop="ruleName" label="规则名称" min-width="200" />
       <el-table-column prop="ruleType" label="规则类型" width="120">
         <template #default="{ row }">
           <el-tag size="small" :type="getRuleTypeTag(row.ruleType)">
@@ -77,7 +77,8 @@
           :title="batchAction === 'enable' ? '启用规则后，这些规则将立即生效' : '禁用规则后，这些规则将暂时失效'"
           :type="batchAction === 'enable' ? 'success' : 'warning'"
           show-icon
-          :closable="false"          style="margin-bottom: 16px"
+          :closable="false"
+          style="margin-bottom: 16px"
       />
       <p>已选择 <strong>{{ selectedRows.length }}</strong> 条规则：</p>
       <ul class="batch-rule-list">
@@ -106,7 +107,8 @@
           title="支持导入 .json 格式的规则配置文件"
           type="info"
           show-icon
-          :closable="false"          style="margin-bottom: 16px"
+          :closable="false"
+          style="margin-bottom: 16px"
       />
       <el-upload
           ref="uploadRef"
@@ -207,21 +209,44 @@
         <!-- 自动编号规则配置 -->
         <template v-if="formData.ruleType === 'auto_number'">
           <el-divider content-position="left">编号规则配置</el-divider>
-          <el-form-item label="编号前缀" prop="prefix">
-            <el-input v-model="formData.prefix" placeholder="例如：CL" maxlength="10" />
-          </el-form-item>
-          <el-form-item label="日期格式" prop="dateFormat">
-            <el-select v-model="formData.dateFormat" style="width: 100%">
-              <el-option label="YYYYMMDD" value="YYYYMMDD" />
-              <el-option label="YYYY-MM-DD" value="YYYY-MM-DD" />
-              <el-option label="无日期" value="" />
+          <el-form-item label="选择编号规则" prop="selectedRuleId">
+            <el-select
+                v-model="formData.selectedRuleId"
+                placeholder="请选择已配置的自动编号规则"
+                style="width: 100%"
+                @change="handleRuleSelectChange"
+            >
+              <el-option
+                  v-for="rule in autoNumberRules"
+                  :key="rule.id"
+                  :label="rule.ruleName"
+                  :value="rule.id"
+              >
+                <div style="display: flex; justify-content: space-between; align-items: center">
+                  <span>{{ rule.ruleName }}</span>
+                  <span style="color: #909399; font-size: 12px">{{ rule.numberFormat }}</span>
+                </div>
+              </el-option>
             </el-select>
+            <div style="margin-top: 8px">
+              <el-link type="primary" :icon="Plus" @click="handleAddAutoNumberRule">
+                前往自动编号规则管理页面配置
+              </el-link>
+            </div>
           </el-form-item>
-          <el-form-item label="流水号位数" prop="serialLength">
-            <el-input-number v-model="formData.serialLength" :min="1" :max="10" style="width: 100%" />
+          <el-form-item v-if="selectedAutoNumberRule" label="规则详情">
+            <el-descriptions :column="1" border size="small">
+              <el-descriptions-item label="规则名称">{{ selectedAutoNumberRule.ruleName }}</el-descriptions-item>
+              <el-descriptions-item label="编号格式">
+                <el-tag size="small">{{ selectedAutoNumberRule.numberFormat }}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="当前编号">{{ selectedAutoNumberRule.currentNumber }}</el-descriptions-item>
+              <el-descriptions-item label="重置规则">{{ getResetRuleText(selectedAutoNumberRule.resetRule) }}</el-descriptions-item>
+              <el-descriptions-item label="规则说明">{{ selectedAutoNumberRule.description }}</el-descriptions-item>
+            </el-descriptions>
           </el-form-item>
-          <el-form-item label="预览示例">
-            <el-input :model-value="previewAutoNumber" disabled />
+          <el-form-item label="预览示例" v-if="selectedAutoNumberRule">
+            <el-tag type="success" size="large">{{ generatePreviewNumber(selectedAutoNumberRule) }}</el-tag>
           </el-form-item>
         </template>
 
@@ -321,7 +346,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { UploadFilled } from '@element-plus/icons-vue'
+import { UploadFilled, Plus } from '@element-plus/icons-vue'
 
 const props = defineProps({
   isVersionEdit: {
@@ -346,6 +371,7 @@ const ruleList = ref([
     description: '使用规则 CL{YYYYMMDD}{0000} 自动生成单据编号',
     status: 'enabled',
     system: true,
+    selectedRuleId: 4,
     prefix: 'CL',
     dateFormat: 'YYYYMMDD',
     serialLength: 4
@@ -456,6 +482,7 @@ const formData = ref({
   targetField: '',
   description: '',
   status: 'enabled',
+  selectedRuleId: null,
   // 自动编号
   prefix: '',
   dateFormat: 'YYYYMMDD',
@@ -516,14 +543,106 @@ const availableFields = computed(() => {
   ]
 })
 
-// 自动编号预览
-const previewAutoNumber = computed(() => {
-  if (formData.value.ruleType !== 'auto_number') return ''
-  const prefix = formData.value.prefix || ''
-  const date = formData.value.dateFormat ? new Date().toLocaleDateString().replace(/\//g, '') : ''
-  const serial = '0'.repeat(formData.value.serialLength || 4)
-  return `${prefix}${date}${serial}`
+// 自动编号规则列表（从自动编号规则管理页面获取）
+const autoNumberRules = ref([
+  {
+    id: 1,
+    ruleName: '请假申请编号规则',
+    businessObject: '请假申请',
+    numberFormat: 'QJ{YYYY}{MM}{DD}-{SEQ:4}',
+    currentNumber: 'QJ20240408-0015',
+    startNumber: 1,
+    resetRule: 'daily',
+    description: '请假申请单自动生成编号，每日重置流水号'
+  },
+  {
+    id: 2,
+    ruleName: '加班申请编号规则',
+    businessObject: '加班申请',
+    numberFormat: 'JB{YYYY}{MM}{DD}-{SEQ:4}',
+    currentNumber: 'JB20240408-0008',
+    startNumber: 1,
+    resetRule: 'daily',
+    description: '加班申请单自动生成编号'
+  },
+  {
+    id: 3,
+    ruleName: '会议申请编号规则',
+    businessObject: '会议申请',
+    numberFormat: 'HY{YYYY}{MM}-{SEQ:4}',
+    currentNumber: 'HY202404-0023',
+    startNumber: 1,
+    resetRule: 'monthly',
+    description: '会议申请单自动生成编号，每月重置'
+  },
+  {
+    id: 4,
+    ruleName: '车辆申请编号规则',
+    businessObject: '车辆申请',
+    numberFormat: 'CL{YYYY}{SEQ:6}',
+    currentNumber: 'CL2024000125',
+    startNumber: 1,
+    resetRule: 'yearly',
+    description: '车辆申请单自动生成编号，每年重置'
+  },
+  {
+    id: 5,
+    ruleName: '费用报销编号规则',
+    businessObject: '费用报销',
+    numberFormat: 'BX{YYYY}{MM}{DD}-{SEQ:6}',
+    currentNumber: 'BX20240408-000042',
+    startNumber: 1,
+    resetRule: 'daily',
+    description: '费用报销单自动生成编号'
+  }
+])
+
+// 选中的自动编号规则
+const selectedAutoNumberRule = computed(() => {
+  if (!formData.value.selectedRuleId) return null
+  return autoNumberRules.value.find(rule => rule.id === formData.value.selectedRuleId)
 })
+
+// 获取重置规则文本
+const getResetRuleText = (resetRule) => {
+  const texts = {
+    never: '永不重置',
+    daily: '每天重置',
+    monthly: '每月重置',
+    yearly: '每年重置'
+  }
+  return texts[resetRule] || '未知'
+}
+
+// 生成预览编号
+const generatePreviewNumber = (rule) => {
+  const now = new Date()
+  let number = rule.numberFormat
+  number = number.replace('{YYYY}', now.getFullYear())
+  number = number.replace('{MM}', String(now.getMonth() + 1).padStart(2, '0'))
+  number = number.replace('{DD}', String(now.getDate()).padStart(2, '0'))
+
+  const seqMatch = rule.numberFormat.match(/\{SEQ:(\d+)\}/)
+  if (seqMatch) {
+    const length = parseInt(seqMatch[1])
+    const currentSeq = parseInt(rule.currentNumber.match(/\d+$/)?.[0] || '0') + 1
+    number = number.replace(seqMatch[0], String(currentSeq).padStart(length, '0'))
+  }
+  return number
+}
+
+// 规则选择变更
+const handleRuleSelectChange = (ruleId) => {
+  const rule = autoNumberRules.value.find(r => r.id === ruleId)
+  if (rule) {
+    formData.value.description = `使用规则 ${rule.numberFormat} 自动生成单据编号`
+  }
+}
+
+// 前往自动编号规则管理页面
+const handleAddAutoNumberRule = () => {
+  window.open('/process/design/auto-number', '_blank')
+}
 
 const getRuleTypeTag = (type) => {
   const tags = {
@@ -569,6 +688,10 @@ const handleEditRule = (row) => {
   })
   // 处理绑定字段
   selectedFields.value = getTargetFields(row.targetField)
+  // 如果是自动编号规则，设置选中的规则ID
+  if (row.ruleType === 'auto_number' && row.selectedRuleId) {
+    formData.value.selectedRuleId = row.selectedRuleId
+  }
   ruleDialogVisible.value = true
 }
 
@@ -581,6 +704,7 @@ const handleRuleTypeChange = () => {
   formData.value.triggerField = ''
   formData.value.triggerCondition = ''
   formData.value.linkageAction = 'set_required'
+  formData.value.selectedRuleId = null
 }
 
 // 字段选择变更
@@ -851,6 +975,7 @@ const resetForm = () => {
     targetField: '',
     description: '',
     status: 'enabled',
+    selectedRuleId: null,
     prefix: '',
     dateFormat: 'YYYYMMDD',
     serialLength: 4,
@@ -875,7 +1000,8 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="scss">.data-rule {
+<style scoped lang="scss">
+.data-rule {
   .tab-toolbar {
     display: flex;
     justify-content: space-between;
