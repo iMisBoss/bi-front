@@ -64,7 +64,7 @@ const currentRouteName = computed(() => {
     '/process/design/auto-number': '自动编号规则配置',
     '/process/design/approver-rules': '审批人规则引擎',
     '/process/design/params': '全局流程参数',
-    '/process/design/variables': '系统变量库',
+    '/process/design/variables': '变量管理',
     '/process/design/form/design': '表单可视化设计',
     '/process/design/form/template': '表单模板管理',
     '/process/design/form/permission': '字段权限配置',
@@ -390,7 +390,7 @@ const loadUnreadCount = async () => {
 
 .app-main {
   background: #f0f2f5;
-  padding: 20px;
+  padding: 0;
   overflow-y: auto;
   height: calc(100vh - 60px);
 

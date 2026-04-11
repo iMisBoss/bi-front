@@ -218,7 +218,7 @@ const routes = [
     {
         path: '/process/design/data-resources',
         name: 'ProcessDesignDataResources',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/process/design/data-resources/Index.vue')
     },
     {
         path: '/process/design/form/design',
@@ -226,9 +226,9 @@ const routes = [
         component: () => import('@/views/process/design/form/design/Index.vue')
     },
     {
-        path: '/process/design/form/template',
-        name: 'ProcessDesignFormTemplate',
-        component: () => import('@/views/process/design/form/template/Index.vue')
+        path: '/process/design/form/management',
+        name: 'ProcessDesignFormManagement',
+        component: () => import('@/views/process/design/form/management/Index.vue')
     },
     {
         path: '/process/design/form/permission',

@@ -1,36 +1,32 @@
 <template>
   <div class="approver-rules-engine">
-    <!-- 页面标题 -->
+    <!-- 面包屑导航 -->
+    <el-breadcrumb separator=">" class="breadcrumb">
+      <el-breadcrumb-item :to="{ path: '/admin' }">后台首页</el-breadcrumb-item>
+      <el-breadcrumb-item>低代码设计平台</el-breadcrumb-item>
+      <el-breadcrumb-item>审批人规则引擎</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <!-- 页面标题区 -->
     <div class="page-header">
-      <h2>审批人规则管理</h2>
-      <p class="subtitle">全局审批人规则统一管理，支持规则复用、权限管控、审计追溯（全局生效）</p>
+      <div class="header-left">
+        <h2>审批人规则引擎（审批人模板库）</h2>
+        <p class="subtitle">提前创建审批人规则模板，请假/报销/采购等流程可直接引用，无需重复配置</p>
+      </div>
     </div>
 
-    <!-- 筛选与操作栏 -->
+    <!-- 搜索与操作栏 -->
     <div class="toolbar">
       <div class="toolbar-left">
         <el-input
             v-model="searchKeyword"
-            placeholder="搜索规则名称/适用节点"
+            placeholder="搜索规则名称/规则说明"
             clearable
             style="width: 280px"
             @keyup.enter="handleSearch"
         >
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
-        <el-select v-model="filterStrategy" placeholder="分配策略" clearable style="width: 150px">
-          <el-option label="指定人员" value="specific_user" />
-          <el-option label="指定角色" value="specific_role" />
-          <el-option label="指定部门" value="specific_dept" />
-          <el-option label="发起人自选" value="initiator_select" />
-          <el-option label="发起人上级" value="initiator_superior" />
-          <el-option label="连续上级" value="continuous_superior" />
-          <el-option label="条件分支" value="condition_branch" />
-        </el-select>
-        <el-select v-model="filterRuleType" placeholder="规则类型" clearable style="width: 140px">
-          <el-option label="全局通用规则" value="global" />
-          <el-option label="流程专属规则" value="process" />
-        </el-select>
         <el-select v-model="filterStatus" placeholder="状态" clearable style="width: 120px">
           <el-option label="启用" value="enabled" />
           <el-option label="禁用" value="disabled" />
@@ -39,177 +35,105 @@
         <el-button icon="Refresh" @click="handleReset">重置</el-button>
       </div>
       <div class="toolbar-right" v-if="isAdmin">
-        <el-button type="primary" icon="Plus" @click="handleAddRule">新增规则</el-button>
-        <el-button type="success" icon="Download" @click="handleExportRules">导出规则</el-button>
+        <el-button type="primary" icon="Plus" @click="handleAddRule">新建审批规则</el-button>
       </div>
     </div>
 
     <!-- 批量操作栏 -->
     <div v-if="selectedRules.length > 0 && isAdmin" class="batch-toolbar">
+      <el-checkbox v-model="selectAll" @change="handleSelectAll">全选</el-checkbox>
       <span class="batch-info">已选择 {{ selectedRules.length }} 项</span>
       <el-button size="small" type="success" @click="handleBatchEnable">批量启用</el-button>
       <el-button size="small" type="warning" @click="handleBatchDisable">批量禁用</el-button>
       <el-button size="small" type="danger" plain @click="handleBatchDelete">批量删除</el-button>
     </div>
 
-    <!-- 统一表头 + 分组展示 -->
+    <!-- 规则列表表格 -->
     <div class="rules-table-container">
-      <!-- 统一表头 -->
-      <div class="unified-header">
-        <el-checkbox v-if="isAdmin" v-model="selectAll" @change="handleSelectAll" style="width: 50px" />
-        <div class="header-cell" style="flex: 2">规则名称</div>
-        <div class="header-cell" style="flex: 1.2">规则类型</div>
-        <div class="header-cell" style="flex: 1.5">适用流程/节点</div>
-        <div class="header-cell" style="flex: 1">分配策略</div>
-        <div class="header-cell" style="flex: 1.5">审批人/角色</div>
-        <div class="header-cell" style="width: 80px">优先级</div>
-        <div class="header-cell" style="width: 80px">状态</div>
-        <div class="header-cell" style="width: 220px">操作</div>
-      </div>
+      <el-table
+          :data="filteredRules"
+          border
+          stripe
+          v-loading="loading"
+          @selection-change="handleSelectionChange"
+      >
+        <el-table-column v-if="isAdmin" type="selection" width="50" align="center" />
 
-      <!-- 分组折叠区 -->
-      <el-collapse v-model="activeGroups" class="rule-groups">
-        <!-- 全局通用规则分组 -->
-        <el-collapse-item v-if="groupedRules.global && groupedRules.global.length > 0" name="global">
-          <template #title>
-            <div class="group-title" style="border-left-color: #409EFF">
-              <el-tag type="primary" size="default">全局通用规则</el-tag>
-              <span class="group-count">({{ groupedRules.global.length }} 条)</span>
+        <el-table-column prop="ruleName" label="规则名称" min-width="150">
+          <template #default="{ row }">
+            <span class="rule-name-link" @click="handleViewDetail(row)">{{ row.ruleName }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="description" label="规则说明" min-width="180" show-overflow-tooltip />
+
+        <el-table-column label="触发条件" min-width="180">
+          <template #default="{ row }">
+            <div v-if="row.conditions && row.conditions.length > 0" class="conditions-display">
+              <el-tag v-for="(cond, idx) in row.conditions.slice(0, 2)" :key="idx" size="small" style="margin-right: 4px">
+                {{ cond.field }}{{ cond.operator }}{{ cond.value }}
+              </el-tag>
+              <span v-if="row.conditions.length > 2" class="more-count">+{{ row.conditions.length - 2 }}</span>
+            </div>
+            <span v-else class="text-muted">无条件限制</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="审批链" min-width="200">
+          <template #default="{ row }">
+            <div class="approval-chain-display">
+              <span v-for="(node, idx) in row.approvalNodes" :key="idx" class="chain-node-tag">
+                {{ node.name }}
+                <span v-if="idx < row.approvalNodes.length - 1" class="chain-arrow">→</span>
+              </span>
             </div>
           </template>
-          <div class="rule-rows">
-            <div v-for="row in groupedRules.global" :key="row.id" class="rule-row">
-              <el-checkbox v-if="isAdmin" v-model="row.selected" @change="handleRowSelect" style="width: 50px" />
-              <div class="rule-cell" style="flex: 2">
-                <span class="rule-name" @click="handleViewDetail(row)">{{ row.ruleName }}</span>
-              </div>
-              <div class="rule-cell" style="flex: 1.2">
-                <el-tag type="primary" size="small">全局通用</el-tag>
-              </div>
-              <div class="rule-cell" style="flex: 1.5">
-                <span class="text-muted">{{ row.processName || '全系统' }}</span>
-              </div>
-              <div class="rule-cell" style="flex: 1">
-                <el-tag size="small">{{ getStrategyText(row.strategy) }}</el-tag>
-              </div>
-              <div class="rule-cell" style="flex: 1.5">
-                <span class="text-ellipsis">{{ row.target }}</span>
-              </div>
-              <div class="rule-cell" style="width: 80px">
-                <el-tag :type="getPriorityTag(row.priority)" size="small">{{ row.priority }}</el-tag>
-              </div>
-              <div class="rule-cell" style="width: 80px">
-                <el-switch
-                    v-if="isAdmin"
-                    v-model="row.status"
-                    active-value="enabled"
-                    inactive-value="disabled"
-                    @change="handleStatusChange(row)"
-                />
-                <el-tag v-else :type="row.status === 'enabled' ? 'success' : 'info'" size="small">
-                  {{ row.status === 'enabled' ? '启用' : '禁用' }}
-                </el-tag>
-              </div>
-              <div class="rule-cell action-cell" style="width: 220px">
-                <el-button size="small" link type="primary" icon="Edit" @click="handleEditRule(row)">编辑</el-button>
-                <el-button size="small" link type="success" icon="CopyDocument" @click="handleCopyRule(row)">复制</el-button>
-                <el-button size="small" link type="info" icon="Clock" @click="handleViewLogs(row)">日志</el-button>
-                <el-button
-                    v-if="isAdmin && row.ruleType === 'process'"
-                    size="small"
-                    link
-                    type="danger"
-                    icon="Delete"
-                    @click="handleDeleteRule(row)"
-                >
-                  删除
-                </el-button>
-              </div>
-            </div>
-          </div>
-        </el-collapse-item>
+        </el-table-column>
 
-        <!-- 流程专属规则分组 -->
-        <el-collapse-item v-if="groupedRules.process && groupedRules.process.length > 0" name="process">
-          <template #title>
-            <div class="group-title" style="border-left-color: #909399">
-              <el-tag type="info" size="default">流程专属规则</el-tag>
-              <span class="group-count">({{ groupedRules.process.length }} 条)</span>
-            </div>
+        <el-table-column prop="status" label="状态" width="100" align="center">
+          <template #default="{ row }">
+            <el-switch
+                v-if="isAdmin"
+                v-model="row.status"
+                active-value="enabled"
+                inactive-value="disabled"
+                @change="handleStatusChange(row)"
+            />
+            <el-tag v-else :type="row.status === 'enabled' ? 'success' : 'info'" size="small">
+              {{ row.status === 'enabled' ? '启用' : '禁用' }}
+            </el-tag>
           </template>
-          <div class="rule-rows">
-            <div v-for="row in groupedRules.process" :key="row.id" class="rule-row">
-              <el-checkbox v-if="isAdmin" v-model="row.selected" @change="handleRowSelect" style="width: 50px" />
-              <div class="rule-cell" style="flex: 2">
-                <span class="rule-name" @click="handleViewDetail(row)">{{ row.ruleName }}</span>
-              </div>
-              <div class="rule-cell" style="flex: 1.2">
-                <el-tag type="info" size="small">流程专属</el-tag>
-              </div>
-              <div class="rule-cell" style="flex: 1.5">
-                <el-link type="primary" :underline="false" @click="handleJumpToProcess(row)">
-                  {{ row.processName }}
-                </el-link>
-              </div>
-              <div class="rule-cell" style="flex: 1">
-                <el-tag size="small">{{ getStrategyText(row.strategy) }}</el-tag>
-              </div>
-              <div class="rule-cell" style="flex: 1.5">
-                <span class="text-ellipsis">{{ row.target }}</span>
-              </div>
-              <div class="rule-cell" style="width: 80px">
-                <el-tag :type="getPriorityTag(row.priority)" size="small">{{ row.priority }}</el-tag>
-              </div>
-              <div class="rule-cell" style="width: 80px">
-                <el-switch
-                    v-if="isAdmin"
-                    v-model="row.status"
-                    active-value="enabled"
-                    inactive-value="disabled"
-                    @change="handleStatusChange(row)"
-                />
-                <el-tag v-else :type="row.status === 'enabled' ? 'success' : 'info'" size="small">
-                  {{ row.status === 'enabled' ? '启用' : '禁用' }}
-                </el-tag>
-              </div>
-              <div class="rule-cell action-cell" style="width: 220px">
-                <el-button size="small" link type="primary" icon="Edit" @click="handleEditRule(row)">编辑</el-button>
-                <el-button size="small" link type="success" icon="CopyDocument" @click="handleCopyRule(row)">复制</el-button>
-                <el-button size="small" link type="info" icon="Clock" @click="handleViewLogs(row)">日志</el-button>
-                <el-button
-                    v-if="isAdmin"
-                    size="small"
-                    link
-                    type="danger"
-                    icon="Delete"
-                    @click="handleDeleteRule(row)"
-                >
-                  删除
-                </el-button>
-              </div>
-            </div>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
+        </el-table-column>
+
+        <el-table-column label="操作" width="200" align="center" fixed="right" v-if="isAdmin">
+          <template #default="{ row }">
+            <el-button size="small" link type="primary" icon="Edit" @click="handleEditRule(row)">编辑</el-button>
+            <el-button size="small" link type="success" icon="CopyDocument" @click="handleCopyRule(row)">复制</el-button>
+            <el-button size="small" link type="danger" icon="Delete" @click="handleDeleteRule(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <!-- 空状态 -->
-      <el-empty v-if="totalRules === 0" description="暂无审批人规则" :image-size="120">
+      <el-empty v-if="filteredRules.length === 0" description="暂无审批人规则" :image-size="120">
         <template #description>
-          <p class="empty-text">请点击上方「新增规则」按钮创建</p>
+          <p class="empty-text">请点击上方「新建审批规则」按钮创建</p>
         </template>
-        <el-button v-if="isAdmin" type="primary" icon="Plus" @click="handleAddRule">新增规则</el-button>
+        <el-button v-if="isAdmin" type="primary" icon="Plus" @click="handleAddRule">新建审批规则</el-button>
       </el-empty>
     </div>
 
-    <!-- 页脚统计 -->
-    <div class="footer-stats">
-      <span>共 {{ totalRules }} 条规则</span>
-      <span class="divider">|</span>
-      <span>全局规则 {{ globalCount }} 条</span>
-      <span class="divider">|</span>
-      <span>流程专属规则 {{ processCount }} 条</span>
-      <span class="divider">|</span>
-      <span>最后修改时间：{{ lastModifyTime }}</span>
+    <!-- 分页 -->
+    <div class="pagination-container">
+      <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="totalRules"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+      />
     </div>
 
     <!-- 新增/编辑规则弹窗 -->
@@ -219,59 +143,122 @@
         width="800px"
         :close-on-click-modal="false"
     >
-      <el-form :model="ruleForm" :rules="ruleRules" ref="ruleFormRef" label-width="130px">
-        <el-form-item label="规则名称" prop="ruleName">
-          <el-input v-model="ruleForm.ruleName" placeholder="请输入规则名称" />
-        </el-form-item>
+      <el-form :model="ruleForm" :rules="ruleRules" ref="ruleFormRef" label-width="120px">
+        <!-- 1. 基础信息 -->
+        <div class="form-section">
+          <h3 class="section-title">1. 基础信息</h3>
+          <el-form-item label="规则名称" prop="ruleName">
+            <el-input v-model="ruleForm.ruleName" placeholder="如：小额报销审批、普通请假审批" />
+          </el-form-item>
+          <el-form-item label="规则说明" prop="description">
+            <el-input
+                v-model="ruleForm.description"
+                type="textarea"
+                :rows="2"
+                placeholder="一句话解释什么时候用这个规则，如：金额小于1000元的报销审批"
+            />
+          </el-form-item>
+        </div>
 
-        <el-form-item label="规则类型" prop="ruleType">
-          <el-radio-group v-model="ruleForm.ruleType">
-            <el-radio label="global">全局通用规则（全系统可用）</el-radio>
-            <el-radio label="process">流程专属规则（仅指定流程可用）</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <!-- 2. 触发条件 -->
+        <div class="form-section">
+          <h3 class="section-title">2. 触发条件（什么时候触发这个规则）</h3>
+          <div class="conditions-builder">
+            <div v-for="(condition, index) in ruleForm.conditions" :key="index" class="condition-row">
+              <el-select v-model="condition.field" placeholder="表单字段" style="width: 150px">
+                <el-option label="报销金额" value="amount" />
+                <el-option label="请假天数" value="days" />
+                <el-option label="申请人部门" value="department" />
+                <el-option label="申请类型" value="type" />
+              </el-select>
+              <el-select v-model="condition.operator" placeholder="运算符" style="width: 120px">
+                <el-option label="等于" value="=" />
+                <el-option label="不等于" value="!=" />
+                <el-option label="大于" value=">" />
+                <el-option label="小于" value="<" />
+                <el-option label="大于等于" value=">=" />
+                <el-option label="小于等于" value="<=" />
+                <el-option label="包含" value="contains" />
+              </el-select>
+              <el-input v-model="condition.value" placeholder="值" style="width: 150px" />
+              <el-button
+                  v-if="index > 0"
+                  size="small"
+                  type="danger"
+                  icon="Delete"
+                  circle
+                  @click="removeCondition(index)"
+              />
+            </div>
+            <el-button size="small" type="primary" icon="Plus" @click="addCondition" style="margin-top: 8px">
+              添加条件
+            </el-button>
+            <div class="condition-tip">满足以上所有条件时，执行此审批规则</div>
+          </div>
+        </div>
 
-        <el-form-item v-if="ruleForm.ruleType === 'process'" label="适用流程" prop="processName">
-          <el-select v-model="ruleForm.processName" placeholder="请选择流程" style="width: 100%">
-            <el-option label="请假审批流程" value="leave_approval" />
-            <el-option label="会议申请审批流程" value="meeting_approval" />
-            <el-option label="费用报销审批流程" value="expense_approval" />
-          </el-select>
-        </el-form-item>
+        <!-- 3. 审批人设置 -->
+        <div class="form-section">
+          <h3 class="section-title">3. 审批人设置（满足条件后，谁审批）</h3>
+          <div class="approval-nodes-builder">
+            <div v-for="(node, index) in ruleForm.approvalNodes" :key="index" class="node-row">
+              <span class="node-label">审批节点{{ index + 1 }}：</span>
+              <el-select v-model="node.type" placeholder="选择类型" style="width: 180px" @change="handleNodeTypeChange(node)">
+                <el-option label="直属主管" value="superior" />
+                <el-option label="部门经理" value="role" />
+                <el-option label="指定人员" value="user" />
+                <el-option label="指定角色" value="role" />
+                <el-option label="指定部门" value="department" />
+                <el-option label="发起人自选" value="self_select" />
+                <el-option label="连续多级上级" value="continuous_superior" />
+              </el-select>
+              <el-select
+                  v-if="node.type === 'user'"
+                  v-model="node.userId"
+                  placeholder="选择人员"
+                  multiple
+                  style="width: 200px; margin-left: 8px"
+              >
+                <el-option label="张三" value="zhangsan" />
+                <el-option label="李四" value="lisi" />
+              </el-select>
+              <el-select
+                  v-if="node.type === 'role'"
+                  v-model="node.roleId"
+                  placeholder="选择角色"
+                  style="width: 200px; margin-left: 8px"
+              >
+                <el-option label="部门经理" value="dept_manager" />
+                <el-option label="总经理" value="general_manager" />
+                <el-option label="总监" value="director" />
+              </el-select>
+              <el-button
+                  v-if="index > 0"
+                  size="small"
+                  type="danger"
+                  icon="Delete"
+                  circle
+                  @click="removeNode(index)"
+                  style="margin-left: 8px"
+              />
+            </div>
+            <el-button size="small" type="primary" icon="Plus" @click="addNode" style="margin-top: 8px">
+              添加审批节点
+            </el-button>
+            <div class="node-tip">按顺序设置审批人，第一个审批完成后流转到下一个</div>
+          </div>
+        </div>
 
-        <el-form-item label="分配策略" prop="strategy">
-          <el-select v-model="ruleForm.strategy" placeholder="请选择分配策略" style="width: 100%" @change="handleFormStrategyChange">
-            <el-option label="指定人员" value="specific_user" />
-            <el-option label="指定角色" value="specific_role" />
-            <el-option label="指定部门" value="specific_dept" />
-            <el-option label="发起人自选" value="initiator_select" />
-            <el-option label="发起人上级" value="initiator_superior" />
-            <el-option label="连续上级" value="continuous_superior" />
-            <el-option label="条件分支" value="condition_branch" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item v-if="ruleForm.strategy === 'specific_user'" label="选择人员">
-          <el-select v-model="ruleForm.targetUser" multiple placeholder="请选择" style="width: 100%">
-            <el-option label="张三" value="zhangsan" />
-            <el-option label="李四" value="lisi" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item v-if="ruleForm.strategy === 'specific_role'" label="选择角色">
-          <el-select v-model="ruleForm.targetRole" multiple placeholder="请选择" style="width: 100%">
-            <el-option label="部门经理" value="dept_manager" />
-            <el-option label="总经理" value="general_manager" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="优先级" prop="priority">
-          <el-input-number v-model="ruleForm.priority" :min="1" :max="100" style="width: 100%" />
-        </el-form-item>
-
-        <el-form-item label="规则说明">
-          <el-input v-model="ruleForm.description" type="textarea" :rows="3" />
-        </el-form-item>
+        <!-- 4. 状态 -->
+        <div class="form-section">
+          <h3 class="section-title">4. 状态</h3>
+          <el-form-item label="规则状态">
+            <el-radio-group v-model="ruleForm.status">
+              <el-radio label="enabled">启用（流程可以使用）</el-radio>
+              <el-radio label="disabled">禁用（流程不可使用）</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
       </el-form>
 
       <template #footer>
@@ -282,26 +269,6 @@
 
     <!-- 规则详情弹窗 -->
     <RuleDetailDialog v-model="detailVisible" :rule="currentDetailRule" />
-
-    <!-- 操作日志弹窗 -->
-    <el-dialog v-model="logsVisible" title="规则操作日志" width="900px">
-      <el-table :data="operationLogs" border>
-        <el-table-column prop="operator" label="操作人" width="120" />
-        <el-table-column prop="operateTime" label="操作时间" width="180" />
-        <el-table-column prop="operateType" label="操作类型" width="120">
-          <template #default="{ row }">
-            <el-tag :type="getOperateTypeTag(row.operateType)" size="small">
-              {{ getOperateTypeText(row.operateType) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="beforeValue" label="修改前值" min-width="120" />
-        <el-table-column prop="afterValue" label="修改后值" min-width="120" />
-      </el-table>
-      <template #footer>
-        <el-button @click="logsVisible = false">关闭</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -309,7 +276,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus, Download, Edit, CopyDocument, Clock, Delete } from '@element-plus/icons-vue'
+import { Search, Refresh, Plus, Edit, CopyDocument, Delete } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import RuleDetailDialog from './components/RuleDetailDialog.vue'
 
@@ -317,172 +284,249 @@ const router = useRouter()
 const userStore = useUserStore()
 const isAdmin = computed(() => userStore.isAdmin)
 
+// 加载状态
+const loading = ref(false)
+
 // 筛选条件
 const searchKeyword = ref('')
-const filterStrategy = ref('')
-const filterRuleType = ref('')
 const filterStatus = ref('')
+
+// 分页
+const currentPage = ref(1)
+const pageSize = ref(10)
 
 // 全选
 const selectAll = ref(false)
 
-// 分组折叠
-const activeGroups = ref(['global', 'process'])
-
-// 规则列表
+// 规则列表数据
 const ruleList = ref([
   {
     id: 1,
-    ruleName: '请假审批-部门经理',
-    ruleType: 'global',
-    processName: '全系统',
-    strategy: 'initiator_superior',
-    target: '发起人直接上级',
-    priority: 10,
+    ruleName: '小额报销审批',
+    description: '金额小于1000元的报销审批',
+    conditions: [
+      { field: '报销金额', operator: '<', value: '1000' }
+    ],
+    approvalNodes: [
+      { name: '直属主管', type: 'superior' }
+    ],
     status: 'enabled',
-    selected: false
+    createTime: '2024-04-01 10:00:00',
+    updateTime: '2024-04-01 10:00:00',
+    creator: '系统管理员',
+    updater: '系统管理员'
   },
   {
     id: 2,
-    ruleName: '会议申请-部门经理审批-专属规则',
-    ruleType: 'process',
-    processName: '会议申请审批流程',
-    strategy: 'initiator_select',
-    target: '发起人自选',
-    priority: 5,
+    ruleName: '中额报销审批',
+    description: '金额1000-5000元的报销审批',
+    conditions: [
+      { field: '报销金额', operator: '>=', value: '1000' },
+      { field: '报销金额', operator: '<=', value: '5000' }
+    ],
+    approvalNodes: [
+      { name: '直属主管', type: 'superior' },
+      { name: '部门经理', type: 'role' }
+    ],
     status: 'enabled',
-    selected: false
+    createTime: '2024-04-01 10:30:00',
+    updateTime: '2024-04-01 10:30:00',
+    creator: '系统管理员',
+    updater: '系统管理员'
+  },
+  {
+    id: 3,
+    ruleName: '大额报销审批',
+    description: '金额大于5000元的报销审批',
+    conditions: [
+      { field: '报销金额', operator: '>', value: '5000' }
+    ],
+    approvalNodes: [
+      { name: '直属主管', type: 'superior' },
+      { name: '部门经理', type: 'role' },
+      { name: '总监', type: 'role' }
+    ],
+    status: 'enabled',
+    createTime: '2024-04-01 11:00:00',
+    updateTime: '2024-04-01 11:00:00',
+    creator: '系统管理员',
+    updater: '系统管理员'
+  },
+  {
+    id: 4,
+    ruleName: '普通请假审批',
+    description: '3天以内的请假审批',
+    conditions: [
+      { field: '请假天数', operator: '<=', value: '3' }
+    ],
+    approvalNodes: [
+      { name: '直属主管', type: 'superior' }
+    ],
+    status: 'enabled',
+    createTime: '2024-04-02 09:00:00',
+    updateTime: '2024-04-02 09:00:00',
+    creator: '系统管理员',
+    updater: '系统管理员'
   }
 ])
 
 // 对话框
 const ruleDialogVisible = ref(false)
-const dialogTitle = ref('新增规则')
+const dialogTitle = ref('新建审批规则')
 const ruleFormRef = ref(null)
 const ruleForm = ref({
   ruleName: '',
-  ruleType: 'global',
-  processName: '',
-  strategy: '',
-  targetUser: [],
-  targetRole: [],
-  priority: 10,
-  description: ''
+  description: '',
+  conditions: [],
+  approvalNodes: [],
+  status: 'enabled'
 })
 
 const ruleRules = {
   ruleName: [{ required: true, message: '请输入规则名称', trigger: 'blur' }],
-  ruleType: [{ required: true, message: '请选择规则类型', trigger: 'change' }],
-  strategy: [{ required: true, message: '请选择分配策略', trigger: 'change' }]
+  description: [{ required: true, message: '请输入规则说明', trigger: 'blur' }]
 }
 
-// 详情/日志
+// 详情
 const detailVisible = ref(false)
 const currentDetailRule = ref(null)
-const logsVisible = ref(false)
-const operationLogs = ref([
-  {
-    operator: '系统管理员',
-    operateTime: '2024-04-07 10:30:00',
-    operateType: 'edit',
-    beforeValue: 'initiator_superior',
-    afterValue: 'initiator_select',
-  }
-])
 const saving = ref(false)
 
-// 分组后的规则
-const groupedRules = computed(() => {
+// 选中的规则
+const selectedRules = ref([])
+
+// 过滤后的规则列表
+const filteredRules = computed(() => {
   let filtered = [...ruleList.value]
 
+  // 关键词筛选
   if (searchKeyword.value) {
     const kw = searchKeyword.value.toLowerCase()
-    filtered = filtered.filter(r => r.ruleName.toLowerCase().includes(kw))
+    filtered = filtered.filter(r =>
+        r.ruleName.toLowerCase().includes(kw) ||
+        (r.description && r.description.toLowerCase().includes(kw))
+    )
   }
-  if (filterStrategy.value) {
-    filtered = filtered.filter(r => r.strategy === filterStrategy.value)
-  }
-  if (filterRuleType.value) {
-    filtered = filtered.filter(r => r.ruleType === filterRuleType.value)
-  }
+
+  // 状态筛选
   if (filterStatus.value) {
     filtered = filtered.filter(r => r.status === filterStatus.value)
   }
 
-  const groups = { global: [], process: [] }
-  filtered.forEach(rule => {
-    if (groups[rule.ruleType]) {
-      groups[rule.ruleType].push(rule)
-    }
-  })
-
-  return groups
+  return filtered
 })
 
 const totalRules = computed(() => ruleList.value.length)
-const globalCount = computed(() => ruleList.value.filter(r => r.ruleType === 'global').length)
-const processCount = computed(() => ruleList.value.filter(r => r.ruleType === 'process').length)
-const selectedRules = computed(() => ruleList.value.filter(r => r.selected))
-const lastModifyTime = computed(() => '2024-04-07 15:30:00')
 
 // 方法
-const handleSearch = () => ElMessage.success('查询完成')
+const handleSearch = () => {
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+    ElMessage.success('查询完成')
+  }, 300)
+}
+
 const handleReset = () => {
   searchKeyword.value = ''
-  filterStrategy.value = ''
-  filterRuleType.value = ''
   filterStatus.value = ''
+  ElMessage.success('已重置查询条件')
 }
 
 const handleSelectAll = (val) => {
-  ruleList.value.forEach(r => r.selected = val)
+  filteredRules.value.forEach(r => r.selected = val)
 }
 
-const handleRowSelect = () => {
-  selectAll.value = ruleList.value.every(r => r.selected)
+const handleSelectionChange = (selection) => {
+  selectedRules.value = selection
+}
+
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  currentPage.value = 1
+}
+
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+}
+
+const addCondition = () => {
+  ruleForm.value.conditions.push({
+    field: '',
+    operator: '',
+    value: ''
+  })
+}
+
+const removeCondition = (index) => {
+  ruleForm.value.conditions.splice(index, 1)
+}
+
+const addNode = () => {
+  ruleForm.value.approvalNodes.push({
+    name: '',
+    type: '',
+    userId: [],
+    roleId: ''
+  })
+}
+
+const removeNode = (index) => {
+  ruleForm.value.approvalNodes.splice(index, 1)
+}
+
+const handleNodeTypeChange = (node) => {
+  // 清空相关字段
+  node.userId = []
+  node.roleId = ''
+
+  // 根据类型设置默认名称
+  const nameMap = {
+    superior: '直属主管',
+    role: '部门经理',
+    user: '指定人员',
+    department: '指定部门',
+    self_select: '发起人自选',
+    continuous_superior: '连续多级上级'
+  }
+  node.name = nameMap[node.type] || ''
 }
 
 const handleAddRule = () => {
-  dialogTitle.value = '新增规则'
+  dialogTitle.value = '新建审批规则'
   ruleForm.value = {
     ruleName: '',
-    ruleType: 'global',
-    processName: '',
-    strategy: '',
-    targetUser: [],
-    targetRole: [],
-    priority: 10,
-    description: ''
+    description: '',
+    conditions: [],
+    approvalNodes: [
+      { name: '直属主管', type: 'superior' }
+    ],
+    status: 'enabled'
   }
   ruleDialogVisible.value = true
 }
 
 const handleEditRule = (row) => {
-  dialogTitle.value = '编辑规则'
-  ruleForm.value = {
-    ...row,
-    strategy: row.strategy || '',
-    targetUser: row.targetUser || [],
-    targetRole: row.targetRole || []
-  }
+  dialogTitle.value = '编辑审批规则'
+  ruleForm.value = JSON.parse(JSON.stringify(row))
   ruleDialogVisible.value = true
 }
 
 const handleCopyRule = (row) => {
-  dialogTitle.value = '复制规则'
-  ruleForm.value = {
-    ...row,
-    id: undefined,
-    ruleName: row.ruleName + '（副本）',
-    strategy: row.strategy || '',
-    targetUser: row.targetUser || [],
-    targetRole: row.targetRole || []
-  }
+  dialogTitle.value = '复制审批规则'
+  const copied = JSON.parse(JSON.stringify(row))
+  copied.id = undefined
+  copied.ruleName = row.ruleName + '（副本）'
+  ruleForm.value = copied
   ruleDialogVisible.value = true
 }
 
 const handleDeleteRule = (row) => {
-  ElMessageBox.confirm(`确定删除规则「${row.ruleName}」吗？`, '删除确认', { type: 'warning' }).then(() => {
+  ElMessageBox.confirm(`确定删除规则「${row.ruleName}」吗？`, '删除确认', {
+    confirmButtonText: '确定删除',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
     ruleList.value = ruleList.value.filter(r => r.id !== row.id)
     ElMessage.success('删除成功')
   }).catch(() => {})
@@ -491,25 +535,39 @@ const handleDeleteRule = (row) => {
 const handleSubmitRule = () => {
   ruleFormRef.value?.validate((valid) => {
     if (!valid) return
+
+    if (ruleForm.value.conditions.length === 0) {
+      ElMessage.warning('请至少添加一个触发条件')
+      return
+    }
+
+    if (ruleForm.value.approvalNodes.length === 0) {
+      ElMessage.warning('请至少添加一个审批节点')
+      return
+    }
+
     saving.value = true
     setTimeout(() => {
-      let target = ''
-      if (ruleForm.value.strategy === 'specific_user') target = ruleForm.value.targetUser.join('、')
-      else if (ruleForm.value.strategy === 'specific_role') target = ruleForm.value.targetRole.join('、')
-      else target = getStrategyText(ruleForm.value.strategy)
-
       if (ruleForm.value.id) {
+        // 编辑
         const index = ruleList.value.findIndex(r => r.id === ruleForm.value.id)
         if (index !== -1) {
-          ruleList.value[index] = { ...ruleForm.value, target }
+          ruleList.value[index] = {
+            ...ruleForm.value,
+            updateTime: new Date().toLocaleString('zh-CN'),
+            updater: userStore.currentUser?.name || '当前用户'
+          }
         }
         ElMessage.success('规则修改成功')
       } else {
+        // 新增
         ruleList.value.unshift({
           ...ruleForm.value,
           id: Date.now(),
-          target,
-          selected: false
+          createTime: new Date().toLocaleString('zh-CN'),
+          updateTime: new Date().toLocaleString('zh-CN'),
+          creator: userStore.currentUser?.name || '当前用户',
+          updater: userStore.currentUser?.name || '当前用户'
         })
         ElMessage.success('规则新增成功')
       }
@@ -537,89 +595,62 @@ const handleViewDetail = (row) => {
   detailVisible.value = true
 }
 
-const handleViewLogs = (row) => {
-  logsVisible.value = true
-}
-
-const handleJumpToProcess = (row) => {
-  ElMessage.info(`跳转到流程设计器：${row.processName}`)
-}
-
 const handleBatchEnable = () => {
   selectedRules.value.forEach(r => r.status = 'enabled')
   ElMessage.success(`已批量启用 ${selectedRules.value.length} 条规则`)
-  ruleList.value.forEach(r => r.selected = false)
+  selectedRules.value = []
 }
 
 const handleBatchDisable = () => {
   selectedRules.value.forEach(r => r.status = 'disabled')
   ElMessage.success(`已批量禁用 ${selectedRules.value.length} 条规则`)
-  ruleList.value.forEach(r => r.selected = false)
+  selectedRules.value = []
 }
 
 const handleBatchDelete = () => {
-  ElMessageBox.confirm(`确定删除选中的 ${selectedRules.value.length} 条规则吗？`, '批量删除', { type: 'warning' }).then(() => {
-    ruleList.value = ruleList.value.filter(r => !r.selected)
+  ElMessageBox.confirm(`确定删除选中的 ${selectedRules.value.length} 条规则吗？`, '批量删除', {
+    confirmButtonText: '确定删除',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    ruleList.value = ruleList.value.filter(r => !selectedRules.value.find(s => s.id === r.id))
     ElMessage.success('批量删除成功')
+    selectedRules.value = []
   }).catch(() => {})
-}
-
-const handleExportRules = () => {
-  ElMessage.success('规则导出成功')
-}
-
-const handleFormStrategyChange = () => {
-  ruleForm.value.targetUser = []
-  ruleForm.value.targetRole = []
-}
-
-const getStrategyText = (strategy) => {
-  const texts = {
-    specific_user: '指定人员',
-    specific_role: '指定角色',
-    specific_dept: '指定部门',
-    initiator_select: '发起人自选',
-    initiator_superior: '发起人上级',
-    continuous_superior: '连续上级',
-    condition_branch: '条件分支'
-  }
-  return texts[strategy] || strategy
-}
-
-const getPriorityTag = (priority) => {
-  if (priority >= 20) return 'danger'
-  if (priority >= 10) return 'warning'
-  return 'info'
-}
-
-const getOperateTypeTag = (type) => {
-  const tags = { add: 'success', edit: 'primary', delete: 'danger', enable: 'success', disable: 'info' }
-  return tags[type] || 'info'
-}
-
-const getOperateTypeText = (type) => {
-  const texts = { add: '新增', edit: '编辑', delete: '删除', enable: '启用', disable: '禁用' }
-  return texts[type] || type
 }
 </script>
 
 <style scoped lang="scss">
 .approver-rules-engine {
   padding: 20px;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 60px);
+
+  .breadcrumb {
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
 
   .page-header {
     margin-bottom: 24px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-    h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
-      color: #303133;
-    }
+    .header-left {
+      h2 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        color: #303133;
+        font-weight: 600;
+      }
 
-    .subtitle {
-      margin: 0;
-      font-size: 14px;
-      color: #909399;
+      .subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: #909399;
+      }
     }
   }
 
@@ -654,120 +685,129 @@ const getOperateTypeText = (type) => {
   }
 
   .rules-table-container {
-    border: 1px solid #ebeef5;
-    border-radius: 4px;
+    background: #fff;
+    border-radius: 8px;
     overflow: hidden;
-  }
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-  .unified-header {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    background: #f5f7fa;
-    border-bottom: 1px solid #ebeef5;
-    font-weight: 600;
-    font-size: 14px;
-    color: #303133;
-
-    .header-cell {
-      padding: 0 8px;
-    }
-  }
-
-  .rule-groups {
-    :deep(.el-collapse-item__header) {
-      padding: 12px 16px;
-      background: #fafafa;
-      border-bottom: 1px solid #ebeef5;
-    }
-
-    .group-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-left: 12px;
-      border-left: 3px solid;
-
-      .group-count {
-        color: #909399;
-        font-size: 13px;
-      }
-    }
-
-    .rule-rows {
-      padding: 0;
-    }
-
-    .rule-row {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid #ebeef5;
-      transition: background-color 0.2s;
+    .rule-name-link {
+      color: #409EFF;
+      cursor: pointer;
+      font-weight: 500;
 
       &:hover {
-        background-color: #f5f7fa;
-      }
-
-      &:last-child {
-        border-bottom: none;
+        text-decoration: underline;
       }
     }
 
-    .rule-cell {
-      padding: 0 8px;
-      font-size: 14px;
-      color: #606266;
+    .conditions-display {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
 
-      .rule-name {
-        color: #409eff;
-        cursor: pointer;
-        font-weight: 500;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      .text-muted {
+      .more-count {
+        font-size: 12px;
         color: #909399;
       }
+    }
 
-      .text-ellipsis {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+    .text-muted {
+      color: #909399;
+      font-size: 13px;
+    }
 
-      &.action-cell {
-        display: flex;
-        gap: 8px;
-        justify-content: flex-start;
+    .approval-chain-display {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
 
-        .el-button {
-          margin: 0;
+      .chain-node-tag {
+        display: inline-flex;
+        align-items: center;
+        font-size: 13px;
+        color: #606266;
+
+        .chain-arrow {
+          margin: 0 4px;
+          color: #409EFF;
+          font-weight: 600;
         }
       }
     }
   }
 
-  .footer-stats {
+  .pagination-container {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 0;
-    font-size: 14px;
-    color: #606266;
-
-    .divider {
-      color: #dcdfe6;
-    }
+    justify-content: flex-end;
+    margin-top: 16px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 8px;
   }
 
   .empty-text {
     color: #909399;
     margin: 8px 0 16px;
+  }
+
+  // 表单样式
+  .form-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #ebeef5;
+
+    &:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #303133;
+      margin: 0 0 16px;
+      padding-left: 8px;
+      border-left: 3px solid #409EFF;
+    }
+
+    .conditions-builder {
+      .condition-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .condition-tip {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #909399;
+      }
+    }
+
+    .approval-nodes-builder {
+      .node-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+
+        .node-label {
+          font-size: 14px;
+          color: #606266;
+          white-space: nowrap;
+        }
+      }
+
+      .node-tip {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #909399;
+      }
+    }
   }
 }
 </style>

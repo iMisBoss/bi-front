@@ -1,476 +1,696 @@
 <template>
   <div class="bpmn-designer">
-    <div class="page-header">
-      <h2>BPMN 流程设计器</h2>
-      <p class="subtitle">可视化设计审批流程，拖拽节点快速搭建流程图</p>
-    </div>
+    <!-- 顶部工具栏（支持折叠） -->
+    <TopToolbar
+        :flow-info="flowInfo"
+        :collapsed="topPanelCollapsed"
+        @update:flow-info="handleFlowInfoUpdate"
+        @toggle-top="topPanelCollapsed = !topPanelCollapsed"
+        @save="handleSave"
+        @publish="handlePublish"
+        @test="handleTest"
+        @preview="handlePreview"
+        @import="handleImport"
+        @export="handleExport"
+    />
 
     <div class="designer-container">
-      <!-- 左侧节点面板 -->
-      <div class="node-panel">
-        <h3 class="panel-title">节点库</h3>
+      <!-- 左侧节点库（支持折叠/展开和宽度拖拽） -->
+      <div class="node-panel-wrapper" :style="{ width: leftPanelCollapsed ? '0px' : leftPanelWidth + 'px' }">
+        <NodePanel
+            :collapsed="leftPanelCollapsed"
+            :width="leftPanelWidth"
+            @node-drag-start="handleNodeDragStart"
+        />
+        <!-- 右侧拖拽条 -->
+        <div v-if="!leftPanelCollapsed" class="resize-handle resize-right" @mousedown="startResize('left', $event)"></div>
+      </div>
 
-        <div class="node-group">
-          <div class="group-title">事件节点</div>
-          <div class="node-list">
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'start')">
-              <el-icon class="node-icon"><VideoPlay /></el-icon>
-              <span>开始事件</span>
-            </div>
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'end')">
-              <el-icon class="node-icon"><VideoPause /></el-icon>
-              <span>结束事件</span>
-            </div>
-          </div>
-        </div>
+      <!-- 中间 bpmn-js 画布 -->
+      <div class="canvas-wrapper">
+        <CanvasArea
+            ref="canvasAreaRef"
+            :nodes="flowNodes"
+            :connections="connections"
+            :zoom="zoom"
+            :grid-visible="gridVisible"
+            :active-node="activeNode"
+            :active-connection="activeConnection"
+            @node-select="handleNodeSelect"
+            @node-delete="handleNodeDelete"
+            @connection-select="handleConnectionSelect"
+            @canvas-click="handleCanvasClick"
+            @zoom-change="handleZoomChange"
+            @grid-toggle="handleGridToggle"
+            @node-move="handleNodeMove"
+            @modeler-ready="handleModelerReady"
+            @node-added="handleNodeAdded"
+            @undo="handleUndo"
+            @redo="handleRedo"
+        />
 
-        <div class="node-group">
-          <div class="group-title">任务节点</div>
-          <div class="node-list">
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'user_task')">
-              <el-icon class="node-icon"><User /></el-icon>
-              <span>用户任务</span>
+        <!-- 面板折叠按钮（浮动在画布上） -->
+        <div class="panel-toggles">
+          <el-tooltip :content="leftPanelCollapsed ? '展开节点库' : '收起节点库'" placement="right">
+            <div class="toggle-btn" @click="leftPanelCollapsed = !leftPanelCollapsed">
+              <el-icon><ArrowRight v-if="leftPanelCollapsed" /><ArrowLeft v-else /></el-icon>
             </div>
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'service_task')">
-              <el-icon class="node-icon"><Setting /></el-icon>
-              <span>服务任务</span>
+          </el-tooltip>
+          <el-tooltip :content="rightPanelCollapsed ? '展开属性面板' : '收起属性面板'" placement="left">
+            <div class="toggle-btn" @click="rightPanelCollapsed = !rightPanelCollapsed">
+              <el-icon><ArrowLeft v-if="rightPanelCollapsed" /><ArrowRight v-else /></el-icon>
             </div>
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'mail_task')">
-              <el-icon class="node-icon"><Message /></el-icon>
-              <span>邮件任务</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="node-group">
-          <div class="group-title">网关</div>
-          <div class="node-list">
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'exclusive_gateway')">
-              <el-icon class="node-icon"><Connection /></el-icon>
-              <span>排他网关</span>
-            </div>
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'parallel_gateway')">
-              <el-icon class="node-icon"><Share /></el-icon>
-              <span>并行网关</span>
-            </div>
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'inclusive_gateway')">
-              <el-icon class="node-icon"><Operation /></el-icon>
-              <span>包容网关</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="node-group">
-          <div class="group-title">子流程</div>
-          <div class="node-list">
-            <div class="node-item" draggable="true" @dragstart="handleDragStart($event, 'subprocess')">
-              <el-icon class="node-icon"><Menu /></el-icon>
-              <span>子流程</span>
-            </div>
-          </div>
+          </el-tooltip>
         </div>
       </div>
 
-      <!-- 中间画布 -->
-      <div class="canvas-area">
-        <div class="canvas-toolbar">
-          <div class="toolbar-left">
-            <el-button size="small" icon="ZoomIn" @click="handleZoomIn">放大</el-button>
-            <el-button size="small" icon="ZoomOut" @click="handleZoomOut">缩小</el-button>
-            <el-button size="small" icon="RefreshLeft" @click="handleResetZoom">重置</el-button>
-          </div>
-          <div class="toolbar-right">
-            <el-button size="small" icon="View" @click="handlePreview">预览</el-button>
-            <el-button size="small" icon="Check" type="primary" @click="handleSave">保存流程</el-button>
-          </div>
-        </div>
-
-        <div
-            class="canvas"
-            @drop="handleDrop"
-            @dragover.prevent
-            @dragenter.prevent
-        >
-          <div class="canvas-content" :style="{ transform: `scale(${zoom})` }">
-            <template v-for="node in flowNodes" :key="node.id">
-              <div
-                  class="flow-node"
-                  :class="[`node-${node.type}`, { active: activeNode?.id === node.id }]"
-                  :style="{ left: node.x + 'px', top: node.y + 'px' }"
-                  @click="handleSelectNode(node)"
-              >
-                <div class="node-shape">
-                  <el-icon v-if="node.type === 'start'" class="shape-icon"><VideoPlay /></el-icon>
-                  <el-icon v-else-if="node.type === 'end'" class="shape-icon"><VideoPause /></el-icon>
-                  <el-icon v-else-if="['user_task', 'service_task', 'mail_task'].includes(node.type)" class="shape-icon">
-                    <User v-if="node.type === 'user_task'" />
-                    <Setting v-else-if="node.type === 'service_task'" />
-                    <Message v-else />
-                  </el-icon>
-                  <el-icon v-else class="shape-icon"><Connection /></el-icon>
-                </div>
-                <div class="node-label">{{ node.name }}</div>
-                <div class="node-delete" @click.stop="handleDeleteNode(node)">
-                  <el-icon><Close /></el-icon>
-                </div>
-              </div>
-            </template>
-
-            <!-- 连接线 -->
-            <svg class="connections" width="100%" height="100%">
-              <template v-for="conn in connections" :key="conn.id">
-                <line
-                    :x1="conn.sourceX"
-                    :y1="conn.sourceY"
-                    :x2="conn.targetX"
-                    :y2="conn.targetY"
-                    stroke="#409eff"
-                    stroke-width="2"
-                    marker-end="url(#arrowhead)"
-                />
-              </template>
-              <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#409eff" />
-                </marker>
-              </defs>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- 右侧属性面板 -->
-      <div class="property-panel">
-        <h3 class="panel-title">节点属性</h3>
-
-        <div v-if="activeNode" class="property-content">
-          <el-form :model="activeNode" label-width="80px">
-            <el-form-item label="节点名称">
-              <el-input v-model="activeNode.name" />
-            </el-form-item>
-
-            <el-form-item label="节点ID">
-              <el-input v-model="activeNode.id" disabled />
-            </el-form-item>
-
-            <el-form-item label="节点类型">
-              <el-tag>{{ getNodeTypeText(activeNode.type) }}</el-tag>
-            </el-form-item>
-
-            <el-form-item v-if="activeNode.type === 'user_task'" label="审批人">
-              <el-select v-model="activeNode.assignee" placeholder="选择审批人" style="width: 100%">
-                <el-option label="部门经理" value="dept_manager" />
-                <el-option label="总经理" value="general_manager" />
-                <el-option label="HR经理" value="hr_manager" />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item v-if="activeNode.type === 'user_task'" label="审批方式">
-              <el-select v-model="activeNode.approvalType" style="width: 100%">
-                <el-option label="单人审批" value="single" />
-                <el-option label="会签" value="countersign" />
-                <el-option label="或签" value="orsign" />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="完成条件">
-              <el-input v-model="activeNode.condition" placeholder="条件表达式" />
-            </el-form-item>
-
-            <el-form-item label="节点说明">
-              <el-input
-                  v-model="activeNode.description"
-                  type="textarea"
-                  :rows="3"
-              />
-            </el-form-item>
-          </el-form>
-        </div>
-
-        <el-empty v-else description="选择节点以编辑属性" />
+      <!-- 右侧属性面板（支持折叠/展开和宽度拖拽） -->
+      <div class="property-panel-wrapper" :style="{ width: rightPanelCollapsed ? '0px' : rightPanelWidth + 'px' }">
+        <!-- 左侧拖拽条 -->
+        <div v-if="!rightPanelCollapsed" class="resize-handle resize-left" @mousedown="startResize('right', $event)"></div>
+        <PropertyPanel
+            :collapsed="rightPanelCollapsed"
+            :key="activeNode ? activeNode.id : 'empty'"
+            :active-node="activeNode"
+            :active-connection="activeConnection"
+            :flow-info="flowInfo"
+            :all-nodes="flowNodes"
+            @update:flow-info="handleFlowInfoUpdate"
+            @update-node="handleNodeUpdate"
+            @update-connection="handleConnectionUpdate"
+        />
       </div>
     </div>
+
+    <!-- 预览弹窗 -->
+    <el-dialog v-model="previewDialog.visible" title="流程预览" width="900px" append-to-body>
+      <div class="preview-content">
+        <el-empty v-if="flowNodes.length === 0" description="暂无流程数据" />
+        <div v-else class="preview-flow">
+          <div class="preview-node" v-for="node in flowNodes" :key="node.id">
+            <div class="node-shape" :class="`node-${node.type}`">
+              <span>{{ node.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 测试弹窗 -->
+    <el-dialog v-model="testDialog.visible" title="流程测试" width="1000px" append-to-body>
+      <div class="test-content">
+        <el-steps :active="testDialog.currentStep" finish-status="success" align-center>
+          <el-step v-for="(step, index) in testDialog.steps" :key="index" :title="step.title" />
+        </el-steps>
+        <div class="test-logs" v-if="testDialog.logs.length > 0">
+          <h4>执行日志</h4>
+          <el-timeline>
+            <el-timeline-item v-for="(log, index) in testDialog.logs" :key="index" :type="log.type" :timestamp="log.time">
+              {{ log.message }}
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="testDialog.visible = false">关闭</el-button>
+        <el-button type="success" @click="handlePublish">测试通过，发布流程</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 导入弹窗 -->
+    <el-dialog v-model="importDialog.visible" title="导入流程" width="520px" append-to-body>
+      <el-upload class="upload-area" drag accept=".bpmn,.xml" :auto-upload="false" :show-file-list="true" :limit="1" :on-change="handleImportFileChange">
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">拖拽 BPMN 文件到此处，或 <em>点击选择</em></div>
+        <template #tip><div class="el-upload__tip">支持 .bpmn 或 .xml 格式文件</div></template>
+      </el-upload>
+      <template #footer>
+        <el-button @click="importDialog.visible = false">取消</el-button>
+        <el-button type="primary" @click="confirmImport" :disabled="!importDialog.file">确认导入</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import {
-  VideoPlay, VideoPause, User, Setting, Message, Connection, Share, Operation, Menu,
-  ZoomIn, ZoomOut, RefreshLeft, View, Check, Close
-} from '@element-plus/icons-vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
+import TopToolbar from './components/TopToolbar.vue'
+import NodePanel from './components/NodePanel.vue'
+import CanvasArea from './components/CanvasArea.vue'
+import PropertyPanel from './components/PropertyPanel.vue'
 
+const canvasAreaRef = ref(null)
+let bpmnModeler = null
+
+// 流程信息
+const flowInfo = ref({
+  name: '新建审批流程',
+  category: 'hr',
+  status: 'draft',
+  description: '',
+  initPermission: 'all',
+  validDays: 30,
+  bindFormId: null
+})
+
+// 流程节点 & 连线
 const flowNodes = ref([])
 const connections = ref([])
+
+// 状态
+const zoom = ref(0.8)
+const gridVisible = ref(true)
 const activeNode = ref(null)
-const zoom = ref(1)
-const nodeIdCounter = ref(0)
+const activeConnection = ref(null)
 
-const nodeTypes = {
-  start: '开始事件',
-  end: '结束事件',
-  user_task: '用户任务',
-  service_task: '服务任务',
-  mail_task: '邮件任务',
-  exclusive_gateway: '排他网关',
-  parallel_gateway: '并行网关',
-  inclusive_gateway: '包容网关',
-  subprocess: '子流程'
+// 操作历史
+const historyStack = ref([])
+const redoStack = ref([])
+
+// 预览/测试/导入弹窗状态
+const previewDialog = ref({ visible: false })
+const testDialog = ref({ visible: false, currentStep: 0, steps: [], logs: [] })
+const importDialog = ref({ visible: false, file: null })
+
+// 面板折叠状态
+const topPanelCollapsed = ref(false)
+const leftPanelCollapsed = ref(false)
+const rightPanelCollapsed = ref(false)
+
+const leftPanelWidth = ref(220)
+const rightPanelWidth = ref(350)
+const minPanelWidth = 180
+const maxPanelWidth = 500
+
+// 拖拽调整宽度
+let isResizing = false
+let resizeDirection = ''
+let startX = 0
+let startWidth = 0
+
+const startResize = (direction, event) => {
+  isResizing = true
+  resizeDirection = direction
+  startX = event.clientX
+  startWidth = direction === 'left' ? leftPanelWidth.value : rightPanelWidth.value
+
+  document.addEventListener('mousemove', handleResize)
+  document.addEventListener('mouseup', stopResize)
+  event.preventDefault()
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
 }
 
-const handleDragStart = (event, type) => {
-  event.dataTransfer.setData('nodeType', type)
+const handleResize = (event) => {
+  if (!isResizing) return
+
+  const deltaX = event.clientX - startX
+
+  if (resizeDirection === 'left') {
+    const newWidth = startWidth + deltaX
+    leftPanelWidth.value = Math.max(minPanelWidth, Math.min(maxPanelWidth, newWidth))
+  } else {
+    const newWidth = startWidth - deltaX
+    rightPanelWidth.value = Math.max(minPanelWidth, Math.min(maxPanelWidth, newWidth))
+  }
 }
 
-const handleDrop = (event) => {
-  const nodeType = event.dataTransfer.getData('nodeType')
-  if (!nodeType) return
+const stopResize = () => {
+  isResizing = false
+  resizeDirection = ''
+  document.removeEventListener('mousemove', handleResize)
+  document.removeEventListener('mouseup', stopResize)
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+}
 
-  const rect = event.currentTarget.getBoundingClientRect()
-  const x = event.clientX - rect.left - 50
-  const y = event.clientY - rect.top - 25
+// ==================== 核心逻辑 ====================
 
-  nodeIdCounter.value++
-  const newNode = {
-    id: `node_${nodeIdCounter.value}`,
-    type: nodeType,
-    name: nodeTypes[nodeType],
-    x: x / zoom.value,
-    y: y / zoom.value,
-    assignee: '',
-    approvalType: 'single',
-    condition: '',
-    description: ''
+const handleFlowInfoUpdate = (info) => {
+  flowInfo.value = { ...flowInfo.value, ...info }
+}
+
+// bpmn modeler 就绪
+const handleModelerReady = (modeler) => {
+  bpmnModeler = modeler
+  saveHistory()
+  syncNodeList()
+}
+
+// 拖拽开始
+const handleNodeDragStart = (nodeType) => {
+  return true
+}
+
+// 选中节点
+const handleNodeSelect = (node) => {
+  activeNode.value = JSON.parse(JSON.stringify(node))
+  activeConnection.value = null
+  console.log('选中节点:', activeNode.value)
+}
+
+// 节点添加成功
+const handleNodeAdded = (node) => {
+  flowNodes.value.push(node)
+  saveHistory()
+  ElMessage.success(`已添加「${node.name}」节点`)
+}
+
+// 同步节点列表（从 bpmn-js 读取）
+const syncNodeList = () => {
+  if (!bpmnModeler) return
+
+  const elementRegistry = bpmnModeler.get('elementRegistry')
+  const elements = elementRegistry.filter(element => {
+    return element.type.startsWith('bpmn:') &&
+        element.type !== 'bpmn:Process' &&
+        element.type !== 'bpmn:Definitions' &&
+        !element.waypoints
+  })
+
+  flowNodes.value = elements.map(el => ({
+    id: el.id,
+    type: el.type.replace('bpmn:', '').toLowerCase(),
+    name: el.businessObject.name || el.id,
+    businessObject: el.businessObject
+  }))
+}
+
+// 节点移动
+const handleNodeMove = (nodeId, position) => {
+  // bpmn-js 已自动处理
+}
+
+// 删除节点
+const handleNodeDelete = (node) => {
+  if (!bpmnModeler) return
+
+  const elementRegistry = bpmnModeler.get('elementRegistry')
+  const element = elementRegistry.get(node.id)
+
+  if (element) {
+    ElMessageBox.confirm(`确定要删除「${node.name}」节点吗？`, '删除确认', { type: 'warning' }).then(() => {
+      const modeling = bpmnModeler.get('modeling')
+      modeling.removeShape(element)
+      if (activeNode.value?.id === node.id) activeNode.value = null
+
+      syncNodeList()
+      saveHistory()
+      ElMessage.success('节点已删除')
+    }).catch(() => {})
+  }
+}
+
+// 选择连线
+const handleConnectionSelect = (conn) => {
+  activeConnection.value = conn
+  activeNode.value = null
+}
+
+// 点击画布空白
+const handleCanvasClick = () => {
+  activeNode.value = null
+  activeConnection.value = null
+}
+
+// 缩放
+const handleZoomChange = (val) => zoom.value = val
+const handleGridToggle = (val) => gridVisible.value = val
+
+// 节点属性更新
+const handleNodeUpdate = (updatedNode) => {
+  if (!bpmnModeler) return
+
+  const elementRegistry = bpmnModeler.get('elementRegistry')
+  const element = elementRegistry.get(updatedNode.id)
+
+  if (element) {
+    const modeling = bpmnModeler.get('modeling')
+
+    if (updatedNode.name) {
+      modeling.updateLabel(element, updatedNode.name)
+    }
+
+    if (updatedNode.businessObject) {
+      Object.assign(element.businessObject, updatedNode.businessObject)
+    }
+
+    if (activeNode.value?.id === updatedNode.id) {
+      activeNode.value = { ...activeNode.value, ...updatedNode }
+    }
+
+    syncNodeList()
+    saveHistory()
+  }
+}
+
+// 连线属性更新
+const handleConnectionUpdate = (updatedConn) => {
+  if (!bpmnModeler) return
+
+  const elementRegistry = bpmnModeler.get('elementRegistry')
+  const element = elementRegistry.get(updatedConn.id)
+
+  if (element) {
+    const modeling = bpmnModeler.get('modeling')
+    modeling.updateLabel(element, updatedConn.name)
+    saveHistory()
+  }
+}
+
+// 历史记录
+const saveHistory = async () => {
+  if (!bpmnModeler) return
+
+  try {
+    const { xml } = await bpmnModeler.saveXML({ format: true })
+
+    if (historyStack.value.length > 0) {
+      const last = historyStack.value[historyStack.value.length - 1]
+      if (last === xml) return
+    }
+
+    historyStack.value.push(xml)
+    redoStack.value = []
+  } catch (err) {
+    console.error('保存历史失败:', err)
+  }
+}
+
+// 撤销
+const handleUndo = () => {
+  if (!bpmnModeler || historyStack.value.length <= 1) {
+    ElMessage.warning('无法继续撤销')
+    return
   }
 
-  flowNodes.value.push(newNode)
-  activeNode.value = newNode
-  ElMessage.success(`已添加${nodeTypes[nodeType]}节点`)
-}
+  redoStack.value.push(historyStack.value.pop())
+  const prev = historyStack.value[historyStack.value.length - 1]
 
-const handleSelectNode = (node) => {
-  activeNode.value = node
-}
-
-const handleDeleteNode = (node) => {
-  flowNodes.value = flowNodes.value.filter(n => n.id !== node.id)
-  connections.value = connections.value.filter(c =>
-      c.source !== node.id && c.target !== node.id
-  )
-  if (activeNode.value?.id === node.id) {
+  bpmnModeler.importXML(prev).then(() => {
     activeNode.value = null
+    syncNodeList()
+    ElMessage.success('已撤销')
+  })
+}
+
+// 重做
+const handleRedo = () => {
+  if (!bpmnModeler || redoStack.value.length === 0) {
+    ElMessage.warning('无法继续重做')
+    return
   }
-  ElMessage.success('节点已删除')
+
+  const next = redoStack.value.pop()
+  historyStack.value.push(next)
+
+  bpmnModeler.importXML(next).then(() => {
+    activeNode.value = null
+    syncNodeList()
+    ElMessage.success('已重做')
+  })
 }
 
-const handleZoomIn = () => {
-  zoom.value = Math.min(zoom.value + 0.1, 2)
+// 保存流程
+const handleSave = async () => {
+  if (!validateFlow()) return
+
+  try {
+    const xml = await canvasAreaRef.value.saveToXml()
+    console.log('保存流程 XML:', xml)
+    ElMessage.success('流程保存成功')
+  } catch (err) {
+    ElMessage.error('保存失败')
+  }
 }
 
-const handleZoomOut = () => {
-  zoom.value = Math.max(zoom.value - 0.1, 0.5)
+// 发布流程
+const handlePublish = async () => {
+  if (!validateFlow()) return
+
+  ElMessageBox.confirm('发布后流程将对用户可见，是否确认发布？', '发布确认', { type: 'info' }).then(async () => {
+    try {
+      const xml = await canvasAreaRef.value.saveToXml()
+      flowInfo.value.status = 'published'
+      console.log('发布流程 XML:', xml)
+      ElMessage.success('流程发布成功')
+    } catch (err) {
+      ElMessage.error('发布失败')
+    }
+  }).catch(() => {})
 }
 
-const handleResetZoom = () => {
-  zoom.value = 1
+// 测试流程
+const handleTest = () => {
+  if (flowNodes.value.length === 0) return ElMessage.warning('请先设计流程')
+
+  testDialog.value.visible = true
+  testDialog.value.currentStep = 0
+  testDialog.value.steps = flowNodes.value.map(n => ({ title: n.name, type: n.type }))
+  testDialog.value.logs = [{ type: 'success', time: new Date().toLocaleTimeString(), message: '流程校验通过' }]
+
+  testDialog.value.steps.forEach((step, i) => {
+    setTimeout(() => {
+      testDialog.value.currentStep = i + 1
+      testDialog.value.logs.push({ type: 'primary', time: new Date().toLocaleTimeString(), message: `执行节点：${step.title}` })
+    }, i * 1000)
+  })
 }
 
-const handlePreview = () => {
-  ElMessage.info('预览功能开发中...')
+const handlePreview = () => previewDialog.value.visible = true
+
+// 导入
+const handleImport = () => { importDialog.value.visible = true; importDialog.value.file = null }
+const handleImportFileChange = (file) => importDialog.value.file = file
+
+const confirmImport = async () => {
+  if (!importDialog.value.file) return ElMessage.warning('请先选择文件')
+
+  try {
+    const text = await importDialog.value.file.raw.text()
+    await canvasAreaRef.value.loadFromXml(text)
+
+    importDialog.value.visible = false
+    syncNodeList()
+    saveHistory()
+    ElMessage.success('导入成功')
+  } catch (e) {
+    ElMessage.error('导入失败，请检查文件格式')
+    console.error(e)
+  }
 }
 
-const handleSave = () => {
-  ElMessage.success('流程保存成功')
+// 导出
+const handleExport = async () => {
+  try {
+    const xml = await canvasAreaRef.value.saveToXml()
+    const blob = new Blob([xml], { type: 'application/xml' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${flowInfo.value.name}.bpmn`
+    a.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('导出成功')
+  } catch (err) {
+    ElMessage.error('导出失败')
+  }
 }
 
-const getNodeTypeText = (type) => {
-  return nodeTypes[type] || type
+// 校验流程
+const validateFlow = () => {
+  if (!bpmnModeler) return false
+
+  const elementRegistry = bpmnModeler.get('elementRegistry')
+  const elements = elementRegistry.filter(el => el.type.startsWith('bpmn:'))
+
+  const startNodes = elements.filter(el => el.type === 'bpmn:StartEvent')
+  const endNodes = elements.filter(el => el.type === 'bpmn:EndEvent')
+
+  if (startNodes.length === 0) return ElMessage.error('流程必须包含开始节点'), false
+  if (startNodes.length > 1) return ElMessage.error('流程只能有一个开始节点'), false
+  if (endNodes.length === 0) return ElMessage.error('流程必须包含结束节点'), false
+
+  return true
 }
+
+// 生命周期
+onUnmounted(() => {
+  // 清理事件监听
+  document.removeEventListener('mousemove', handleResize)
+  document.removeEventListener('mouseup', stopResize)
+})
 </script>
 
 <style scoped lang="scss">
 .bpmn-designer {
-  padding: 20px;
-
-  .page-header {
-    margin-bottom: 24px;
-
-    h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: 14px;
-      color: #909399;
-    }
-  }
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
 
   .designer-container {
     display: flex;
-    gap: 16px;
-    height: calc(100vh - 200px);
-  }
-
-  .node-panel,
-  .property-panel {
-    width: 280px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 16px;
-    overflow-y: auto;
-
-    .panel-title {
-      margin: 0 0 16px;
-      font-size: 16px;
-    }
-  }
-
-  .node-group {
-    margin-bottom: 16px;
-
-    .group-title {
-      font-size: 13px;
-      color: #909399;
-      margin-bottom: 8px;
-    }
-
-    .node-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-
-    .node-item {
-      padding: 12px;
-      background: #f5f7fa;
-      border-radius: 4px;
-      cursor: grab;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-
-      &:hover {
-        background: #e4e7ed;
-      }
-
-      .node-icon {
-        font-size: 16px;
-      }
-    }
-  }
-
-  .canvas-area {
     flex: 1;
-    background: #fff;
-    border-radius: 8px;
+    overflow: hidden;
+    padding: 0;
+    gap: 0;
+  }
+
+  // 左侧面板容器
+  .node-panel-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+    overflow: hidden;
+  }
+
+  // 右侧面板容器
+  .property-panel-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+    overflow: hidden;
+  }
+
+  // 中间画布容器
+  .canvas-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-
-    .canvas-toolbar {
-      padding: 12px;
-      border-bottom: 1px solid #ebeef5;
-      display: flex;
-      justify-content: space-between;
-
-      .toolbar-left,
-      .toolbar-right {
-        display: flex;
-        gap: 12px;
-      }
-    }
-
-    .canvas {
-      flex: 1;
-      overflow: auto;
-      background: #f5f7fa;
-      position: relative;
-    }
-
-    .canvas-content {
-      position: relative;
-      width: 2000px;
-      height: 2000px;
-      transform-origin: 0 0;
-    }
   }
 
-  .flow-node {
+  // 面板折叠按钮
+  .panel-toggles {
     position: absolute;
-    cursor: pointer;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
 
-    &.active {
-      .node-shape {
-        border-color: #409eff;
-        box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.3);
-      }
-    }
-
-    .node-shape {
-      width: 100px;
-      height: 50px;
-      background: #fff;
-      border: 2px solid #dcdfe6;
+    .toggle-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e4e7ed;
       border-radius: 4px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .shape-icon {
-        font-size: 24px;
-        color: #409eff;
-      }
-    }
-
-    &.node-start .node-shape,
-    &.node-end .node-shape {
-      border-radius: 25px;
-      width: 50px;
-      height: 50px;
-    }
-
-    .node-label {
-      text-align: center;
-      font-size: 12px;
-      margin-top: 4px;
-      white-space: nowrap;
-    }
-
-    .node-delete {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      width: 20px;
-      height: 20px;
-      background: #f56c6c;
-      color: #fff;
-      border-radius: 50%;
-      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 12px;
-    }
+      pointer-events: all;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-    &:hover .node-delete {
-      display: flex;
+      &:hover {
+        background: #fff;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        color: #409eff;
+      }
+
+      &:first-child {
+        left: 8px;
+      }
+
+      &:last-child {
+        right: 8px;
+      }
     }
   }
 
-  .connections {
+  // 拖拽条
+  .resize-handle {
     position: absolute;
     top: 0;
-    left: 0;
-    pointer-events: none;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    z-index: 100;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 40px;
+      background: #dcdfe6;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    &:hover::after {
+      background: #409eff;
+      height: 60px;
+    }
+
+    &.resize-left {
+      left: -3px;
+    }
+
+    &.resize-right {
+      right: -3px;
+    }
   }
 
-  .property-content {
-    :deep(.el-form-item) {
-      margin-bottom: 16px;
+  // 预览弹窗样式
+  .preview-content {
+    min-height: 400px;
+
+    .preview-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 20px;
+
+      .preview-node {
+        .node-shape {
+          padding: 12px 24px;
+          background: #fff;
+          border: 2px solid #409eff;
+          border-radius: 8px;
+          text-align: center;
+
+          &.node-start, &.node-end {
+            border-radius: 24px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+
+  // 测试弹窗样式
+  .test-content {
+    .test-logs {
+      margin-top: 24px;
+      padding: 20px;
+      background: #f5f7fa;
+      border-radius: 8px;
+
+      h4 {
+        margin: 0 0 16px 0;
+        font-size: 16px;
+        color: #303133;
+      }
     }
   }
 }
 </style>
+

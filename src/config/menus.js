@@ -115,30 +115,33 @@ export const backMenus = [
         icon: 'Tools',
         children: [
             {
-                title: '基础能力配置',
+                title: '全局基础配置',
+                icon: 'Setting',
                 children: [
                     { title: '业务对象管理', path: '/process/design/business-object' },
                     { title: '自动编号规则配置', path: '/process/design/auto-number' },
                     { title: '审批人规则引擎', path: '/process/design/approver-rules' },
                     { title: '全局流程参数', path: '/process/design/params' },
-                    { title: '系统变量库', path: '/process/design/variables' },
+                    { title: '变量管理', path: '/process/design/variables' },
                     { title: '数据资源管理', path: '/process/design/data-resources' }
                 ]
             },
             {
-                title: '低代码表单设计器',
+                title: '表单中心',
+                icon: 'Document',
                 children: [
-                    { title: '表单模板管理', path: '/process/design/form/template' },
                     { title: '表单可视化设计', path: '/process/design/form/design' },
+                    { title: '表单管理', path: '/process/design/form/management' },
                     { title: '字段权限配置', path: '/process/design/form/permission' },
                     { title: '表单联动规则', path: '/process/design/form/linkage' }
                 ]
             },
             {
-                title: '可视化流程设计器',
+                title: '流程中心',
+                icon: 'Connection',
                 children: [
-                    { title: '流程分类管理', path: '/process/design/flowable/categories' },
                     { title: 'BPMN可视化设计', path: '/process/design/flowable/bpmn' },
+                    { title: '流程分类管理', path: '/process/design/flowable/categories' },
                     { title: '流程-表单绑定', path: '/process/design/flowable/form-bind' },
                     { title: '节点属性配置', path: '/process/design/flowable/node-config' },
                     { title: '流程版本管理', path: '/process/design/flowable/version' },
@@ -146,10 +149,11 @@ export const backMenus = [
                 ]
             },
             {
-                title: '门户设计中心',
+                title: '门户中心',
+                icon: 'HomeFilled',
                 children: [
-                    { title: '门户模板管理', path: '/process/design/portal/templates' },
                     { title: '可视化门户设计器', path: '/process/design/portal/designer' },
+                    { title: '门户模板管理', path: '/process/design/portal/templates' },
                     { title: '门户组件库管理', path: '/process/design/portal/components' },
                     { title: '门户数据绑定配置', path: '/process/design/portal/data-binding' },
                     { title: '门户发布管理', path: '/process/design/portal/publish' },
