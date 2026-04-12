@@ -176,7 +176,7 @@ const routes = [
     {
         path: '/process/admin/delegate-control',
         name: 'ProcessAdminDelegateControl',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/process/delegate-control/Index.vue')
     },
     {
         path: '/process/approval/archive',
@@ -199,11 +199,6 @@ const routes = [
         path: '/process/design/auto-number',
         name: 'ProcessDesignAutoNumber',
         component: () => import('@/views/process/design/auto-number/Index.vue')
-    },
-    {
-        path: '/process/design/approver-rules',
-        name: 'ProcessDesignApproverRules',
-        component: () => import('@/views/process/design/approver-rules/Index.vue')
     },
     {
         path: '/process/design/params',
@@ -243,7 +238,7 @@ const routes = [
     {
         path: '/process/design/flowable/categories',
         name: 'ProcessDesignFlowableCategories',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/process/design/flowable/categories/Index.vue')
     },
     {
         path: '/process/design/flowable/bpmn',
@@ -256,11 +251,6 @@ const routes = [
         component: () => import('@/views/process/design/flowable/form-bind/Index.vue')
     },
     {
-        path: '/process/design/flowable/node-config',
-        name: 'ProcessDesignFlowableNodeConfig',
-        component: () => import('@/views/process/design/flowable/node-config/Index.vue')
-    },
-    {
         path: '/process/design/flowable/version',
         name: 'ProcessDesignFlowableVersion',
         component: () => import('@/views/process/design/flowable/version/Index.vue')
@@ -270,45 +260,36 @@ const routes = [
         name: 'ProcessDesignFlowablePermission',
         component: () => import('@/views/Empty.vue')
     },
+    // 门户中心路由
     {
-        path: '/process/design/portal/templates',
-        name: 'ProcessDesignPortalTemplates',
-        component: () => import('@/views/Empty.vue')
+        path: '/portal/designer',
+        name: 'PortalDesigner',
+        component: () => import('@/views/portal/designer/Index.vue')
     },
     {
-        path: '/process/design/portal/designer',
-        name: 'ProcessDesignPortalDesigner',
-        component: () => import('@/views/Empty.vue')
+        path: '/portal/management',
+        name: 'PortalManagement',
+        component: () => import('@/views/portal/management/Index.vue')
     },
     {
-        path: '/process/design/portal/components',
-        name: 'ProcessDesignPortalComponents',
-        component: () => import('@/views/Empty.vue')
+        path: '/portal/categories',
+        name: 'PortalCategories',
+        component: () => import('@/views/portal/categories/Index.vue')
     },
     {
-        path: '/process/design/portal/data-binding',
-        name: 'ProcessDesignPortalDataBinding',
-        component: () => import('@/views/Empty.vue')
+        path: '/portal/components-lib',
+        name: 'PortalComponentsLib',
+        component: () => import('@/views/portal/components-lib/Index.vue')
     },
     {
-        path: '/process/design/portal/publish',
-        name: 'ProcessDesignPortalPublish',
-        component: () => import('@/views/Empty.vue')
+        path: '/portal/user-rules',
+        name: 'PortalUserRules',
+        component: () => import('@/views/portal/user-rules/Index.vue')
     },
     {
-        path: '/process/design/portal/permission',
-        name: 'ProcessDesignPortalPermission',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/process/design/portal/user-rules',
-        name: 'ProcessDesignPortalUserRules',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/process/design/portal/global-config',
-        name: 'ProcessDesignPortalGlobalConfig',
-        component: () => import('@/views/Empty.vue')
+        path: '/portal/global-config',
+        name: 'PortalGlobalConfig',
+        component: () => import('@/views/portal/global-config/Index.vue')
     },
 
     // ========== 日常办公 ==========

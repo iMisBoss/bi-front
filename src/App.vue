@@ -71,7 +71,6 @@ const currentRouteName = computed(() => {
     '/process/design/form/linkage': '表单联动规则',
     '/process/design/flowable/bpmn': 'BPMN可视化设计',
     '/process/design/flowable/form-bind': '流程-表单绑定',
-    '/process/design/flowable/node-config': '节点属性配置',
     '/process/design/flowable/version': '流程版本管理',
     '/cms/news': '新闻公告',
     '/cms/document/personal': '个人公文中心',

@@ -111,55 +111,57 @@ export const backMenus = [
         path: '/admin/home'
     },
     {
-        title: '低代码设计平台',
-        icon: 'Tools',
+        title: '表单中心',
+        icon: 'Document',
         children: [
+            { title: '表单可视化设计', path: '/process/design/form/design' },
+            { title: '表单管理', path: '/process/design/form/management' },
             {
-                title: '全局基础配置',
-                icon: 'Setting',
+                title: '表单配置',
                 children: [
                     { title: '业务对象管理', path: '/process/design/business-object' },
-                    { title: '自动编号规则配置', path: '/process/design/auto-number' },
-                    { title: '审批人规则引擎', path: '/process/design/approver-rules' },
-                    { title: '全局流程参数', path: '/process/design/params' },
+                    { title: '自动编号规则配置', path: '/process/design/auto-number' }
+                ]
+            }
+        ]
+    },
+    {
+        title: '流程中心',
+        icon: 'Connection',
+        children: [
+            { title: '流程建模设计', path: '/process/design/flowable/bpmn' },
+            { title: '流程模板中心', path: '/process/design/flowable/version' },
+            {
+                title: '流程配置',
+                children: [
+                    { title: '流程分类管理', path: '/process/design/flowable/categories' },
+                    { title: '全局参数设置', path: '/process/design/params' },
                     { title: '变量管理', path: '/process/design/variables' },
                     { title: '数据资源管理', path: '/process/design/data-resources' }
                 ]
             },
             {
-                title: '表单中心',
-                icon: 'Document',
+                title: '实例运维',
                 children: [
-                    { title: '表单可视化设计', path: '/process/design/form/design' },
-                    { title: '表单管理', path: '/process/design/form/management' },
-                    { title: '字段权限配置', path: '/process/design/form/permission' },
-                    { title: '表单联动规则', path: '/process/design/form/linkage' }
+                    { title: '流程实例中心', path: '/process/approval/handle-query' },
+                    { title: '审批委托管控', path: '/process/admin/delegate-control' }
                 ]
-            },
+            }
+        ]
+    },
+    {
+        title: '门户中心',
+        icon: 'HomeFilled',
+        children: [
+            { title: '门户设计器', path: '/portal/designer' },
+            { title: '门户管理中心', path: '/portal/management' },
             {
-                title: '流程中心',
-                icon: 'Connection',
+                title: '门户配置',
                 children: [
-                    { title: 'BPMN可视化设计', path: '/process/design/flowable/bpmn' },
-                    { title: '流程分类管理', path: '/process/design/flowable/categories' },
-                    { title: '流程-表单绑定', path: '/process/design/flowable/form-bind' },
-                    { title: '节点属性配置', path: '/process/design/flowable/node-config' },
-                    { title: '流程版本管理', path: '/process/design/flowable/version' },
-                    { title: '流程模板权限分配', path: '/process/design/flowable/permission' }
-                ]
-            },
-            {
-                title: '门户中心',
-                icon: 'HomeFilled',
-                children: [
-                    { title: '可视化门户设计器', path: '/process/design/portal/designer' },
-                    { title: '门户模板管理', path: '/process/design/portal/templates' },
-                    { title: '门户组件库管理', path: '/process/design/portal/components' },
-                    { title: '门户数据绑定配置', path: '/process/design/portal/data-binding' },
-                    { title: '门户发布管理', path: '/process/design/portal/publish' },
-                    { title: '门户权限分配', path: '/process/design/portal/permission' },
-                    { title: '用户自定义规则配置', path: '/process/design/portal/user-rules' },
-                    { title: '门户全局配置', path: '/process/design/portal/global-config' }
+                    { title: '组件库管理', path: '/portal/components-lib' },
+                    { title: '门户分类管理', path: '/portal/categories' },
+                    { title: '自定义规则配置', path: '/portal/user-rules' },
+                    { title: '全局配置', path: '/portal/global-config' }
                 ]
             }
         ]
@@ -209,17 +211,6 @@ export const backMenus = [
                 ]
             },
             { title: '群组管理', path: '/org/groups' }
-        ]
-    },
-    {
-        title: '流程运行管理后台',
-        icon: 'Connection',
-        children: [
-            { title: '全局流程管理', path: '/process/approval/handle-query' },
-            { title: '流程模板运行管控', path: '/process/admin/template-control' },
-            { title: '审批委托管控', path: '/process/admin/delegate-control' },
-            { title: '流程归档管理', path: '/process/approval/archive' },
-            { title: '流程版本管理', path: '/process/admin/version-management' }
         ]
     },
     {

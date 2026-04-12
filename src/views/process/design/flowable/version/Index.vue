@@ -1,314 +1,191 @@
+
 <template>
-  <div class="flowable-version">
+  <div class="template-center">
+    <!-- 面包屑 -->
     <div class="page-header">
-      <h2>流程版本管理</h2>
-      <p class="subtitle">管理流程定义的版本，支持版本对比、回滚和发布</p>
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/admin/home' }">后台首页</el-breadcrumb-item>
+        <el-breadcrumb-item>流程中心</el-breadcrumb-item>
+        <el-breadcrumb-item>流程模板中心</el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
 
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <el-input
-            v-model="searchKeyword"
-            placeholder="搜索流程名称"
-            clearable
-            style="width: 300px"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-        <el-select v-model="filterStatus" placeholder="流程状态" clearable style="width: 150px">
-          <el-option label="草稿" value="draft" />
-          <el-option label="已发布" value="published" />
-          <el-option label="已停用" value="disabled" />
-        </el-select>
-        <el-button type="primary" icon="Search" @click="handleSearch">查询</el-button>
-        <el-button icon="Refresh" @click="handleReset">重置</el-button>
+    <!-- 全局操作栏 -->
+    <div class="global-toolbar">
+      <el-button type="primary" @click="handleAdd">
+        <el-icon><Plus /></el-icon>新建流程
+      </el-button>
+      <el-button @click="handleImport">
+        <el-icon><Upload /></el-icon>导入流程
+      </el-button>
+      <el-button @click="handleExport">
+        <el-icon><Download /></el-icon>导出模板
+      </el-button>
+      <el-divider direction="vertical" />
+      <el-button @click="handleRefresh">
+        <el-icon><Refresh /></el-icon>刷新
+      </el-button>
+    </div>
+
+    <!-- 核心Tab栏 -->
+    <el-tabs v-model="activeTab" class="main-tabs" @tab-change="handleTabChange">
+      <el-tab-pane name="design">
+        <template #label>
+          <span class="tab-label"><el-icon><EditPen /></el-icon>设计版本<el-badge :value="designCount" :max="99" class="tab-badge" /></span>
+        </template>
+        <DesignVersion ref="designRef" @refresh="handleRefresh" />
+      </el-tab-pane>
+
+      <el-tab-pane name="running">
+        <template #label>
+          <span class="tab-label"><el-icon><VideoPlay /></el-icon>运行版本<el-badge :value="runningCount" :max="99" class="tab-badge" /></span>
+        </template>
+        <RunningVersion ref="runningRef" @refresh="handleRefresh" />
+      </el-tab-pane>
+
+      <el-tab-pane name="control">
+        <template #label>
+          <span class="tab-label"><el-icon><Setting /></el-icon>模板管控</span>
+        </template>
+        <TemplateControl />
+      </el-tab-pane>
+
+      <el-tab-pane name="permission">
+        <template #label>
+          <span class="tab-label"><el-icon><Lock /></el-icon>权限分配</span>
+        </template>
+        <PermissionAssign />
+      </el-tab-pane>
+    </el-tabs>
+
+    <!-- 流程图预览弹窗 -->
+    <el-dialog v-model="previewVisible" title="流程预览" width="900px" top="5vh">
+      <div class="preview-placeholder">
+        <el-empty description="流程图预览区域（集成 BPMN.js 只读视图）" />
       </div>
-      <div class="toolbar-right">
-        <el-button type="primary" icon="Plus" @click="handleAdd">新建流程</el-button>
-      </div>
-    </div>
-
-    <el-table
-        :data="filteredVersionList"
-        border
-        style="width: 100%"
-        v-loading="loading"
-    >
-      <el-table-column prop="processName" label="流程名称" min-width="180" />
-      <el-table-column prop="version" label="版本号" width="100" align="center">
-        <template #default="{ row }">
-          <el-tag size="small">V{{ row.version }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="流程状态" width="100" align="center">
-        <template #default="{ row }">
-          <el-tag size="small" :type="getStatusTag(row.status)">
-            {{ getStatusText(row.status) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="nodeCount" label="节点数" width="80" align="center" />
-      <el-table-column prop="deployTime" label="发布时间" width="180" />
-      <el-table-column prop="creator" label="创建人" width="120" />
-      <el-table-column label="操作" width="380" align="center" fixed="right">
-        <template #default="{ row }">
-          <div class="action-buttons">
-            <el-button size="small" type="primary" icon="Edit" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="success" icon="Upload" @click="handleDeploy(row)">发布</el-button>
-            <el-button size="small" type="info" icon="View" @click="handleView(row)">查看</el-button>
-            <el-button
-                v-if="row.status === 'published'"
-                size="small"
-                type="warning"
-                icon="RefreshLeft"
-                @click="handleRollback(row)"
-            >
-              停用
-            </el-button>
-            <el-button size="small" type="danger" icon="Delete" @click="handleDelete(row)">删除</el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <div class="pagination-bar">
-      <span>共 {{ filteredVersionList.length }} 条记录</span>
-      <el-pagination
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="filteredVersionList.length"
-          :page-sizes="[10, 20, 50]"
-          v-model:page-size="pageSize"
-          v-model:current-page="currentPage"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-      />
-    </div>
+    </el-dialog>
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus, Edit, Upload, View, RefreshLeft, Delete } from '@element-plus/icons-vue'
+<script setup>import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { Plus, Upload, Download, Refresh, EditPen, VideoPlay, Setting, Lock } from '@element-plus/icons-vue'
+import DesignVersion from './components/DesignVersion.vue'
+import RunningVersion from './components/RunningVersion.vue'
+import TemplateControl from './components/TemplateControl.vue'
+import PermissionAssign from './components/PermissionAssign.vue'
 
-const searchKeyword = ref('')
-const filterStatus = ref('')
-const loading = ref(false)
+const router = useRouter()
+const activeTab = ref('design')
+const previewVisible = ref(false)
 
-const versionList = ref([
-  {
-    id: 1,
-    processName: '请假审批流程',
-    version: '1.3',
-    status: 'published',
-    nodeCount: 5,
-    deployTime: '2024-03-15 14:20:00',
-    creator: '系统管理员'
-  },
-  {
-    id: 2,
-    processName: '加班审批流程',
-    version: '1.2',
-    status: 'published',
-    nodeCount: 4,
-    deployTime: '2024-02-20 16:45:00',
-    creator: '系统管理员'
-  },
-  {
-    id: 3,
-    processName: '费用报销流程',
-    version: '1.1',
-    status: 'published',
-    nodeCount: 6,
-    deployTime: '2024-01-10 17:30:00',
-    creator: '财务管理员'
-  },
-  {
-    id: 4,
-    processName: '会议申请流程',
-    version: '1.0',
-    status: 'draft',
-    nodeCount: 3,
-    deployTime: '-',
-    creator: '行政管理员'
-  },
-  {
-    id: 5,
-    processName: '车辆申请流程',
-    version: '0.9',
-    status: 'disabled',
-    nodeCount: 4,
-    deployTime: '2023-12-01 18:00:00',
-    creator: '系统管理员'
-  }
-])
+const designRef = ref(null)
+const runningRef = ref(null)
+const designCount = ref(5)
+const runningCount = ref(3)
 
-const pageSize = ref(10)
-const currentPage = ref(1)
+const handleAdd = () => { router.push({ path: '/process/design/flowable/bpmn' }) }
+const handleImport = () => { ElMessage.info('导入功能开发中...') }
+const handleExport = () => { ElMessage.info('导出功能开发中...') }
+const handleRefresh = () => { ElMessage.success('刷新成功') }
 
-const filteredVersionList = computed(() => {
-  let result = [...versionList.value]
-
-  if (searchKeyword.value) {
-    const keyword = searchKeyword.value.toLowerCase()
-    result = result.filter(v => v.processName.toLowerCase().includes(keyword))
-  }
-
-  if (filterStatus.value) {
-    result = result.filter(v => v.status === filterStatus.value)
-  }
-
-  return result
-})
-
-const handleSearch = () => {
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-    ElMessage.success('查询完成')
-  }, 500)
-}
-
-const handleReset = () => {
-  searchKeyword.value = ''
-  filterStatus.value = ''
-  currentPage.value = 1
-  ElMessage.success('已重置查询条件')
-}
-
-const handleAdd = () => {
-  ElMessage.info('新建流程功能开发中...')
-}
-
-const handleEdit = (row) => {
-  ElMessage.info(`编辑流程"${row.processName}"`)
-}
-
-const handleDeploy = (row) => {
-  ElMessageBox.confirm(
-      `确定要发布流程"${row.processName}" V${row.version} 吗？`,
-      '发布确认',
-      {
-        confirmButtonText: '确认发布',
-        cancelButtonText: '取消',
-        type: 'info'
-      }
-  ).then(() => {
-    row.status = 'published'
-    row.deployTime = new Date().toLocaleString('zh-CN')
-    ElMessage.success('流程发布成功')
-  }).catch(() => {})
-}
-
-const handleView = (row) => {
-  ElMessage.info(`查看流程"${row.processName}"`)
-}
-
-const handleRollback = (row) => {
-  ElMessageBox.confirm(
-      `确定要停用流程"${row.processName}"吗？停用后将无法发起新流程。`,
-      '停用确认',
-      {
-        confirmButtonText: '确认停用',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-  ).then(() => {
-    row.status = 'disabled'
-    ElMessage.success('流程已停用')
-  }).catch(() => {})
-}
-
-const handleDelete = (row) => {
-  ElMessageBox.confirm(
-      `确定要删除流程"${row.processName}"吗？此操作不可恢复！`,
-      '删除确认',
-      {
-        confirmButtonText: '确认删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-  ).then(() => {
-    versionList.value = versionList.value.filter(v => v.id !== row.id)
-    ElMessage.success('删除成功')
-  }).catch(() => {})
-}
-
-const handleSizeChange = (size) => {
-  pageSize.value = size
-}
-
-const handleCurrentChange = (page) => {
-  currentPage.value = page
-}
-
-const getStatusTag = (status) => {
-  const tags = { draft: 'info', published: 'success', disabled: 'warning' }
-  return tags[status] || 'info'
-}
-
-const getStatusText = (status) => {
-  const texts = { draft: '草稿', published: '已发布', disabled: '已停用' }
-  return texts[status] || status
+const handleTabChange = (tab) => {
+  if (tab === 'design') designCount.value = 5
+  if (tab === 'running') runningCount.value = 3
 }
 </script>
 
-<style scoped lang="scss">
-.flowable-version {
-  padding: 20px;
+<style scoped lang="scss">.template-center {
+  height: calc(100vh - 50px);
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
 
   .page-header {
-    margin-bottom: 24px;
+    background: #fff;
+    border-bottom: 1px solid #dee0e3;
+    padding: 12px 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 
-    h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
-
-    .subtitle {
-      margin: 0;
+    :deep(.el-breadcrumb__inner) {
       font-size: 14px;
-      color: #909399;
+      color: #646a73;
+
+      &:hover { color: #3370ff; }
+    }
+
+    :deep(.el-breadcrumb__separator) {
+      color: #c0c4cc;
+      margin: 0 8px;
     }
   }
 
-  .toolbar {
+  .global-toolbar {
+    background: #fff;
+    border-bottom: 1px solid #dee0e3;
+    padding: 14px 24px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    gap: 10px;
 
-    .toolbar-left,
-    .toolbar-right {
+    :deep(.el-button) {
+      height: 36px;
+      border-radius: 4px;
+      font-size: 14px;
+
+      .el-icon { margin-right: 6px; }
+    }
+
+    :deep(.el-divider--vertical) { margin: 0 6px; height: 20px; }
+  }
+
+  .main-tabs {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+
+    :deep(.el-tabs__header) {
+      padding: 0 24px;
+      margin: 0;
+      border-bottom: 1px solid #dee0e3;
+
+      .el-tabs__nav-wrap::after { display: none; }
+    }
+
+    :deep(.el-tabs__content) {
+      flex: 1;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    :deep(.el-tab-pane) {
+      height: 100%;
       display: flex;
-      gap: 12px;
+      flex-direction: column;
     }
   }
 
-  :deep(.el-table__cell) {
-    .action-buttons {
-      display: inline-flex !important;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: nowrap !important;
-      white-space: nowrap !important;
-
-      .el-button {
-        margin: 0 !important;
-        white-space: nowrap !important;
-      }
-    }
-  }
-
-  .pagination-bar {
+  .tab-label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-top: 16px;
-    padding: 12px 0;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+
+    .tab-badge {
+      margin-left: 4px;
+      :deep(.el-badge__content) { font-size: 11px; height: 16px; line-height: 16px; }
+    }
+  }
+
+  .preview-placeholder {
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

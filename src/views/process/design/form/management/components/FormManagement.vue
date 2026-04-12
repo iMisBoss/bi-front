@@ -155,6 +155,14 @@
                     <el-icon><CopyDocument /></el-icon>
                     保存为模板
                   </el-dropdown-item>
+                  <el-dropdown-item command="field-permission">
+                    <el-icon><Lock /></el-icon>
+                    字段权限配置
+                  </el-dropdown-item>
+                  <el-dropdown-item command="form-linkage">
+                    <el-icon><Link /></el-icon>
+                    表单联动规则
+                  </el-dropdown-item>
                   <el-dropdown-item command="toggle-status" :divided="true">
                     <el-icon>
                       <CircleClose v-if="row.status === 'enabled'" />
@@ -192,8 +200,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Edit, Delete, View, CircleCheck, CircleClose, Upload, Download, Connection, CopyDocument, ArrowDown } from '@element-plus/icons-vue'
-
+import { Search, Refresh, Edit, Delete, View, CircleCheck, CircleClose, Upload, Download, Connection, CopyDocument, ArrowDown, Lock, Link } from '@element-plus/icons-vue'
 const props = defineProps({
   formList: {
     type: Array,
@@ -225,7 +232,9 @@ const emit = defineEmits([
   'batch-toggle-status',
   'batch-disable',
   'batch-delete',
-  'add'
+  'add',
+  'field-permission',
+  'form-linkage'
 ])
 const pagination = ref({
   currentPage: 1,
@@ -291,6 +300,12 @@ const handleMoreAction = (command, row) => {
       break
     case 'save-as-template':
       emit('save-as-template', row)
+      break
+    case 'field-permission':
+      emit('field-permission', row)
+      break
+    case 'form-linkage':
+      emit('form-linkage', row)
       break
     case 'toggle-status':
       handleToggleStatus(row)

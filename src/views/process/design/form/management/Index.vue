@@ -31,6 +31,8 @@
             @batch-disable="handleBatchDisableForms"
             @batch-delete="handleBatchDeleteForms"
             @add="handleAddForm"
+            @field-permission="handleFieldPermission"
+            @form-linkage="handleFormLinkage"
         />
       </el-tab-pane>
 
@@ -198,6 +200,23 @@
         <el-button type="primary" @click="confirmSaveAsTemplate">确认保存</el-button>
       </template>
     </el-dialog>
+    <!-- 字段权限配置弹窗 -->
+    <el-dialog v-model="fieldPermissionDialog.visible" title="字段权限配置" width="900px" append-to-body top="5vh">
+      <field-permission-config
+          :form-id="fieldPermissionDialog.formId"
+          :form-name="fieldPermissionDialog.formName"
+          @saved="fieldPermissionDialog.visible = false"
+      />
+    </el-dialog>
+
+    <!-- 表单联动规则弹窗 -->
+    <el-dialog v-model="formLinkageDialog.visible" title="表单联动规则" width="900px" append-to-body top="5vh">
+      <form-linkage-config
+          :form-id="formLinkageDialog.formId"
+          :form-name="formLinkageDialog.formName"
+          @saved="formLinkageDialog.visible = false"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -208,6 +227,8 @@ import { ElMessage } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 import FormManagement from './components/FormManagement.vue'
 import TemplateManagement from './components/TemplateManagement.vue'
+import FieldPermissionConfig from './components/FieldPermissionConfig.vue'
+import FormLinkageConfig from './components/FormLinkageConfig.vue'
 
 const router = useRouter()
 
@@ -227,6 +248,18 @@ const importFormDialog = ref({
   visible: false,
   files: [],
   loading: false
+})
+
+const fieldPermissionDialog = ref({
+  visible: false,
+  formId: null,
+  formName: ''
+})
+
+const formLinkageDialog = ref({
+  visible: false,
+  formId: null,
+  formName: ''
 })
 
 const formList = ref([
@@ -431,6 +464,18 @@ const handleAddForm = () => {
     path: '/process/design/form/design',
     query: { mode: 'form', formId: null }
   })
+}
+
+const handleFieldPermission = (row) => {
+  fieldPermissionDialog.value.formId = row.id
+  fieldPermissionDialog.value.formName = row.formName
+  fieldPermissionDialog.value.visible = true
+}
+
+const handleFormLinkage = (row) => {
+  formLinkageDialog.value.formId = row.id
+  formLinkageDialog.value.formName = row.formName
+  formLinkageDialog.value.visible = true
 }
 
 // 批量启用表单
