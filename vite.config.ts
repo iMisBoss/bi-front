@@ -8,6 +8,13 @@ const __dirname = fileURLToPath(new URL('./', import.meta.url))
 export default defineConfig({
     plugins: [vue()],
     base: '/',
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern-compiler'
+            }
+        }
+    },
     server: {
         port: 8088,
         cors: true,

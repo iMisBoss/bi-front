@@ -171,6 +171,7 @@ export const backMenus = [
         icon: 'UserFilled',
         children: [
             { title: '组织架构管理', path: '/office/org/admin/structure' },
+            { title: '职务职级管理', path: '/office/org/admin/position' },
             { title: '人员用户管理', path: '/office/org/admin/users' },
             { title: '通讯录管理', path: '/office/org/admin/contacts' },
             { title: '数据安全配置', path: '/office/org/admin/security' },

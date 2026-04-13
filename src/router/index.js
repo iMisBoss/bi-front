@@ -177,12 +177,17 @@ const routes = [
     {
         path: '/office/org/admin/structure',
         name: 'OfficeOrgAdminStructure',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/org/admin/structure/Index.vue')
+    },
+    {
+        path: '/office/org/admin/position',
+        name: 'OfficeOrgAdminPosition',
+        component: () => import('@/views/office/org/admin/position/Index.vue')
     },
     {
         path: '/office/org/admin/users',
         name: 'OfficeOrgAdminUsers',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/org/admin/users/Index.vue')
     },
     {
         path: '/office/org/admin/contacts',
@@ -197,7 +202,7 @@ const routes = [
     {
         path: '/office/org/admin/groups',
         name: 'OfficeOrgAdminGroups',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/org/admin/groups/Index.vue')
     },
 
     // ========== 组织通讯录（前台） ==========
