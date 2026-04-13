@@ -167,179 +167,66 @@ export const backMenus = [
         ]
     },
     {
-        title: '组织人事管理后台',
+        title: '组织人事管理',
         icon: 'UserFilled',
         children: [
-            {
-                title: '组织架构管理',
-                children: [
-                    { title: '部门架构维护', path: '/org/department' },
-                    { title: '岗位职级体系维护', path: '/org/level' },
-                    { title: '职务管理', path: '/org/position' },
-                    { title: '办公地点管理', path: '/org/locations' }
-                ]
-            },
-            {
-                title: '系统用户管理',
-                children: [
-                    { title: '组织用户管理', path: '/org/staff' },
-                    { title: '用户禁用管理', path: '/org/users/disabled' },
-                    { title: '历史用户管理', path: '/org/users/history' }
-                ]
-            },
-            {
-                title: '人员档案管理',
-                children: [
-                    { title: '在职人员管理', path: '/org/employee' },
-                    { title: '离职人员管理', path: '/org/employee/resigned' }
-                ]
-            },
-            {
-                title: '通讯录管理后台',
-                children: [
-                    { title: '通讯录展示字段配置', path: '/org/contacts/field-config' },
-                    { title: '通讯录权限管控', path: '/org/contacts/permission' },
-                    { title: '外部联系人管理', path: '/org/contacts/external' },
-                    { title: '通讯录操作审计', path: '/org/contacts/audit' }
-                ]
-            },
-            {
-                title: '数据安全与脱敏配',
-                children: [
-                    { title: '敏感字段脱敏规则', path: '/org/security/masking-rules' },
-                    { title: '敏感数据访问管控', path: '/org/security/access-control' }
-                ]
-            },
+            { title: '组织架构管理', path: '/org/structure', tabs: ['部门', '岗位', '职务', '办公地点'] },
+            { title: '人员用户管理', path: '/org/users', tabs: ['组织用户', '在职', '离职', '禁用', '历史用户'] },
+            { title: '通讯录管理', path: '/org/contacts', tabs: ['展示字段', '权限管控', '外部联系人'] },
+            { title: '数据安全配置', path: '/org/security', tabs: ['敏感字段脱敏', '敏感数据访问'] },
             { title: '群组管理', path: '/org/groups' }
         ]
     },
     {
-        title: '日常办公后台管',
+        title: '日常办公管理',
         icon: 'Briefcase',
         children: [
-            {
-                title: '会议管理后台',
-                children: [
-                    { title: '会议室基础信息管理', path: '/office/meeting/admin/rooms' },
-                    { title: '会议室预约权限管控', path: '/office/meeting/admin/permission' },
-                    { title: '会议模板配置', path: '/office/meeting/admin/templates' },
-                    { title: '会议审批流程配置', path: '/office/meeting/admin/approval-flow' },
-                    { title: '会议统计分析', path: '/office/meeting/admin/statistics' },
-                    { title: '会议基础配置', path: '/office/meeting/admin/config' }
-                ]
-            },
-            { title: '群组管理', path: '/office/admin/groups' },
-            { title: '内部邮件管控', path: '/office/admin/email-control' }
+            { title: '会议管理', path: '/office/meeting', tabs: ['会议室信息', '预约权限', '模板', '审批流程', '统计', '基础配置'] },
+            { title: '内部邮件管控', path: '/office/email' }
         ]
     },
     {
-        title: '公文与内容管理后台',
+        title: '公文与内容管理',
         icon: 'Reading',
         children: [
-            {
-                title: '公文管理后台',
-                children: [
-                    { title: '公文模板配置', path: '/cms/document/admin/templates' },
-                    { title: '文号规则配置', path: '/cms/document/admin/number-rules' },
-                    { title: '发文流程配置', path: '/cms/document/admin/outgoing-flow' },
-                    { title: '收文流程配置', path: '/cms/document/admin/incoming-flow' },
-                    { title: '公文模板权限分配', path: '/cms/document/admin/template-permission' },
-                    { title: '涉密公文管控配置', path: '/cms/document/admin/confidential' },
-                    { title: '公文归档管理', path: '/cms/document/admin/archive' }
-                ]
-            },
-            {
-                title: '内容管理后台',
-                children: [
-                    { title: '栏目管理', path: '/cms/admin/columns' },
-                    { title: '新闻公告管理', path: '/cms/news' },
-                    { title: '规章制度管理', path: '/cms/admin/regulations' },
-                    { title: '文档中心权限配置', path: '/cms/admin/document-permission' },
-                    { title: '内容发布审批配置', path: '/cms/admin/publish-approval' },
-                    { title: '知识库管理', path: '/cms/knowledge' }
-                ]
-            }
+            { title: '公文管理', path: '/cms/document', tabs: ['模板', '文号规则', '发文', '收文流程', '模板权限', '涉密管控', '归档'] },
+            { title: '内容管理', path: '/cms/content', tabs: ['栏目', '新闻公告', '规章制度', '文档权限', '发布审批', '知识库'] }
         ]
     },
     {
         title: 'AI智能助手管理',
         icon: 'ChatDotRound',
         children: [
-            { title: 'AI功能权限配置', path: '/ai/admin/permission' },
-            { title: '敏感词与合规管控', path: '/ai/admin/sensitive-words' },
-            { title: 'AI使用审计日志', path: '/ai/admin/audit-log' },
-            { title: '模型基础配置', path: '/ai/admin/model-config' }
+            { title: 'AI管理', path: '/ai/admin', tabs: ['功能权限', '敏感词管控', '使用审计', '模型配置'] }
         ]
     },
     {
         title: '系统管理',
         icon: 'Setting',
         children: [
-            { title: '角色与权限管理', path: '/org/role' },
-            { title: '系统菜单管理', path: '/system/menus' },
-            { title: '系统导航配置', path: '/system/navigation' },
-            {
-                title: '系统参数配置',
-                children: [
-                    { title: '前台系统设置', path: '/system/config/frontend' },
-                    { title: '后台系统设置', path: '/system/config/backend' },
-                    { title: '数据字典管理', path: '/system/dictionary' }
-                ]
-            }
+            { title: '权限菜单管理', path: '/system/permission', tabs: ['角色权限', '系统菜单', '系统导航'] },
+            { title: '系统参数配置', path: '/system/config', tabs: ['前台设置', '后台设置', '数据字典'] }
         ]
     },
     {
-        title: '审计日志管理中',
+        title: '审计日志管理',
         icon: 'Monitor',
         children: [
-            {
-                title: '全量操作日志',
-                children: [
-                    { title: '全量操作日志', path: '/system/log' },
-                    { title: '登录登出日志', path: '/system/log/login' },
-                    { title: '审计规则配置', path: '/system/log/audit-rules' },
-                    { title: '敏感操作告警配置', path: '/system/log/alert-config' },
-                    { title: '日志归档设置', path: '/system/log/archive-config' }
-                ]
-            }
+            { title: '审计管理', path: '/system/audit', tabs: ['全量操作日志', '登录登出日志', '审计规则', '敏感告警', '日志归档'] }
         ]
     },
     {
-        title: '系统运维监控中',
+        title: '运维监控',
         icon: 'DataLine',
         children: [
-            { title: '日志采集设置', path: '/system/monitor/log-collection' },
-            { title: 'IP黑白名单过滤', path: '/system/monitor/ip-filter' },
-            { title: '系统服务监控', path: '/system/monitor/services' },
-            {
-                title: '数据备份管理',
-                children: [
-                    { title: '备份规则设置', path: '/system/backup' },
-                    { title: '备份记录管理', path: '/system/backup/records' }
-                ]
-            }
+            { title: '运维管理', path: '/system/operations', tabs: ['日志采集', 'IP黑白名单', '系统服务监控', '备份规则', '备份记录'] }
         ]
     },
     {
         title: '集成中心',
         icon: 'Link',
         children: [
-            { title: '应用集成管理', path: '/integration/apps' },
-            {
-                title: '定时任务管理',
-                children: [
-                    { title: '定时任务配置', path: '/integration/cron/config' },
-                    { title: '任务执行日志', path: '/integration/cron/logs' }
-                ]
-            },
-            {
-                title: '接口管理',
-                children: [
-                    { title: '公共接口配置', path: '/integration/api/config' },
-                    { title: '接口调用日志', path: '/integration/api/logs' }
-                ]
-            },
-            { title: 'JAR包管理', path: '/integration/jar-files' }
+            { title: '集成管理', path: '/integration/admin', tabs: ['应用集成', '定时任务配置', '任务执行日志', '公共接口', '接口调用日志', 'JAR包管理'] }
         ]
     }
 ]
