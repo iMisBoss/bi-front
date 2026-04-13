@@ -192,12 +192,12 @@ const routes = [
     {
         path: '/office/org/admin/contacts',
         name: 'OfficeOrgAdminContacts',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/org/admin/contacts/Index.vue')
     },
     {
         path: '/office/org/admin/security',
         name: 'OfficeOrgAdminSecurity',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/org/admin/security/Index.vue')
     },
     {
         path: '/office/org/admin/groups',
