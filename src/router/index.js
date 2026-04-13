@@ -18,119 +18,14 @@ const routes = [
         name: 'Empty',
         component: () => import('@/views/Empty.vue')
     },
-
     {
         path: '/admin/home',
         name: 'AdminHome',
-        component: () => import('@/views/AdminHome.vue'),
+        component: () => import('@/views/admin/Home.vue'),
         meta: { requiresAuth: true, title: '后台管理首页' }
     },
 
-    // ========== 工作台 ==========
-    {
-        path: '/workbench/cced-by-me',
-        name: 'WorkbenchCcedByMe',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/workbench/my-schedule',
-        name: 'WorkbenchMySchedule',
-        component: () => import('@/views/Empty.vue')
-    },
-
-    // ========== 组织人事管理 ==========
-    {
-        path: '/org/staff',
-        name: 'OrgStaff',
-        component: () => import('@/views/org/Staff.vue')
-    },
-    {
-        path: '/org/department',
-        name: 'OrgDepartment',
-        component: () => import('@/views/org/Department.vue')
-    },
-    {
-        path: '/org/position',
-        name: 'OrgPosition',
-        component: () => import('@/views/org/Position.vue')
-    },
-    {
-        path: '/org/role',
-        name: 'OrgRole',
-        component: () => import('@/views/org/Role.vue')
-    },
-    {
-        path: '/org/level',
-        name: 'OrgLevel',
-        component: () => import('@/views/org/Level.vue')
-    },
-    {
-        path: '/org/employee',
-        name: 'OrgEmployee',
-        component: () => import('@/views/org/Employee.vue')
-    },
-    {
-        path: '/org/employee/resigned',
-        name: 'OrgEmployeeResigned',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/locations',
-        name: 'OrgLocations',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/users/disabled',
-        name: 'OrgUsersDisabled',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/users/history',
-        name: 'OrgUsersHistory',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/contacts/field-config',
-        name: 'OrgContactsFieldConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/contacts/permission',
-        name: 'OrgContactsPermission',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/contacts/external',
-        name: 'OrgContactsExternal',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/contacts/audit',
-        name: 'OrgContactsAudit',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/security/masking-rules',
-        name: 'OrgSecurityMaskingRules',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/security/access-control',
-        name: 'OrgSecurityAccessControl',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/org/groups',
-        name: 'OrgGroups',
-        component: () => import('@/views/Empty.vue')
-    },
-
-    // ========== 流程审批中心 ==========
-    {
-        path: '/process/approval/start',
-        name: 'ProcessApprovalStart',
-        component: () => import('@/views/process/approval/start/Index.vue')
-    },
+    // ========== 流程前端（审批相关） ==========
     {
         path: '/process/approval/todo',
         name: 'ProcessApprovalTodo',
@@ -152,6 +47,11 @@ const routes = [
         component: () => import('@/views/process/approval/cced/Index.vue')
     },
     {
+        path: '/process/approval/start',
+        name: 'ProcessApprovalStart',
+        component: () => import('@/views/process/approval/start/Index.vue')
+    },
+    {
         path: '/process/approval/delegate',
         name: 'ProcessApprovalDelegate',
         component: () => import('@/views/process/approval/delegate/index.vue')
@@ -161,110 +61,96 @@ const routes = [
         name: 'ProcessApprovalProgress',
         component: () => import('@/views/process/approval/progress/Index.vue')
     },
-
-    // ========== 流程运行管理 ==========
-    {
-        path: '/process/approval/handle-query',
-        name: 'ProcessApprovalHandleQuery',
-        component: () => import('@/views/process/handle-query/Index.vue')
-    },
-    {
-        path: '/process/admin/template-control',
-        name: 'ProcessAdminTemplateControl',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/process/admin/delegate-control',
-        name: 'ProcessAdminDelegateControl',
-        component: () => import('@/views/process/delegate-control/Index.vue')
-    },
     {
         path: '/process/approval/archive',
         name: 'ProcessApprovalArchive',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/process/admin/version-management',
-        name: 'ProcessAdminVersionManagement',
+        path: '/process/approval/message',
+        name: 'ProcessApprovalMessage',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/process/approval/my-schedule',
+        name: 'ProcessApprovalMySchedule',
         component: () => import('@/views/Empty.vue')
     },
 
-    // ========== 低代码设计平台 ==========
+    // ========== 流程后端（设计建模） ==========
     {
-        path: '/process/design/business-object',
-        name: 'ProcessDesignBusinessObject',
-        component: () => import('@/views/process/design/business-object/Index.vue')
+        path: '/process/flowable/bpmn',
+        name: 'ProcessFlowableBpmn',
+        component: () => import('@/views/process/flowable/bpmn/Index.vue')
     },
     {
-        path: '/process/design/auto-number',
-        name: 'ProcessDesignAutoNumber',
-        component: () => import('@/views/process/design/auto-number/Index.vue')
+        path: '/process/flowable/version',
+        name: 'ProcessFlowableVersion',
+        component: () => import('@/views/process/flowable/version/Index.vue')
     },
     {
-        path: '/process/design/params',
-        name: 'ProcessDesignParams',
-        component: () => import('@/views/process/design/params/Index.vue')
+        path: '/process/flowable/categories',
+        name: 'ProcessFlowableCategories',
+        component: () => import('@/views/process/flowable/categories/Index.vue')
     },
     {
-        path: '/process/design/variables',
-        name: 'ProcessDesignVariables',
-        component: () => import('@/views/process/design/variables/Index.vue')
+        path: '/process/flowable/params',
+        name: 'ProcessFlowableParams',
+        component: () => import('@/views/process/flowable/params/Index.vue')
     },
     {
-        path: '/process/design/data-resources',
-        name: 'ProcessDesignDataResources',
-        component: () => import('@/views/process/design/data-resources/Index.vue')
+        path: '/process/flowable/variables',
+        name: 'ProcessFlowableVariables',
+        component: () => import('@/views/process/flowable/variables/Index.vue')
     },
     {
-        path: '/process/design/form/design',
-        name: 'ProcessDesignFormDesign',
-        component: () => import('@/views/process/design/form/design/Index.vue')
+        path: '/process/flowable/data-resources',
+        name: 'ProcessFlowableDataResources',
+        component: () => import('@/views/process/flowable/data-resources/Index.vue')
     },
     {
-        path: '/process/design/form/management',
-        name: 'ProcessDesignFormManagement',
-        component: () => import('@/views/process/design/form/management/Index.vue')
+        path: '/process/flowable/handle-query',
+        name: 'ProcessFlowableHandleQuery',
+        component: () => import('@/views/process/flowable/handle-query/Index.vue')
     },
     {
-        path: '/process/design/form/permission',
-        name: 'ProcessDesignFormPermission',
-        component: () => import('@/views/process/design/form/permission/Index.vue')
+        path: '/process/flowable/delegate-control',
+        name: 'ProcessFlowableDelegateControl',
+        component: () => import('@/views/process/flowable/delegate-control/Index.vue')
+    },
+
+    // ========== 表单中心 ==========
+    {
+        path: '/form/design',
+        name: 'FormDesign',
+        component: () => import('@/views/form/design/Index.vue')
     },
     {
-        path: '/process/design/form/linkage',
-        name: 'ProcessDesignFormLinkage',
-        component: () => import('@/views/process/design/form/linkage/Index.vue')
+        path: '/form/management',
+        name: 'FormManagement',
+        component: () => import('@/views/form/management/Index.vue')
     },
     {
-        path: '/process/design/flowable/categories',
-        name: 'ProcessDesignFlowableCategories',
-        component: () => import('@/views/process/design/flowable/categories/Index.vue')
+        path: '/form/business-object',
+        name: 'FormBusinessObject',
+        component: () => import('@/views/form/business-object/Index.vue')
     },
     {
-        path: '/process/design/flowable/bpmn',
-        name: 'ProcessDesignFlowableBpmn',
-        component: () => import('@/views/process/design/flowable/bpmn/Index.vue')
+        path: '/form/auto-number',
+        name: 'FormAutoNumber',
+        component: () => import('@/views/form/auto-number/Index.vue')
     },
-    {
-        path: '/process/design/flowable/form-bind',
-        name: 'ProcessDesignFlowableFormBind',
-        component: () => import('@/views/process/design/flowable/form-bind/Index.vue')
-    },
-    {
-        path: '/process/design/flowable/version',
-        name: 'ProcessDesignFlowableVersion',
-        component: () => import('@/views/process/design/flowable/version/Index.vue')
-    },
-    {
-        path: '/process/design/flowable/permission',
-        name: 'ProcessDesignFlowablePermission',
-        component: () => import('@/views/Empty.vue')
-    },
-    // 门户中心路由
+
+    // ========== 门户中心 ==========
     {
         path: '/portal/designer',
         name: 'PortalDesigner',
         component: () => import('@/views/portal/designer/Index.vue')
+    },
+    {
+        path: '/portal/management',
+        name: 'PortalManagement',
+        component: () => import('@/views/portal/management/Index.vue')
     },
     {
         path: '/portal/categories',
@@ -274,20 +160,7 @@ const routes = [
     {
         path: '/portal/components-lib',
         name: 'PortalComponentsLib',
-        component: () => import('@/views/portal/components-lib/Index.vue'),
-        meta: { title: '组件库管理' }
-    },
-    {
-        path: '/portal/categories',
-        name: 'PortalCategories',
-        component: () => import('@/views/portal/categories/Index.vue'),
-        meta: { title: '门户分类管理' }
-    },
-    {
-        path: '/portal/management',
-        name: 'PortalManagement',
-        component: () => import('@/views/portal/management/Index.vue'),
-        meta: { title: '门户管理中心' }
+        component: () => import('@/views/portal/components-lib/Index.vue')
     },
     {
         path: '/portal/user-rules',
@@ -300,12 +173,56 @@ const routes = [
         component: () => import('@/views/portal/global-config/Index.vue')
     },
 
-    // ========== 日常办公 ==========
+    // ========== 组织人事管理（后台） ==========
     {
-        path: '/office/meeting',
-        name: 'OfficeMeeting',
-        component: () => import('@/views/office/Meeting.vue')
+        path: '/office/org/admin/structure',
+        name: 'OfficeOrgAdminStructure',
+        component: () => import('@/views/Empty.vue')
     },
+    {
+        path: '/office/org/admin/users',
+        name: 'OfficeOrgAdminUsers',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/office/org/admin/contacts',
+        name: 'OfficeOrgAdminContacts',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/office/org/admin/security',
+        name: 'OfficeOrgAdminSecurity',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/office/org/admin/groups',
+        name: 'OfficeOrgAdminGroups',
+        component: () => import('@/views/Empty.vue')
+    },
+
+    // ========== 组织通讯录（前台） ==========
+    {
+        path: '/office/org/contacts/employee',
+        name: 'OfficeOrgContactsEmployee',
+        component: () => import('@/views/office/org/contacts/employee/Index.vue')
+    },
+    {
+        path: '/office/org/contacts/favorites',
+        name: 'OfficeOrgContactsFavorites',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/office/org/contacts/external',
+        name: 'OfficeOrgContactsExternal',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/office/org/contacts/my-card',
+        name: 'OfficeOrgContactsMyCard',
+        component: () => import('@/views/Empty.vue')
+    },
+
+    // ========== 日常办公 ==========
     {
         path: '/office/meeting/my-meetings',
         name: 'OfficeMeetingMyMeetings',
@@ -337,44 +254,9 @@ const routes = [
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/office/meeting/admin/rooms',
-        name: 'OfficeMeetingAdminRooms',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/meeting/admin/permission',
-        name: 'OfficeMeetingAdminPermission',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/meeting/admin/templates',
-        name: 'OfficeMeetingAdminTemplates',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/meeting/admin/approval-flow',
-        name: 'OfficeMeetingAdminApprovalFlow',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/meeting/admin/statistics',
-        name: 'OfficeMeetingAdminStatistics',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/meeting/admin/config',
-        name: 'OfficeMeetingAdminConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/admin/groups',
-        name: 'OfficeAdminGroups',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/office/admin/email-control',
-        name: 'OfficeAdminEmailControl',
-        component: () => import('@/views/Empty.vue')
+        path: '/office/meeting-admin',
+        name: 'OfficeMeetingAdmin',
+        component: () => import('@/views/office/meeting-admin/Index.vue')
     },
     {
         path: '/office/reports',
@@ -386,146 +268,56 @@ const routes = [
     {
         path: '/cms/news',
         name: 'CmsNews',
-        component: () => import('@/views/cms/News.vue')
-    },
-    {
-        path: '/cms/document',
-        name: 'CmsDocument',
-        component: () => import('@/views/cms/Document.vue')
-    },
-    {
-        path: '/cms/document/personal',
-        name: 'CmsDocumentPersonal',
-        component: () => import('@/views/cms/document/Personal.vue')
-    },
-    {
-        path: '/cms/document/send-receive',
-        name: 'CmsDocumentSendReceive',
-        component: () => import('@/views/cms/document/SendReceive.vue')
-    },
-    {
-        path: '/cms/document/circulation',
-        name: 'CmsDocumentCirculation',
-        component: () => import('@/views/cms/document/Circulation.vue')
-    },
-    {
-        path: '/cms/document/query-archive',
-        name: 'CmsDocumentQueryArchive',
-        component: () => import('@/views/cms/document/QueryArchive.vue')
-    },
-    {
-        path: '/cms/document/document-number',
-        name: 'CmsDocumentNumber',
-        component: () => import('@/views/cms/document/DocumentNumber.vue')
-    },
-    {
-        path: '/cms/document/handle',
-        name: 'CmsDocumentHandle',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/create',
-        name: 'CmsDocumentCreate',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/my-documents',
-        name: 'CmsDocumentMyDocuments',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/search',
-        name: 'CmsDocumentSearch',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/archived',
-        name: 'CmsDocumentArchived',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/incoming',
-        name: 'CmsDocumentIncoming',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/outgoing',
-        name: 'CmsDocumentOutgoing',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/supervision',
-        name: 'CmsDocumentSupervision',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/templates',
-        name: 'CmsDocumentAdminTemplates',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/number-rules',
-        name: 'CmsDocumentAdminNumberRules',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/outgoing-flow',
-        name: 'CmsDocumentAdminOutgoingFlow',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/incoming-flow',
-        name: 'CmsDocumentAdminIncomingFlow',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/template-permission',
-        name: 'CmsDocumentAdminTemplatePermission',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/confidential',
-        name: 'CmsDocumentAdminConfidential',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/cms/document/admin/archive',
-        name: 'CmsDocumentAdminArchive',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/news/Index.vue')
     },
     {
         path: '/cms/regulation',
         name: 'CmsRegulation',
-        component: () => import('@/views/cms/Regulation.vue')
+        component: () => import('@/views/cms/regulation/Index.vue')
     },
     {
         path: '/cms/knowledge',
         name: 'CmsKnowledge',
-        component: () => import('@/views/cms/Knowledge.vue')
+        component: () => import('@/views/cms/knowledge/Index.vue')
     },
     {
         path: '/cms/archive-library',
         name: 'CmsArchiveLibrary',
-        component: () => import('@/views/cms/ArchiveLibrary.vue')
+        component: () => import('@/views/cms/archive-library/Index.vue')
     },
     {
-        path: '/cms/admin/columns',
-        name: 'CmsAdminColumns',
+        path: '/cms/document/personal',
+        name: 'CmsDocumentPersonal',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/cms/admin/regulations',
-        name: 'CmsAdminRegulations',
+        path: '/cms/document/send-receive',
+        name: 'CmsDocumentSendReceive',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/cms/admin/document-permission',
-        name: 'CmsAdminDocumentPermission',
+        path: '/cms/document/circulation',
+        name: 'CmsDocumentCirculation',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/cms/admin/publish-approval',
-        name: 'CmsAdminPublishApproval',
+        path: '/cms/document/query-archive',
+        name: 'CmsDocumentQueryArchive',
+        component: () => import('@/views/Empty.vue')
+    },
+    {
+        path: '/cms/document/document-number',
+        name: 'CmsDocumentNumber',
+        component: () => import('@/views/cms/document/document-number/Index.vue')
+    },
+    {
+        path: '/cms/document-admin',
+        name: 'CmsDocumentAdmin',
+        component: () => import('@/views/cms/document-admin/Index.vue')
+    },
+    {
+        path: '/cms/content-admin',
+        name: 'CmsContentAdmin',
         component: () => import('@/views/Empty.vue')
     },
 
@@ -533,54 +325,39 @@ const routes = [
     {
         path: '/ai/qa',
         name: 'AIQA',
-        component: () => import('@/views/ai/QA.vue')
+        component: () => import('@/views/ai/application/qa/Index.vue')
     },
     {
         path: '/ai/writing',
         name: 'AIWriting',
-        component: () => import('@/views/ai/Writing.vue')
+        component: () => import('@/views/ai/application/writing/Index.vue')
     },
     {
         path: '/ai/summary',
         name: 'AISummary',
-        component: () => import('@/views/ai/Summary.vue')
+        component: () => import('@/views/ai/application/summary/Index.vue')
     },
     {
         path: '/ai/meeting',
         name: 'AIMeeting',
-        component: () => import('@/views/ai/MeetingMinutes.vue')
+        component: () => import('@/views/ai/application/meeting-minutes/Index.vue')
     },
     {
-        path: '/ai/admin/permission',
-        name: 'AIAdminPermission',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/ai/admin/sensitive-words',
-        name: 'AIAdminSensitiveWords',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/ai/admin/audit-log',
-        name: 'AIAdminAuditLog',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/ai/admin/model-config',
-        name: 'AIAdminModelConfig',
-        component: () => import('@/views/Empty.vue')
+        path: '/ai/admin',
+        name: 'AIAdmin',
+        component: () => import('@/views/ai/admin/Index.vue')
     },
 
     // ========== 消息中心 ==========
     {
-        path: '/message/station',
-        name: 'MessageStation',
-        component: () => import('@/views/message/Station.vue')
-    },
-    {
         path: '/message/email',
         name: 'MessageEmail',
-        component: () => import('@/views/message/Email.vue')
+        component: () => import('@/views/message/email/Index.vue')
+    },
+    {
+        path: '/message/station',
+        name: 'MessageStation',
+        component: () => import('@/views/message/station/Index.vue')
     },
 
     // ========== 个人中心 ==========
@@ -632,135 +409,51 @@ const routes = [
 
     // ========== 系统管理 ==========
     {
+        path: '/system/permission',
+        name: 'SystemPermission',
+        component: () => import('@/views/system/permission/Index.vue')
+    },
+    {
         path: '/system/config',
         name: 'SystemConfig',
-        component: () => import('@/views/system/Config.vue')
-    },
-    {
-        path: '/system/config/frontend',
-        name: 'SystemConfigFrontend',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/system/config/backend',
-        name: 'SystemConfigBackend',
+        path: '/system/role',
+        name: 'SystemRole',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/system/menus',
-        name: 'SystemMenus',
-        component: () => import('@/views/Empty.vue')
+        path: '/system/audit',
+        name: 'SystemAudit',
+        component: () => import('@/views/system/audit/Index.vue')
     },
-    {
-        path: '/system/navigation',
-        name: 'SystemNavigation',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/system/dictionary',
-        name: 'SystemDictionary',
-        component: () => import('@/views/Empty.vue')
-    },
-
-    // ========== 审计日志管理 ==========
     {
         path: '/system/log',
         name: 'SystemLog',
-        component: () => import('@/views/system/Log.vue')
-    },
-    {
-        path: '/system/log/login',
-        name: 'SystemLogLogin',
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/system/log/audit-rules',
-        name: 'SystemLogAuditRules',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/system/log/alert-config',
-        name: 'SystemLogAlertConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/system/log/archive-config',
-        name: 'SystemLogArchiveConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-
-    // ========== 系统运维监控 ==========
-    {
-        path: '/system/monitor/log-collection',
-        name: 'SystemMonitorLogCollection',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/system/monitor/ip-filter',
-        name: 'SystemMonitorIpFilter',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/system/monitor/services',
-        name: 'SystemMonitorServices',
-        component: () => import('@/views/Empty.vue')
+        path: '/system/operations',
+        name: 'SystemOperations',
+        component: () => import('@/views/system/operations/Index.vue')
     },
     {
         path: '/system/backup',
         name: 'SystemBackup',
-        component: () => import('@/views/system/Backup.vue')
+        component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/system/backup/records',
-        name: 'SystemBackupRecords',
+        path: '/system/version',
+        name: 'SystemVersion',
         component: () => import('@/views/Empty.vue')
     },
 
     // ========== 集成中心 ==========
     {
-        path: '/integration/apps',
-        name: 'IntegrationApps',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/cron/config',
-        name: 'IntegrationCronConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/cron/logs',
-        name: 'IntegrationCronLogs',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/api/config',
-        name: 'IntegrationApiConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/api/logs',
-        name: 'IntegrationApiLogs',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/jar-files',
-        name: 'IntegrationJarFiles',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/database/connections',
-        name: 'IntegrationDatabaseConnections',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/database/datasources',
-        name: 'IntegrationDatabaseDatasources',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/integration/database/jar-files',
-        name: 'IntegrationDatabaseJarFiles',
-        component: () => import('@/views/Empty.vue')
+        path: '/integration/admin',
+        name: 'IntegrationAdmin',
+        component: () => import('@/views/integration/admin/Index.vue')
     }
 ]
 
@@ -779,7 +472,6 @@ router.beforeEach((to, from, next) => {
 
     if (to.path === '/login') {
         if (token) {
-            // 已登录的管理员访问登录页，重定向到后台首页
             if (userRole === 'admin') {
                 next('/admin/home')
             } else {
@@ -792,7 +484,6 @@ router.beforeEach((to, from, next) => {
         if (!token) {
             next('/login')
         } else {
-            // 管理员访问普通首页，重定向到后台首页
             if (to.path === '/' && userRole === 'admin') {
                 next('/admin/home')
             } else {

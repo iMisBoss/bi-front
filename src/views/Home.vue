@@ -259,9 +259,8 @@ const quickAccessList = ref([
   { name: '抄送我的', path: '/process/approval/cced', icon: 'Promotion', color: '#F56C6C', bgColor: '#fef0f0' },
   { name: '审批委托', path: '/process/approval/delegate', icon: 'UserFilled', color: '#909399', bgColor: '#f4f4f5' },
   { name: '会议管理', path: '/office/meeting', icon: 'VideoCamera', color: '#67C23A', bgColor: '#f0f9ff' },
-  { name: '组织通讯录', path: '/org/employee', icon: 'User', color: '#1890ff', bgColor: '#ecf5ff' },
+  { name: '组织通讯录', path: '/office/org/contacts/employee', icon: 'User', color: '#1890ff', bgColor: '#ecf5ff' },
   { name: '新闻公告', path: '/cms/news', icon: 'Reading', color: '#E6A23C', bgColor: '#fdf6ec' },
-  { name: '公文管理', path: '/cms/document', icon: 'Folder', color: '#F56C6C', bgColor: '#fef0f0' },
   { name: '内部邮件', path: '/message/email', icon: 'Message', color: '#409EFF', bgColor: '#ecf5ff' },
   { name: '站内消息', path: '/message/station', icon: 'ChatDotRound', color: '#909399', bgColor: '#f4f4f5' }
 ])
@@ -331,7 +330,7 @@ const noticeList = ref([
 
 // 常用工具
 const commonTools = ref([
-  { name: '通讯录', path: '/org/employee', icon: 'User' },
+  { name: '通讯录', path: '/office/org/contacts/employee', icon: 'User' },
   { name: '内部邮件', path: '/message/email', icon: 'Message' },
   { name: '日程管理', path: '/Empty', icon: 'Calendar' },
   { name: '系统设置', path: '/system/config', icon: 'Setting' }

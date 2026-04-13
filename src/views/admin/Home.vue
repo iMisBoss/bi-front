@@ -172,7 +172,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user.js'
 import {
   CircleCheckFilled, Grid, Document, Monitor, Setting, Coin,
   User, List, Files, DataAnalysis, Management, Bell, Tools,

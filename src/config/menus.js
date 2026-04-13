@@ -6,7 +6,7 @@ export const frontMenus = [
         children: [
             { title: '首页看板', path: '/' },
             { title: '我的待办', path: '/process/approval/todo' },
-            { title: '我的消息', path: '/process/approval/message' },
+            { title: '我的消息', path: '/message/station' },
             { title: '我已处理', path: '/process/approval/done' },
             { title: '我发起的', path: '/process/approval/launched' },
             { title: '抄送管理', path: '/process/approval/cced' },
@@ -41,10 +41,10 @@ export const frontMenus = [
             {
                 title: '组织通讯录',
                 children: [
-                    { title: '组织架构通讯录', path: '/org/employee' },
-                    { title: '我的常用联系人', path: '/org/contacts/favorites' },
-                    { title: '外部联系人', path: '/org/contacts/external' },
-                    { title: '个人名片维护', path: '/org/contacts/my-card' }
+                    { title: '组织架构通讯录', path: '/office/org/contacts/employee' },
+                    { title: '我的常用联系人', path: '/office/org/contacts/favorites' },
+                    { title: '外部联系人', path: '/office/org/contacts/external' },
+                    { title: '个人名片维护', path: '/office/org/contacts/my-card' }
                 ]
             },
             { title: '内部邮件', path: '/message/email' },
@@ -170,11 +170,11 @@ export const backMenus = [
         title: '组织人事管理',
         icon: 'UserFilled',
         children: [
-            { title: '组织架构管理', path: '/org/structure' },
-            { title: '人员用户管理', path: '/org/users' },
-            { title: '通讯录管理', path: '/org/contacts' },
-            { title: '数据安全配置', path: '/org/security' },
-            { title: '群组管理', path: '/org/groups' }
+            { title: '组织架构管理', path: '/office/org/admin/structure' },
+            { title: '人员用户管理', path: '/office/org/admin/users' },
+            { title: '通讯录管理', path: '/office/org/admin/contacts' },
+            { title: '数据安全配置', path: '/office/org/admin/security' },
+            { title: '群组管理', path: '/office/org/admin/groups' }
         ]
     },
     {
@@ -182,7 +182,7 @@ export const backMenus = [
         icon: 'Briefcase',
         children: [
             { title: '会议管理', path: '/office/meeting-admin' },
-            { title: '内部邮件管控', path: '/office/email' }
+            { title: '内部邮件管控', path: '/message/email' }
         ]
     },
     {
