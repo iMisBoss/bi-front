@@ -272,7 +272,7 @@ import {
   Printer, CircleCheck, CircleClose, Grid, Money, Document, Monitor,
   Star
 } from '@element-plus/icons-vue'
-import DetailComponent from '../approval/Detail.vue'
+import DetailComponent from '../../approval/Detail.vue'
 
 const loading = ref(false)
 const viewDialogVisible = ref(false)
