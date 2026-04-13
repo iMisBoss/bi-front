@@ -6,11 +6,11 @@ export const frontMenus = [
         children: [
             { title: '首页看板', path: '/' },
             { title: '我的待办', path: '/process/approval/todo' },
-            { title: '我的消息', path: '/message/station' },
+            { title: '我的消息', path: '/process/approval/message' },
             { title: '我已处理', path: '/process/approval/done' },
             { title: '我发起的', path: '/process/approval/launched' },
             { title: '抄送管理', path: '/process/approval/cced' },
-            { title: '我的日程', path: '/workbench/my-schedule' }
+            { title: '我的日程', path: '/process/approval/my-schedule' }
         ]
     },
     {
@@ -18,7 +18,7 @@ export const frontMenus = [
         icon: 'DocumentChecked',
         children: [
             { title: '发起审批', path: '/process/approval/start' },
-            { title: '审批委托',path: '/process/approval/delegate' },
+            { title: '审批委托', path: '/process/approval/delegate' },
             { title: '流程进度查询', path: '/process/approval/progress' },
             { title: '流程归档查询', path: '/process/approval/archive' }
         ]
@@ -114,13 +114,13 @@ export const backMenus = [
         title: '表单中心',
         icon: 'Document',
         children: [
-            { title: '表单可视化设计', path: '/process/design/form/design' },
-            { title: '表单管理', path: '/process/design/form/management' },
+            { title: '表单可视化设计', path: '/form/design' },
+            { title: '表单管理', path: '/form/management' },
             {
                 title: '表单配置',
                 children: [
-                    { title: '业务对象管理', path: '/process/design/business-object' },
-                    { title: '自动编号规则配置', path: '/process/design/auto-number' }
+                    { title: '业务对象管理', path: '/form/business-object' },
+                    { title: '自动编号规则配置', path: '/form/auto-number' }
                 ]
             }
         ]
@@ -129,22 +129,22 @@ export const backMenus = [
         title: '流程中心',
         icon: 'Connection',
         children: [
-            { title: '流程建模设计', path: '/process/design/flowable/bpmn' },
-            { title: '流程模板中心', path: '/process/design/flowable/version' },
+            { title: '流程建模设计', path: '/process/flowable/bpmn' },
+            { title: '流程模板中心', path: '/process/flowable/version' },
             {
                 title: '流程配置',
                 children: [
-                    { title: '流程分类管理', path: '/process/design/flowable/categories' },
-                    { title: '全局参数设置', path: '/process/design/params' },
-                    { title: '变量管理', path: '/process/design/variables' },
-                    { title: '数据资源管理', path: '/process/design/data-resources' }
+                    { title: '流程分类管理', path: '/process/flowable/categories' },
+                    { title: '全局参数设置', path: '/process/flowable/params' },
+                    { title: '变量管理', path: '/process/flowable/variables' },
+                    { title: '数据资源管理', path: '/process/flowable/data-resources' }
                 ]
             },
             {
                 title: '实例运维',
                 children: [
-                    { title: '流程实例中心', path: '/process/approval/handle-query' },
-                    { title: '审批委托管控', path: '/process/admin/delegate-control' }
+                    { title: '流程实例中心', path: '/process/flowable/handle-query' },
+                    { title: '审批委托管控', path: '/process/flowable/delegate-control' }
                 ]
             }
         ]
@@ -170,10 +170,10 @@ export const backMenus = [
         title: '组织人事管理',
         icon: 'UserFilled',
         children: [
-            { title: '组织架构管理', path: '/org/structure', tabs: ['部门', '岗位', '职务', '办公地点'] },
-            { title: '人员用户管理', path: '/org/users', tabs: ['组织用户', '在职', '离职', '禁用', '历史用户'] },
-            { title: '通讯录管理', path: '/org/contacts', tabs: ['展示字段', '权限管控', '外部联系人'] },
-            { title: '数据安全配置', path: '/org/security', tabs: ['敏感字段脱敏', '敏感数据访问'] },
+            { title: '组织架构管理', path: '/org/structure' },
+            { title: '人员用户管理', path: '/org/users' },
+            { title: '通讯录管理', path: '/org/contacts' },
+            { title: '数据安全配置', path: '/org/security' },
             { title: '群组管理', path: '/org/groups' }
         ]
     },
@@ -181,7 +181,7 @@ export const backMenus = [
         title: '日常办公管理',
         icon: 'Briefcase',
         children: [
-            { title: '会议管理', path: '/office/meeting', tabs: ['会议室信息', '预约权限', '模板', '审批流程', '统计', '基础配置'] },
+            { title: '会议管理', path: '/office/meeting-admin' },
             { title: '内部邮件管控', path: '/office/email' }
         ]
     },
@@ -189,44 +189,45 @@ export const backMenus = [
         title: '公文与内容管理',
         icon: 'Reading',
         children: [
-            { title: '公文管理', path: '/cms/document', tabs: ['模板', '文号规则', '发文', '收文流程', '模板权限', '涉密管控', '归档'] },
-            { title: '内容管理', path: '/cms/content', tabs: ['栏目', '新闻公告', '规章制度', '文档权限', '发布审批', '知识库'] }
+            { title: '公文管理', path: '/cms/document-admin' },
+            { title: '内容管理', path: '/cms/content-admin' }
         ]
     },
     {
         title: 'AI智能助手管理',
         icon: 'ChatDotRound',
         children: [
-            { title: 'AI管理', path: '/ai/admin', tabs: ['功能权限', '敏感词管控', '使用审计', '模型配置'] }
+            { title: 'AI管理', path: '/ai/admin' }
         ]
     },
     {
         title: '系统管理',
         icon: 'Setting',
         children: [
-            { title: '权限菜单管理', path: '/system/permission', tabs: ['角色权限', '系统菜单', '系统导航'] },
-            { title: '系统参数配置', path: '/system/config', tabs: ['前台设置', '后台设置', '数据字典'] }
+            { title: '权限菜单管理', path: '/system/permission' },
+            { title: '系统参数配置', path: '/system/config' },
+            { title: '角色管理', path: '/system/role' }
         ]
     },
     {
         title: '审计日志管理',
         icon: 'Monitor',
         children: [
-            { title: '审计管理', path: '/system/audit', tabs: ['全量操作日志', '登录登出日志', '审计规则', '敏感告警', '日志归档'] }
+            { title: '审计管理', path: '/system/audit' }
         ]
     },
     {
         title: '运维监控',
         icon: 'DataLine',
         children: [
-            { title: '运维管理', path: '/system/operations', tabs: ['日志采集', 'IP黑白名单', '系统服务监控', '备份规则', '备份记录'] }
+            { title: '运维管理', path: '/system/operations' }
         ]
     },
     {
         title: '集成中心',
         icon: 'Link',
         children: [
-            { title: '集成管理', path: '/integration/admin', tabs: ['应用集成', '定时任务配置', '任务执行日志', '公共接口', '接口调用日志', 'JAR包管理'] }
+            { title: '集成管理', path: '/integration/admin' }
         ]
     }
 ]
