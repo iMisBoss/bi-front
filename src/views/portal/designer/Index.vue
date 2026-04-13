@@ -31,9 +31,33 @@
         </el-form>
       </div>
       <div class="config-right">
+        <el-dropdown @command="handleTemplateCommand" trigger="click">
+          <el-button size="small">
+            应用模板<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="employee">员工门户</el-dropdown-item>
+              <el-dropdown-item command="admin">管理员门户</el-dropdown-item>
+              <el-dropdown-item command="department">部门门户</el-dropdown-item>
+              <el-dropdown-item command="finance">金融行业门户</el-dropdown-item>
+              <el-dropdown-item command="government">政企公文门户</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button size="small" @click="handleSave" :loading="saving">保存</el-button>
         <el-button size="small" type="primary" @click="handlePublish" :loading="publishing">发布</el-button>
-        <el-button size="small" @click="handlePreview">预览</el-button>
+        <el-dropdown @command="handlePreviewCommand" trigger="click">
+          <el-button size="small">
+            预览<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="pc">PC端预览</el-dropdown-item>
+              <el-dropdown-item command="mobile">移动端预览</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button size="small" @click="handleImport">导入模板</el-button>
         <el-button size="small" @click="handleExport">导出模板</el-button>
       </div>
@@ -138,7 +162,7 @@ const isSaved = ref(true)
 
 const canvasComponents = ref([])
 const selectedComponent = ref(null)
-const gridVisible = ref(true)
+const gridVisible = ref(false)
 const zoom = ref(100)
 const isDragging = ref(false)
 const componentSearchKeyword = ref('')
@@ -271,6 +295,7 @@ const handleComponentDrop = (component) => {
   saveHistory()
   ElMessage.success('组件已添加')
 }
+
 const handleUpdateContainer = (updatedContainer) => {
   const index = canvasComponents.value.findIndex(c => c.id === updatedContainer.id)
   if (index !== -1) {
@@ -279,6 +304,7 @@ const handleUpdateContainer = (updatedContainer) => {
     saveHistory()
   }
 }
+
 const handleCanvasClick = () => {
   selectedComponent.value = null
 }
@@ -288,7 +314,7 @@ const handleComponentClick = (component) => {
 }
 
 const handleComponentDelete = (component) => {
-  ElMessageBox.confirm('确定删除该组件？此操作不可恢复。', '删除确认', { type: 'warning' }).then(() => {
+  ElMessageBox.confirm('确定删除该组件？', '删除确认', { type: 'warning' }).then(() => {
     const index = canvasComponents.value.findIndex(c => c.id === component.id)
     if (index !== -1) canvasComponents.value.splice(index, 1)
     if (selectedComponent.value?.id === component.id) {
@@ -337,10 +363,10 @@ const handleUpdatePortal = (config) => {
 
 const handleJumpPermission = () => {
   if (publishStatus.value !== 'published') {
-    ElMessage.warning('请先发布门户后，再配置访问权限')
+    ElMessage.warning('请先发布后配置')
     return
   }
-  ElMessage.info('跳转到门户管理中心权限配置页')
+  ElMessage.info('跳转到权限配置页')
 }
 
 const handleUndo = () => {
@@ -399,7 +425,7 @@ const handlePublish = () => {
   }).catch(() => {})
 }
 
-const handlePreview = () => {
+const handlePreviewCommand = (command) => {
   if (canvasComponents.value.length === 0) {
     ElMessage.warning('画布为空，无法预览')
     return
@@ -408,9 +434,14 @@ const handlePreview = () => {
     previewDialogRef.value.open({
       name: portalName.value,
       background: portalConfig.background,
-      components: canvasComponents.value
+      components: canvasComponents.value,
+      mode: command
     })
   }
+}
+
+const handlePreview = () => {
+  handlePreviewCommand('pc')
 }
 
 const handleImport = () => {
@@ -440,13 +471,87 @@ const handleImportSuccess = (data) => {
 }
 
 const handleCanvasClear = () => {
-  ElMessageBox.confirm('确定清空画布？此操作不可恢复。', '清空确认', { type: 'warning' }).then(() => {
+  ElMessageBox.confirm('确定清空画布？', '清空确认', { type: 'warning' }).then(() => {
     canvasComponents.value = []
     selectedComponent.value = null
     markUnsaved()
     saveHistory()
     ElMessage.success('画布已清空')
   }).catch(() => {})
+}
+
+// 应用模板
+const handleTemplateCommand = (command) => {
+  ElMessageBox.confirm('应用模板将覆盖当前画布内容，是否继续？', '应用模板', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    const templateData = getTemplateData(command)
+    if (templateData) {
+      portalName.value = templateData.name
+      portalCategory.value = templateData.category
+      canvasComponents.value = templateData.components
+      selectedComponent.value = null
+      markUnsaved()
+      saveHistory()
+      ElMessage.success('模板应用成功')
+    }
+  }).catch(() => {})
+}
+
+// 获取模板数据
+const getTemplateData = (type) => {
+  const templates = {
+    employee: {
+      name: '员工门户',
+      category: 'office',
+      components: [
+        { id: 1, type: 'user-card', name: '个人信息卡', showTitle: false, visible: true, borderRadius: 'small', showShadow: true, padding: 'default' },
+        { id: 2, type: 'todo-list', name: '我的待办', showTitle: true, title: '我的待办', visible: true, borderRadius: 'small', showShadow: true, padding: 'default', displayCount: 5, dataScope: 'all', sortRule: 'time_desc' },
+        { id: 3, type: 'launched-list', name: '我的发起', showTitle: true, title: '我的发起', visible: true, borderRadius: 'small', showShadow: true, padding: 'default', displayCount: 5 },
+        { id: 4, type: 'scroll-notice', name: '单行公告', showTitle: false, visible: true, borderRadius: 'small', showShadow: false, padding: 'default' },
+        { id: 5, type: 'shortcut', name: '快捷入口', showTitle: true, title: '快捷入口', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' }
+      ]
+    },
+    admin: {
+      name: '管理员门户',
+      category: 'admin',
+      components: [
+        { id: 1, type: 'stat-card', name: '数据卡片', showTitle: true, title: '待办统计', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' },
+        { id: 2, type: 'flow-stats', name: '流程统计', showTitle: true, title: '流程效率', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' },
+        { id: 3, type: 'form-data', name: '表单数据', showTitle: true, title: '最新申请', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' }
+      ]
+    },
+    department: {
+      name: '部门门户',
+      category: 'office',
+      components: [
+        { id: 1, type: 'nav-menu', name: '快捷导航', showTitle: false, visible: true, borderRadius: 'small', showShadow: false, padding: 'default' },
+        { id: 2, type: 'article-list', name: '新闻列表', showTitle: true, title: '部门动态', visible: true, borderRadius: 'small', showShadow: true, padding: 'default', displayCount: 5 },
+        { id: 3, type: 'carousel', name: '公告轮播', showTitle: false, visible: true, borderRadius: 'small', showShadow: true, padding: 'default' }
+      ]
+    },
+    finance: {
+      name: '金融行业门户',
+      category: 'data',
+      components: [
+        { id: 1, type: 'data-chart', name: '业务图表', showTitle: true, title: '经营数据', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' },
+        { id: 2, type: 'stat-card', name: '数据卡片', showTitle: true, title: '关键指标', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' },
+        { id: 3, type: 'form-data', name: '表单数据', showTitle: true, title: '合同到期', visible: true, borderRadius: 'small', showShadow: true, padding: 'default' }
+      ]
+    },
+    government: {
+      name: '政企公文门户',
+      category: 'office',
+      components: [
+        { id: 1, type: 'article-list', name: '新闻列表', showTitle: true, title: '党务公开', visible: true, borderRadius: 'small', showShadow: true, padding: 'default', displayCount: 5 },
+        { id: 2, type: 'todo-list', name: '待办审批', showTitle: true, title: '督办待办', visible: true, borderRadius: 'small', showShadow: true, padding: 'default', displayCount: 5 },
+        { id: 3, type: 'scroll-notice', name: '单行公告', showTitle: false, visible: true, borderRadius: 'small', showShadow: false, padding: 'default' }
+      ]
+    }
+  }
+  return templates[type]
 }
 
 const initHistory = () => {

@@ -15,13 +15,14 @@
 
     <div class="library-content">
       <el-collapse v-model="activeNames">
-        <el-collapse-item name="layout">
+        <!-- 个人中心 -->
+        <el-collapse-item name="personal">
           <template #title>
-            <span class="collapse-title">基础布局</span>
+            <span class="collapse-title">个人中心</span>
           </template>
           <div class="component-grid">
             <div
-                v-for="item in filteredLayoutComponents"
+                v-for="item in filteredPersonalComponents"
                 :key="item.type"
                 class="component-item"
                 draggable="true"
@@ -34,13 +35,14 @@
           </div>
         </el-collapse-item>
 
-        <el-collapse-item name="common">
+        <!-- 信息公告 -->
+        <el-collapse-item name="notice">
           <template #title>
-            <span class="collapse-title">常用功能</span>
+            <span class="collapse-title">信息公告</span>
           </template>
           <div class="component-grid">
             <div
-                v-for="item in filteredCommonComponents"
+                v-for="item in filteredNoticeComponents"
                 :key="item.type"
                 class="component-item"
                 draggable="true"
@@ -53,9 +55,10 @@
           </div>
         </el-collapse-item>
 
+        <!-- 业务数据 -->
         <el-collapse-item name="business">
           <template #title>
-            <span class="collapse-title">业务联动</span>
+            <span class="collapse-title">业务数据</span>
           </template>
           <div class="component-grid">
             <div
@@ -72,9 +75,50 @@
           </div>
         </el-collapse-item>
 
+        <!-- 系统工具 -->
+        <el-collapse-item name="tools">
+          <template #title>
+            <span class="collapse-title">系统工具</span>
+          </template>
+          <div class="component-grid">
+            <div
+                v-for="item in filteredToolsComponents"
+                :key="item.type"
+                class="component-item"
+                draggable="true"
+                @dragstart="handleDragStart(item, $event)"
+            >
+              <el-icon><component :is="item.icon" /></el-icon>
+              <span class="component-name">{{ item.name }}</span>
+              <div class="tooltip">{{ item.desc }}</div>
+            </div>
+          </div>
+        </el-collapse-item>
+
+        <!-- 布局容器（默认折叠） -->
+        <el-collapse-item name="layout">
+          <template #title>
+            <span class="collapse-title">布局容器</span>
+          </template>
+          <div class="component-grid">
+            <div
+                v-for="item in filteredLayoutComponents"
+                :key="item.type"
+                class="component-item"
+                draggable="true"
+                @dragstart="handleDragStart(item, $event)"
+            >
+              <el-icon><component :is="item.icon" /></el-icon>
+              <span class="component-name">{{ item.name }}</span>
+              <div class="tooltip">{{ item.desc }}</div>
+            </div>
+          </div>
+        </el-collapse-item>
+
+        <!-- 高级扩展（默认折叠） -->
         <el-collapse-item name="advanced">
           <template #title>
-            <span class="collapse-title">高级组件</span>
+            <span class="collapse-title">高级扩展</span>
           </template>
           <div class="component-grid">
             <div
@@ -116,7 +160,14 @@ import {
   Search,
   Menu as IconMenu,
   ScaleToOriginal,
-  Notebook
+  Notebook,
+  Avatar,
+  Tickets,
+  Connection,
+  OfficeBuilding,
+  Clock,
+  FolderOpened,
+  Tools
 } from '@element-plus/icons-vue'
 
 const props = defineProps({
@@ -129,7 +180,7 @@ const props = defineProps({
 const emit = defineEmits(['drag-start', 'search-change'])
 
 const searchKeyword = ref(props.searchKeyword)
-const activeNames = ref(['layout'])
+const activeNames = ref(['personal', 'notice', 'business', 'tools'])
 
 // 从localStorage加载分组状态
 onMounted(() => {
@@ -148,38 +199,54 @@ watch(activeNames, (newVal) => {
   localStorage.setItem('portal-designer-collapse-state', JSON.stringify(newVal))
 }, { deep: true })
 
+// 个人中心
+const personalComponents = [
+  { type: 'user-card', name: '个人信息卡', icon: Avatar, desc: '头像+姓名+部门+退出' },
+  { type: 'todo-list', name: '我的待办', icon: DocumentChecked, desc: '待办审批列表' },
+  { type: 'launched-list', name: '我的发起', icon: Promotion, desc: '我的发起列表' },
+  { type: 'done-list', name: '我的收文', icon: Finished, desc: '已办审批列表' }
+]
+
+// 信息公告
+const noticeComponents = [
+  { type: 'scroll-notice', name: '单行公告', icon: Bell, desc: '滚动文字通知' },
+  { type: 'carousel', name: '公告轮播', icon: Picture, desc: '图片轮播展示' },
+  { type: 'article-list', name: '新闻列表', icon: List, desc: '新闻文章列表' },
+  { type: 'image-text-list', name: '图文列表', icon: Tickets, desc: '图文混排列表' }
+]
+
+// 业务数据
+const businessComponents = [
+  { type: 'stat-card', name: '数据卡片', icon: DataLine, desc: '数据统计展示' },
+  { type: 'flow-stats', name: '流程统计', icon: TrendCharts, desc: '流程统计图表' },
+  { type: 'form-data', name: '表单数据', icon: List, desc: '表单数据列表' },
+  { type: 'data-chart', name: '业务图表', icon: TrendCharts, desc: '可视化图表' }
+]
+
+// 系统工具
+const toolsComponents = [
+  { type: 'shortcut', name: '快捷入口', icon: Link, desc: '图标快捷入口' },
+  { type: 'nav-menu', name: '快捷导航', icon: Menu, desc: '横向菜单导航' },
+  { type: 'quick-tools', name: '常用工具', icon: Tools, desc: '常用工具集合' },
+  { type: 'file-handle', name: '文件办理', icon: FolderOpened, desc: '文件处理中心' }
+]
+
+// 布局容器（默认折叠）
 const layoutComponents = [
-  { type: 'grid-1', name: '1 列栅格', icon: Grid, desc: '单列布局容器' },
-  { type: 'grid-2', name: '2 列栅格', icon: ScaleToOriginal, desc: '双列布局容器' },
-  { type: 'grid-3', name: '3 列栅格', icon: IconMenu, desc: '三列布局容器' },
-  { type: 'grid-4', name: '4 列栅格', icon: Grid, desc: '四列布局容器' },
+  { type: 'grid-1', name: '1列栅格', icon: Grid, desc: '单列布局容器' },
+  { type: 'grid-2', name: '2列栅格', icon: ScaleToOriginal, desc: '双列布局容器' },
+  { type: 'grid-3', name: '3列栅格', icon: IconMenu, desc: '三列布局容器' },
+  { type: 'grid-4', name: '4列栅格', icon: Grid, desc: '四列布局容器' },
   { type: 'card', name: '卡片容器', icon: Files, desc: '基础卡片容器' },
   { type: 'divider', name: '分割线', icon: Minus, desc: '水平分割线' },
   { type: 'spacer', name: '空白占位', icon: Notebook, desc: '空白占位符' }
 ]
 
-const commonComponents = [
-  { type: 'user-card', name: '个人信息卡', icon: User, desc: '头像+姓名+部门+退出' },
-  { type: 'scroll-notice', name: '单行公告', icon: Bell, desc: '滚动文字通知' },
-  { type: 'nav-menu', name: '快捷导航', icon: Menu, desc: '横向菜单导航' },
-  { type: 'shortcut', name: '快捷入口', icon: Link, desc: '图标快捷入口' },
-  { type: 'carousel', name: '公告轮播', icon: Picture, desc: '图片轮播展示' },
-  { type: 'article-list', name: '图文列表', icon: List, desc: '文章图文列表' },
-  { type: 'stat-card', name: '数据卡片', icon: DataLine, desc: '数据统计展示' }
-]
-
-const businessComponents = [
-  { type: 'todo-list', name: '待办审批', icon: DocumentChecked, desc: '待办审批列表' },
-  { type: 'done-list', name: '已办审批', icon: Finished, desc: '已办审批列表' },
-  { type: 'launched-list', name: '我的发起', icon: Promotion, desc: '我的发起列表' },
-  { type: 'form-data', name: '表单数据', icon: List, desc: '表单数据列表' },
-  { type: 'flow-stats', name: '流程统计', icon: TrendCharts, desc: '流程统计图表' }
-]
-
+// 高级扩展（默认折叠）
 const advancedComponents = [
   { type: 'rich-text', name: '富文本', icon: Edit, desc: '富文本编辑器' },
-  { type: 'html', name: '自定义 HTML', icon: Document, desc: '自定义HTML代码' },
-  { type: 'iframe', name: 'iframe 嵌入', icon: Document, desc: '外部页面嵌入' }
+  { type: 'html', name: '自定义HTML', icon: Document, desc: '自定义HTML代码' },
+  { type: 'iframe', name: 'iframe嵌入', icon: Document, desc: '外部页面嵌入' }
 ]
 
 const filterComponents = (components, keyword) => {
@@ -190,9 +257,11 @@ const filterComponents = (components, keyword) => {
   )
 }
 
-const filteredLayoutComponents = computed(() => filterComponents(layoutComponents, searchKeyword.value))
-const filteredCommonComponents = computed(() => filterComponents(commonComponents, searchKeyword.value))
+const filteredPersonalComponents = computed(() => filterComponents(personalComponents, searchKeyword.value))
+const filteredNoticeComponents = computed(() => filterComponents(noticeComponents, searchKeyword.value))
 const filteredBusinessComponents = computed(() => filterComponents(businessComponents, searchKeyword.value))
+const filteredToolsComponents = computed(() => filterComponents(toolsComponents, searchKeyword.value))
+const filteredLayoutComponents = computed(() => filterComponents(layoutComponents, searchKeyword.value))
 const filteredAdvancedComponents = computed(() => filterComponents(advancedComponents, searchKeyword.value))
 
 const handleSearch = () => {

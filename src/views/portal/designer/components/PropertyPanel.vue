@@ -33,7 +33,7 @@
                   :disabled="publishStatus !== 'published'"
                   @click="handleJumpPermission"
               >
-                {{ publishStatus === 'published' ? '去门户管理中心设置' : '请先发布门户后，再配置访问权限' }}
+                {{ publishStatus === 'published' ? '去设置' : '请先发布后配置' }}
               </el-link>
             </el-form-item>
           </el-form>
@@ -81,10 +81,18 @@
                     <el-radio value="category">指定分类</el-radio>
                   </el-radio-group>
                 </el-form-item>
+                <el-form-item v-if="selectedComponent.dataScope === 'category'" label="选择分类">
+                  <el-select v-model="selectedComponent.categoryId" placeholder="请选择" style="width: 100%">
+                    <el-option label="公司公告" value="1" />
+                    <el-option label="部门通知" value="2" />
+                    <el-option label="制度文件" value="3" />
+                  </el-select>
+                </el-form-item>
                 <el-form-item label="排序规则">
                   <el-select v-model="selectedComponent.sortRule" style="width: 100%">
                     <el-option label="按时间倒序" value="time_desc" />
                     <el-option label="按紧急度" value="urgency" />
+                    <el-option label="按重要性" value="importance" />
                   </el-select>
                 </el-form-item>
               </template>
@@ -136,12 +144,69 @@
           <span>点击画布中的组件查看样式</span>
         </div>
       </el-tab-pane>
+
+      <!-- Tab4: 全局样式 -->
+      <el-tab-pane label="全局样式" name="global">
+        <div class="tab-content">
+          <el-form label-width="90px" size="small">
+            <el-form-item label="主题色">
+              <el-color-picker v-model="globalStyle.primaryColor" show-alpha />
+            </el-form-item>
+            <el-form-item label="辅助色">
+              <el-color-picker v-model="globalStyle.secondaryColor" show-alpha />
+            </el-form-item>
+            <el-form-item label="布局风格">
+              <el-radio-group v-model="globalStyle.layoutStyle">
+                <el-radio value="card">卡片式</el-radio>
+                <el-radio value="simple">极简式</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="顶部Banner">
+              <el-upload
+                  action="#"
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :on-change="handleBannerUpload"
+              >
+                <el-button size="small" type="primary">上传Banner</el-button>
+              </el-upload>
+              <div v-if="globalStyle.bannerImage" class="banner-preview">
+                <img :src="globalStyle.bannerImage" alt="Banner" />
+                <el-button size="small" type="danger" link @click="globalStyle.bannerImage = ''">删除</el-button>
+              </div>
+            </el-form-item>
+            <el-form-item label="Banner高度">
+              <el-input-number v-model="globalStyle.bannerHeight" :min="100" :max="400" style="width: 100%" />
+            </el-form-item>
+            <el-form-item label="字体大小">
+              <el-radio-group v-model="globalStyle.fontSize">
+                <el-radio value="small">小</el-radio>
+                <el-radio value="medium">中</el-radio>
+                <el-radio value="large">大</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="组件间距">
+              <el-radio-group v-model="globalStyle.componentGap">
+                <el-radio value="compact">紧凑</el-radio>
+                <el-radio value="default">默认</el-radio>
+                <el-radio value="loose">宽松</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-divider />
+            <el-form-item>
+              <el-button type="primary" size="small" @click="saveGlobalStyle">保存为模板</el-button>
+              <el-button size="small" @click="resetGlobalStyle">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 import { InfoFilled } from '@element-plus/icons-vue'
 
 const props = defineProps({
@@ -169,6 +234,17 @@ const localPortal = reactive({
   background: '#f5f7fa'
 })
 
+// 全局样式配置
+const globalStyle = reactive({
+  primaryColor: '#409eff',
+  secondaryColor: '#67c23a',
+  layoutStyle: 'card',
+  bannerImage: '',
+  bannerHeight: 200,
+  fontSize: 'medium',
+  componentGap: 'default'
+})
+
 // 容器组件类型
 const containerTypes = ['grid-1', 'grid-2', 'grid-3', 'grid-4', 'card', 'divider', 'spacer']
 
@@ -179,7 +255,7 @@ const isDisplayComponent = computed(() => {
 
 const isBusinessComponent = computed(() => {
   if (!props.selectedComponent) return false
-  const businessTypes = ['todo-list', 'done-list', 'launched-list', 'form-data', 'flow-stats']
+  const businessTypes = ['todo-list', 'done-list', 'launched-list', 'form-data', 'flow-stats', 'news-list', 'article-list', 'image-text-list', 'data-chart']
   return businessTypes.includes(props.selectedComponent.type)
 })
 
@@ -214,6 +290,50 @@ watch(() => props.selectedComponent, (newVal) => {
     activeTab.value = isDisplayComponent.value ? 'component' : 'page'
   }
 }, { immediate: true })
+
+// Banner上传处理
+const handleBannerUpload = (file) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    globalStyle.bannerImage = e.target.result
+    ElMessage.success('Banner上传成功')
+  }
+  reader.readAsDataURL(file.raw)
+}
+
+// 保存全局样式为模板
+const saveGlobalStyle = () => {
+  localStorage.setItem('portal-global-style-template', JSON.stringify(globalStyle))
+  ElMessage.success('已保存为模板')
+}
+
+// 重置全局样式
+const resetGlobalStyle = () => {
+  Object.assign(globalStyle, {
+    primaryColor: '#409eff',
+    secondaryColor: '#67c23a',
+    layoutStyle: 'card',
+    bannerImage: '',
+    bannerHeight: 200,
+    fontSize: 'medium',
+    componentGap: 'default'
+  })
+  ElMessage.success('已重置')
+}
+
+// 加载保存的模板
+const loadSavedTemplate = () => {
+  const saved = localStorage.getItem('portal-global-style-template')
+  if (saved) {
+    try {
+      Object.assign(globalStyle, JSON.parse(saved))
+    } catch (e) {
+      console.error('加载模板失败:', e)
+    }
+  }
+}
+
+loadSavedTemplate()
 </script>
 
 <style scoped lang="scss">.property-panel {
@@ -258,6 +378,24 @@ watch(() => props.selectedComponent, (newVal) => {
       .readonly-tip {
         font-size: 13px;
         color: #909399;
+      }
+
+      .banner-preview {
+        margin-top: 8px;
+        position: relative;
+
+        img {
+          width: 100%;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 4px;
+        }
+
+        .el-button {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+        }
       }
     }
 

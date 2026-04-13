@@ -158,8 +158,8 @@ export const backMenus = [
             {
                 title: '基础配置',
                 children: [
-                    { title: '组件库管理', path: '/portal/components-lib' },
                     { title: '门户分类管理', path: '/portal/categories' },
+                    { title: '组件库管理', path: '/portal/components-lib' },
                     { title: '自定义规则配置', path: '/portal/user-rules' },
                     { title: '全局配置', path: '/portal/global-config' }
                 ]

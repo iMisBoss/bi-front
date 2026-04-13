@@ -267,11 +267,6 @@ const routes = [
         component: () => import('@/views/portal/designer/Index.vue')
     },
     {
-        path: '/portal/management',
-        name: 'PortalManagement',
-        component: () => import('@/views/portal/management/Index.vue')
-    },
-    {
         path: '/portal/categories',
         name: 'PortalCategories',
         component: () => import('@/views/portal/categories/Index.vue')
@@ -279,7 +274,20 @@ const routes = [
     {
         path: '/portal/components-lib',
         name: 'PortalComponentsLib',
-        component: () => import('@/views/portal/components-lib/Index.vue')
+        component: () => import('@/views/portal/components-lib/Index.vue'),
+        meta: { title: '组件库管理' }
+    },
+    {
+        path: '/portal/categories',
+        name: 'PortalCategories',
+        component: () => import('@/views/portal/categories/Index.vue'),
+        meta: { title: '门户分类管理' }
+    },
+    {
+        path: '/portal/management',
+        name: 'PortalManagement',
+        component: () => import('@/views/portal/management/Index.vue'),
+        meta: { title: '门户管理中心' }
     },
     {
         path: '/portal/user-rules',
