@@ -661,7 +661,6 @@ const getSensitiveText = (level) => {
 }
 </script>
 
-// ... existing code ...
 <style scoped lang="scss">
 .step-content {
   min-height: 450px;

@@ -156,7 +156,7 @@ export const backMenus = [
             { title: '门户设计器', path: '/portal/designer' },
             { title: '门户管理中心', path: '/portal/management' },
             {
-                title: '门户配置',
+                title: '基础配置',
                 children: [
                     { title: '组件库管理', path: '/portal/components-lib' },
                     { title: '门户分类管理', path: '/portal/categories' },

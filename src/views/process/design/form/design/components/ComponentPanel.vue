@@ -1,15 +1,9 @@
 <template>
-  <div class="component-panel" :class="{ 'is-collapsed': collapsed }" :style="{ width: collapsed ? '50px' : width + 'px' }">
+  <div class="component-panel">
     <div class="panel-header">
       <h3 class="panel-title">组件库</h3>
-      <div class="panel-toggle-btn" @click="$emit('toggle')" :title="collapsed ? '展开' : '收起'">
-        <el-icon>
-          <DArrowLeft v-if="!collapsed" />
-          <DArrowRight v-else />
-        </el-icon>
-      </div>
     </div>
-    <div class="panel-content" v-show="!collapsed">
+    <div class="panel-content">
       <el-tabs v-model="activeTab" class="component-tabs">
         <!-- Tab1：基础组件 -->
         <el-tab-pane label="基础组件" name="basic">
@@ -110,21 +104,17 @@ import { ref } from 'vue'
 import {
   Edit, Document, Coin, Calendar, CircleCheck, Check,
   Upload, Picture, Location, User, OfficeBuilding,
-  Files, Box, Grid, Notebook, DArrowLeft, DArrowRight
+  Files, Box, Grid, Notebook
 } from '@element-plus/icons-vue'
 
 const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false
-  },
   width: {
     type: Number,
     default: 280
   }
 })
 
-const emit = defineEmits(['toggle', 'insert-system', 'drag-start'])
+const emit = defineEmits(['insert-system', 'drag-start'])
 
 const activeTab = ref('basic')
 
@@ -192,22 +182,6 @@ const handleInsertSystemVariable = (comp) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-
-  &.is-collapsed {
-    .panel-header {
-      padding: 12px 8px;
-      justify-content: center;
-
-      .panel-title {
-        display: none;
-      }
-    }
-
-    .panel-content {
-      display: none;
-    }
-  }
 
   .panel-header {
     padding: 12px 16px;
@@ -215,30 +189,13 @@ const handleInsertSystemVariable = (comp) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+    background: #fff;
+    color: #303133;
 
     .panel-title {
       margin: 0;
       font-size: 15px;
       font-weight: 600;
-    }
-
-    .panel-toggle-btn {
-      width: 24px;
-      height: 24px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
     }
   }
 

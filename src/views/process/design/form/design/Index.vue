@@ -10,12 +10,17 @@
       </el-breadcrumb>
 
       <!-- 折叠/展开按钮 -->
-      <div class="header-toggle" @click="topPanelCollapsed = !topPanelCollapsed" :title="topPanelCollapsed ? '展开查询区域' : '收起查询区域'">
-        <el-icon>
-          <ArrowUp v-if="!topPanelCollapsed" />
-          <ArrowDown v-else />
-        </el-icon>
-        <span class="toggle-text">{{ topPanelCollapsed ? '展开' : '收起' }}</span>
+      <div class="header-actions">
+        <el-button size="small" @click="toggleMenuTree" :title="menuTreeVisible ? '收起菜单树' : '展开菜单树'">
+          <el-icon><Fold v-if="menuTreeVisible" /><Expand v-else /></el-icon>
+        </el-button>
+        <div class="header-toggle" @click="topPanelCollapsed = !topPanelCollapsed" :title="topPanelCollapsed ? '展开查询区域' : '收起查询区域'">
+          <el-icon>
+            <ArrowUp v-if="!topPanelCollapsed" />
+            <ArrowDown v-else />
+          </el-icon>
+          <span class="toggle-text">{{ topPanelCollapsed ? '展开' : '收起' }}</span>
+        </div>
       </div>
     </div>
 
@@ -73,15 +78,13 @@
     <!-- 主体三栏布局 -->
     <div class="designer-body">
       <!-- 左侧组件库 -->
-      <div class="component-panel-wrapper" :style="{ width: leftPanelCollapsed ? '50px' : leftPanelWidth + 'px' }">
+      <div class="component-panel-wrapper" :style="{ width: leftPanelCollapsed ? '0px' : leftPanelWidth + 'px' }">
         <ComponentPanel
-            :collapsed="leftPanelCollapsed"
+            v-show="!leftPanelCollapsed"
             :width="leftPanelWidth"
-            @toggle="leftPanelCollapsed = !leftPanelCollapsed"
             @drag-start="handleDragStart"
             @insert-system="handleInsertSystemVariable"
         />
-        <!-- 左侧拖拽条（只在展开时显示） -->
         <div v-if="!leftPanelCollapsed" class="resize-handle resize-left" @mousedown="startResize('left', $event)"></div>
       </div>
 
@@ -201,18 +204,30 @@
             </template>
           </el-empty>
         </div>
+
+        <!-- 面板折叠按钮（浮动在画布上） -->
+        <div class="panel-toggles">
+          <el-tooltip :content="leftPanelCollapsed ? '展开组件库' : '收起组件库'" placement="right">
+            <div class="toggle-btn" @click="leftPanelCollapsed = !leftPanelCollapsed">
+              <el-icon><ArrowRight v-if="leftPanelCollapsed" /><ArrowLeft v-else /></el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip :content="rightPanelCollapsed ? '展开属性面板' : '收起属性面板'" placement="left">
+            <div class="toggle-btn" @click="rightPanelCollapsed = !rightPanelCollapsed">
+              <el-icon><ArrowLeft v-if="rightPanelCollapsed" /><ArrowRight v-else /></el-icon>
+            </div>
+          </el-tooltip>
+        </div>
       </div>
 
       <!-- 右侧属性面板 -->
-      <div class="property-panel-wrapper" :style="{ width: rightPanelCollapsed ? '50px' : rightPanelWidth + 'px' }">
-        <!-- 右侧拖拽条（只在展开时显示） -->
+      <div class="property-panel-wrapper" :style="{ width: rightPanelCollapsed ? '0px' : rightPanelWidth + 'px' }">
         <div v-if="!rightPanelCollapsed" class="resize-handle resize-right" @mousedown="startResize('right', $event)"></div>
         <PropertyPanel
-            :collapsed="rightPanelCollapsed"
+            v-show="!rightPanelCollapsed"
             :active-field="activeField"
             :linkage-rules="linkageRules"
             :all-fields="formFields"
-            @toggle="rightPanelCollapsed = !rightPanelCollapsed"
             @open-linkage="handleOpenLinkageConfig"
         />
       </div>
@@ -251,7 +266,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Menu, Grid, Box, RefreshLeft, Right, Refresh,
   Download, Upload, View, Document, Promotion,
-  ArrowUp, ArrowDown
+  ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
+  Fold, Expand
 } from '@element-plus/icons-vue'
 import ComponentPanel from './components/ComponentPanel.vue'
 import FormField from './components/FormField.vue'
@@ -271,7 +287,7 @@ const importRef = ref(null)
 const exportRef = ref(null)
 const previewRef = ref(null)
 
-// 表单基础信息（使用 reactive 而不是 ref，避免 v-model 访问问题）
+// 表单基础信息
 const formInfo = reactive({
   name: '新建表单',
   category: '',
@@ -291,6 +307,7 @@ const isPublished = ref(false)
 const topPanelCollapsed = ref(false)
 const leftPanelCollapsed = ref(false)
 const rightPanelCollapsed = ref(false)
+const menuTreeVisible = ref(true)
 
 // 面板宽度
 const leftPanelWidth = ref(280)
@@ -338,6 +355,11 @@ const stopResize = () => {
   document.removeEventListener('mouseup', stopResize)
   document.body.style.cursor = ''
   document.body.style.userSelect = ''
+}
+
+// 切换菜单树显示/隐藏
+const toggleMenuTree = () => {
+  menuTreeVisible.value = !menuTreeVisible.value
 }
 
 // 撤销重做历史
@@ -814,7 +836,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .form-designer {
   height: calc(100vh - 50px);
-  background: #f0f2f5;
+  background: #fff;
   display: flex;
   flex-direction: column;
   font-size: 13px;
@@ -838,28 +860,34 @@ onUnmounted(() => {
       }
     }
 
-    .header-toggle {
+    .header-actions {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      background: #fff;
-      border: 1px solid #dcdfe6;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      color: #606266;
-      transition: all 0.2s;
-      user-select: none;
+      gap: 8px;
 
-      &:hover {
-        color: #409eff;
-        border-color: #409eff;
-        background: #ecf5ff;
-      }
+      .header-toggle {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        background: #fff;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #606266;
+        transition: all 0.2s;
+        user-select: none;
 
-      .toggle-text {
-        font-weight: 500;
+        &:hover {
+          color: #409eff;
+          border-color: #409eff;
+          background: #ecf5ff;
+        }
+
+        .toggle-text {
+          font-weight: 500;
+        }
       }
     }
   }
@@ -954,19 +982,66 @@ onUnmounted(() => {
     flex: 1;
     display: flex;
     overflow: hidden;
-    background: #f0f2f5;
+    background: #fff;
   }
 
-  .component-panel-wrapper {
-    position: relative;
-    flex-shrink: 0;
-    transition: width 0.3s ease;
-  }
-
+  .component-panel-wrapper,
   .property-panel-wrapper {
     position: relative;
     flex-shrink: 0;
     transition: width 0.3s ease;
+    overflow: hidden;
+  }
+
+  .canvas-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  // 面板折叠按钮
+  .panel-toggles {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
+
+    .toggle-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e4e7ed;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: all;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: #fff;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        color: #409eff;
+      }
+
+      &:first-child {
+        left: 8px;
+      }
+
+      &:last-child {
+        right: 8px;
+      }
+    }
   }
 
   // 拖拽调整宽度手柄
@@ -977,143 +1052,99 @@ onUnmounted(() => {
     width: 6px;
     cursor: col-resize;
     z-index: 100;
-    background: transparent;
-    transition: background 0.2s;
 
-    &:hover,
-    &.active {
-      background: rgba(64, 158, 255, 0.3);
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 40px;
+      background: #dcdfe6;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    &:hover::after {
+      background: #409eff;
+      height: 60px;
     }
 
     &.resize-left {
-      right: -3px;
+      left: -3px;
     }
 
     &.resize-right {
-      left: -3px;
+      right: -3px;
     }
   }
 
-  .canvas-area {
-    flex: 1;
+  .canvas-toolbar {
+    height: 48px;
+    padding: 0 16px;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
     display: flex;
-    flex-direction: column;
-    background: #f0f2f5;
-    min-width: 400px;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
 
-    .canvas-toolbar {
-      padding: 8px 16px;
-      background: #fff;
+    .layout-toolbar-left {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #e8e8e8;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      gap: 8px;
 
-      .layout-toolbar-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        .toolbar-label {
-          font-size: 12px;
-          color: #606266;
-          font-weight: 500;
-        }
-
-        .layout-buttons {
-          :deep(.el-button) {
-            padding: 6px 12px;
-            border-radius: 4px;
-            height: 28px;
-            font-size: 12px;
-
-            &.is-active {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              border-color: transparent;
-              color: #fff;
-              font-weight: 500;
-              box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-
-              &:hover {
-                opacity: 0.9;
-              }
-            }
-          }
-        }
+      .toolbar-label {
+        font-size: 13px;
+        color: #606266;
+        font-weight: 500;
       }
 
-      // 画布操作按钮组
-      .canvas-actions {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        :deep(.el-button-group) {
-          .el-button {
-            padding: 6px 10px;
-            height: 28px;
-            font-size: 12px;
-          }
-        }
-
+      .layout-buttons {
         :deep(.el-button) {
           padding: 6px 12px;
-          height: 28px;
           font-size: 12px;
+
+          &.is-active {
+            background: #409eff;
+            border-color: #409eff;
+            color: #fff;
+          }
         }
       }
     }
 
-    .canvas {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      background: #f0f2f5;
-      min-height: 400px;
+    .canvas-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
 
-      // 1列布局 - Flexbox 垂直排列
-      &.canvas-cols-1 {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+  .canvas {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background: #f5f7fa;
 
-        :deep(.form-field),
-        :deep(.container-field),
-        :deep(.detail-table-field) {
-          width: 100%;
-          max-width: 800px;
-          margin: 0 auto;
-        }
+    &.canvas-cols-1 {
+      .form-field {
+        max-width: 100%;
       }
+    }
 
-      // 2列布局 - Grid 双列
-      &.canvas-cols-2 {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-
-        :deep(.form-field),
-        :deep(.container-field),
-        :deep(.detail-table-field) {
-          width: 100%;
-        }
+    &.canvas-cols-2 {
+      .form-field {
+        max-width: 50%;
       }
+    }
 
-      // 3列布局 - Grid 三列
-      &.canvas-cols-3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-
-        :deep(.form-field),
-        :deep(.container-field),
-        :deep(.detail-table-field) {
-          width: 100%;
-        }
+    &.canvas-cols-3 {
+      .form-field {
+        max-width: 33.333%;
       }
     }
   }
 }
 </style>
-
