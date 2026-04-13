@@ -627,7 +627,7 @@ onUnmounted(() => {
   .main-content {
     display: flex;
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
     padding: 0;
     gap: 0;
   }
@@ -637,13 +637,13 @@ onUnmounted(() => {
     position: relative;
     flex-shrink: 0;
     transition: width 0.3s ease;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .canvas-wrapper {
     flex: 1;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
 

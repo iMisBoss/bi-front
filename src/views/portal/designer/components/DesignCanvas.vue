@@ -680,8 +680,8 @@ watch(contextMenuVisible, (val) => {
 
   .canvas-area {
     flex: 1;
-    overflow: auto;
-    padding: 8px;
+    overflow: visible;
+    padding: 24px;
     transform-origin: top left;
 
     &.drag-over {
@@ -692,6 +692,7 @@ watch(contextMenuVisible, (val) => {
       min-height: 600px;
       background: #fff;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: visible;
 
       &.show-grid {
         background-image:
@@ -778,7 +779,8 @@ watch(contextMenuVisible, (val) => {
           gap: 4px;
           opacity: 0;
           transition: opacity 0.2s;
-          z-index: 20;
+          z-index: 10000;
+          pointer-events: auto;
 
           &.show-actions {
             opacity: 1;
@@ -795,6 +797,7 @@ watch(contextMenuVisible, (val) => {
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
             &:hover {
               background: #ecf5ff;

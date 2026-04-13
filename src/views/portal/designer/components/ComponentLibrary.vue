@@ -311,7 +311,9 @@ const handleDragStart = (component, event) => {
   .library-content {
     flex: 1;
     overflow-y: auto;
+    overflow-x: visible;
     padding: 8px;
+    padding-top: 40px;
 
     :deep(.el-collapse) {
       border: none;
@@ -327,8 +329,13 @@ const handleDragStart = (component, event) => {
         margin-bottom: 4px;
       }
 
+      .el-collapse-item__wrap {
+        overflow: visible !important;
+      }
+
       .el-collapse-item__content {
         padding: 8px 0;
+        overflow: visible !important;
       }
     }
 
@@ -356,11 +363,13 @@ const handleDragStart = (component, event) => {
         transition: all 0.2s;
         min-height: 64px;
         position: relative;
+        z-index: 1;
 
         &:hover {
           background: #ecf5ff;
           border-color: #409eff;
           transform: translateY(-1px);
+          z-index: 100;
 
           .tooltip {
             opacity: 1;
@@ -399,7 +408,7 @@ const handleDragStart = (component, event) => {
           opacity: 0;
           visibility: hidden;
           transition: all 0.2s;
-          z-index: 10;
+          z-index: 10000;
           pointer-events: none;
 
           &::after {
