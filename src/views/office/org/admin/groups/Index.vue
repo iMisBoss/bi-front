@@ -1,287 +1,134 @@
 <template>
   <div class="group-management-page">
+    <!-- 面包屑 -->
+    <el-breadcrumb separator="/" class="breadcrumb">
+      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
+      <el-breadcrumb-item>组织人事管理</el-breadcrumb-item>
+      <el-breadcrumb-item>群组管理</el-breadcrumb-item>
+    </el-breadcrumb>
+
     <el-card class="main-card" shadow="never">
       <!-- 顶部工具栏 -->
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <el-button-group>
-            <el-button @click="handleBatchDisband" :disabled="selectedGroups.length === 0">批量解散</el-button>
-            <el-button @click="handleBatchDisable" :disabled="selectedGroups.length === 0">批量禁用</el-button>
-            <el-button @click="handleExportGroups">导出</el-button>
-          </el-button-group>
-        </div>
+      <GroupToolbar
+          :selected-count="selectedRows.length"
+          @batch-disable="handleBatchDisable"
+          @batch-dissolve="handleBatchDissolve"
+          @export="handleExport"
+          @add="handleAdd"
+          @import="showImportDialog = true"
+          @refresh="handleRefresh"
+          @show-settings="showSettings = true"
+          @search="handleSearch"
+          @filter="handleFilter"
+      />
 
-        <div class="toolbar-center">
-          <el-dropdown @command="handleAddCommand">
-            <el-button type="primary">
-              新增<el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="manual">手动建群</el-dropdown-item>
-                <el-dropdown-item command="template">模板建群</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-button @click="showImportDialog = true">导入</el-button>
-          <el-button @click="handleRefresh">刷新</el-button>
-          <el-button @click="showSettings = true">显示设置</el-button>
-        </div>
+      <!-- 全部群组列表（删除"我的群组"Tab） -->
+      <GroupTable
+          :table-data="filteredAllGroups"
+          @selection-change="handleSelectionChange"
+          @edit="handleEdit"
+          @manage-members="handleManageMembers"
+          @view="handleView"
+          @toggle-status="handleToggleStatus"
+          @dissolve="handleDissolve"
+      />
 
-        <div class="toolbar-right">
-          <el-input
-              v-model="searchKeyword"
-              placeholder="输入群名称/群主/群ID搜索"
-              prefix-icon="Search"
-              clearable
-              style="width: 240px"
-              @input="handleSearch"
-          />
-          <el-select v-model="typeFilter" placeholder="群组类型" style="width: 120px" @change="handleFilter">
-            <el-option label="全部" value="" />
-            <el-option label="部门群" value="部门群" />
-            <el-option label="项目群" value="项目群" />
-            <el-option label="系统群" value="系统群" />
-            <el-option label="临时群" value="临时群" />
-          </el-select>
-          <el-select v-model="statusFilter" placeholder="群状态" style="width: 100px" @change="handleFilter">
-            <el-option label="全部" value="" />
-            <el-option label="启用" value="enabled" />
-            <el-option label="禁用" value="disabled" />
-          </el-select>
-        </div>
-      </div>
-
-      <!-- 主内容区 -->
-      <div class="content-wrapper">
-        <GroupTable
-            :groups="filteredGroups"
-            v-model:page="currentPage"
+      <!-- 底部分页 -->
+      <div class="pagination-wrapper">
+        <el-pagination
+            v-model:current-page="currentPage"
             v-model:page-size="pageSize"
             :total="total"
-            @selection-change="handleSelectionChange"
-            @row-click="handleRowClick"
-            @edit-group="handleEditGroup"
-            @view-group="handleViewGroup"
-            @disable-group="handleDisableGroup"
-            @enable-group="handleEnableGroup"
-            @disband-group="handleDisbandGroup"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
 
-    <!-- 群组详情抽屉 -->
+    <!-- 新增/编辑抽屉 -->
     <GroupDrawer
-        v-model="drawerVisible"
-        v-model:active-tab="drawerActiveTab"
-        :current-group="currentGroup"
-        :basic-form="groupBasicForm"
-        :members="groupMembers"
-        :logs="groupLogs"
-        @edit-group="handleEditGroup"
-        @add-members="handleAddMembers"
-        @disband-group="handleDisbandGroup"
-        @disable-group="handleDisableGroup"
-        @enable-group="handleEnableGroup"
-        @remove-member="handleRemoveMember"
-        @transfer-owner="handleTransferOwner"
+        v-model="showDrawer"
+        :type="drawerType"
+        :data="currentGroup"
+        :group-tree="groupTree"
+        :department-tree="departmentTree"
+        :positions-list="positionsList"
+        :all-users="allUsers"
+        @confirm="handleConfirmSave"
     />
 
-    <!-- 新增/编辑群组对话框 -->
-    <GroupAddDialog
-        v-model="showAddDialog"
-        :group-data="editingGroup"
-        @confirm="handleConfirmGroup"
-    />
-
-    <!-- 导入群组对话框 -->
+    <!-- 导入对话框 -->
     <GroupImportDialog
         v-model="showImportDialog"
         @download-template="downloadTemplate"
         @confirm-import="handleConfirmImport"
     />
 
-    <!-- 添加成员对话框 -->
-    <el-dialog v-model="showAddMemberDialog" title="添加群成员" width="600px">
-      <UserSelectDialog
-          v-model="selectedUsers"
-          :multiple="true"
-          title="选择成员"
-      />
-      <template #footer>
-        <el-button @click="showAddMemberDialog = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmAddMembers">确定</el-button>
-      </template>
-    </el-dialog>
+    <!-- 查看详情抽屉 -->
+    <GroupDetailDrawer
+        v-model="showDetailDrawer"
+        :data="currentGroup"
+        @edit="handleEdit"
+        @toggle-status="handleToggleStatus"
+        @dissolve="handleDissolve"
+    />
 
-    <!-- 转让群主对话框 -->
-    <el-dialog v-model="showTransferDialog" title="转让群主" width="500px">
-      <el-form :model="transferForm" label-width="100px">
-        <el-form-item label="新群主" required>
-          <UserSelectDialog
-              v-model="transferForm.newOwnerId"
-              :multiple="false"
-              title="选择新群主"
-          />
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input
-              v-model="transferForm.remark"
-              type="textarea"
-              :rows="3"
-              placeholder="请输入转让原因"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="showTransferDialog = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmTransfer">确定</el-button>
-      </template>
-    </el-dialog>
-
-    <!-- 显示设置对话框 -->
-    <el-dialog v-model="showSettings" title="列表显示设置" width="500px">
-      <el-form label-width="120px">
-        <el-form-item label="显示字段">
-          <el-checkbox-group v-model="settings.visibleFields">
-            <el-checkbox label="type">群组类型</el-checkbox>
-            <el-checkbox label="owner">群主</el-checkbox>
-            <el-checkbox label="memberCount">成员数</el-checkbox>
-            <el-checkbox label="status">群状态</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="showSettings = false">取消</el-button>
-        <el-button type="primary" @click="showSettings = false">保存</el-button>
-      </template>
-    </el-dialog>
+    <!-- 群组成员管理对话框 -->
+    <GroupMembersDialog
+        v-model="showMembersDialog"
+        :group="currentGroup"
+        :all-users="allUsers"
+        :department-tree="departmentTree"
+        @confirm="handleConfirmMembers"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
+import GroupToolbar from './components/GroupToolbar.vue'
 import GroupTable from './components/GroupTable.vue'
 import GroupDrawer from './components/GroupDrawer.vue'
-import GroupAddDialog from './components/GroupAddDialog.vue'
 import GroupImportDialog from './components/GroupImportDialog.vue'
-import UserSelectDialog from '@/components/UserSelectDialog.vue'
+import GroupDetailDrawer from './components/GroupDetailDrawer.vue'
+import GroupMembersDialog from './components/GroupMembersDialog.vue'
 
-const searchKeyword = ref('')
-const typeFilter = ref('')
-const statusFilter = ref('')
-const showImportDialog = ref(false)
-const showAddDialog = ref(false)
-const showSettings = ref(false)
-const drawerVisible = ref(false)
-const drawerActiveTab = ref('basic')
-const selectedGroups = ref([])
-const editingGroup = ref(null)
+const activeTab = ref('all')
+const selectedRows = ref([])
 const currentGroup = ref(null)
-const showAddMemberDialog = ref(false)
-const showTransferDialog = ref(false)
-const selectedUsers = ref([])
-
-const groups = ref([])
+const drawerType = ref('add')
+const showDrawer = ref(false)
+const showImportDialog = ref(false)
+const showDetailDrawer = ref(false)
+const showMembersDialog = ref(false)
+const showSettings = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 
-const groupBasicForm = reactive({
-  id: null,
-  name: '',
-  groupId: '',
-  type: '',
-  ownerId: null,
-  ownerName: '',
-  status: 'enabled',
-  remark: ''
-})
+const searchKeyword = ref('')
+const typeFilter = ref('')
+const statusFilter = ref('')
 
-const groupMembers = ref([])
-const groupLogs = ref([])
+// 数据源
+const groupData = ref([])
+const groupTree = ref([])
+const departmentTree = ref([])
+const positionsList = ref([])
+const allUsers = ref([])
 
-const transferForm = reactive({
-  newOwnerId: null,
-  remark: ''
-})
-
-const settings = reactive({
-  visibleFields: ['type', 'owner', 'memberCount', 'status']
-})
-
-onMounted(() => {
-  loadGroups()
-})
-
-const loadGroups = () => {
-  groups.value = [
-    {
-      id: 1,
-      groupId: 'GRP001',
-      name: '技术部工作群',
-      type: '部门群',
-      ownerId: 1,
-      ownerName: '张三',
-      memberCount: 15,
-      status: 'enabled',
-      avatar: '',
-      createTime: '2026-01-15 10:00:00',
-      linkedProcesses: 0
-    },
-    {
-      id: 2,
-      groupId: 'GRP002',
-      name: '新产品项目组',
-      type: '项目群',
-      ownerId: 2,
-      ownerName: '李四',
-      memberCount: 8,
-      status: 'enabled',
-      avatar: '',
-      createTime: '2026-02-20 14:30:00',
-      linkedProcesses: 2
-    },
-    {
-      id: 3,
-      groupId: 'GRP003',
-      name: '全员通知群',
-      type: '系统群',
-      ownerId: 1,
-      ownerName: '张三',
-      memberCount: 156,
-      status: 'enabled',
-      avatar: '',
-      createTime: '2025-12-01 09:00:00',
-      linkedProcesses: 0
-    },
-    {
-      id: 4,
-      groupId: 'GRP004',
-      name: '临时攻坚群',
-      type: '临时群',
-      ownerId: 3,
-      ownerName: '王五',
-      memberCount: 5,
-      status: 'disabled',
-      avatar: '',
-      createTime: '2026-03-10 16:00:00',
-      linkedProcesses: 0
-    }
-  ]
-  total.value = groups.value.length
-}
-
-const filteredGroups = computed(() => {
-  let data = [...groups.value]
+// 过滤后的全部群组
+const filteredAllGroups = computed(() => {
+  let data = [...groupData.value]
 
   if (searchKeyword.value) {
     data = data.filter(item =>
-        item.name.includes(searchKeyword.value) ||
-        item.ownerName.includes(searchKeyword.value) ||
-        item.groupId.toLowerCase().includes(searchKeyword.value.toLowerCase())
+        item.name?.includes(searchKeyword.value) ||
+        item.groupId?.includes(searchKeyword.value) ||
+        item.owner?.includes(searchKeyword.value)
     )
   }
 
@@ -293,176 +140,408 @@ const filteredGroups = computed(() => {
     data = data.filter(item => item.status === statusFilter.value)
   }
 
+  total.value = data.length
   return data
 })
 
-const handleSearch = () => {}
+onMounted(() => {
+  loadGroupData()
+  loadGroupTree()
+  loadDepartmentTree()
+  loadPositions()
+  loadAllUsers()
+})
 
-const handleFilter = () => {}
-
-const handleRefresh = () => {
-  loadGroups()
-  ElMessage.success('刷新成功')
+// 加载群组数据
+const loadGroupData = () => {
+  groupData.value = [
+    {
+      id: 1,
+      groupId: 'GRP-001',
+      name: '全公司全员群',
+      parentId: null,
+      parentName: '根群组',
+      type: 'system',
+      typeName: '系统群',
+      scope: 'all',
+      scopeName: '全公司',
+      owner: '系统管理员',
+      ownerIds: [1],
+      memberCount: 3,
+      status: 'enabled',
+      createTime: '2024-01-01 10:00:00',
+      description: '公司全员通讯群组',
+      members: [
+        { id: 100, name: '系统管理员', employeeNo: 'ADMIN', department: '公司总部' },
+        { id: 1, name: '张三', employeeNo: 'E001', department: '前端开发组' },
+        { id: 2, name: '李四', employeeNo: 'E002', department: '技术部' }
+      ],
+      isSystem: true
+    },
+    {
+      id: 2,
+      groupId: 'GRP-002',
+      name: '技术部群组',
+      parentId: null,
+      parentName: '根群组',
+      type: 'department',
+      typeName: '部门群',
+      scope: 'department',
+      scopeName: '技术部',
+      owner: '李四',
+      ownerIds: [2],
+      memberCount: 3,
+      status: 'enabled',
+      createTime: '2024-01-15 10:00:00',
+      description: '技术部门内部群组',
+      members: [
+        { id: 2, name: '李四', employeeNo: 'E002', department: '技术部' },
+        { id: 1, name: '张三', employeeNo: 'E001', department: '前端开发组' },
+        { id: 4, name: '赵六', employeeNo: 'E004', department: '后端开发组' }
+      ],
+      isSystem: false
+    },
+    {
+      id: 3,
+      groupId: 'GRP-003',
+      name: '前端开发组',
+      parentId: 2,
+      parentName: '技术部群组',
+      type: 'department',
+      typeName: '部门群',
+      scope: 'department',
+      scopeName: '前端开发组',
+      owner: '张三',
+      ownerIds: [1],
+      memberCount: 2,
+      status: 'enabled',
+      createTime: '2024-02-01 10:00:00',
+      description: '前端开发团队群组',
+      members: [
+        { id: 1, name: '张三', employeeNo: 'E001', department: '前端开发组' },
+        { id: 8, name: '郑十', employeeNo: 'E010', department: '前端开发组' }
+      ],
+      isSystem: false
+    },
+    {
+      id: 4,
+      groupId: 'GRP-004',
+      name: '产品部群组',
+      parentId: null,
+      parentName: '根群组',
+      type: 'department',
+      typeName: '部门群',
+      scope: 'department',
+      scopeName: '产品部',
+      owner: '王五',
+      ownerIds: [3],
+      memberCount: 3,
+      status: 'enabled',
+      createTime: '2024-01-20 10:00:00',
+      description: '产品部门内部群组',
+      members: [
+        { id: 3, name: '王五', employeeNo: 'E003', department: '产品部' },
+        { id: 5, name: '孙七', employeeNo: 'E005', department: '产品部' },
+        { id: 15, name: '马十七', employeeNo: 'E015', department: '产品部' }
+      ],
+      isSystem: false
+    },
+    {
+      id: 5,
+      groupId: 'GRP-005',
+      name: '2024年度项目群',
+      parentId: null,
+      parentName: '根群组',
+      type: 'project',
+      typeName: '项目群',
+      scope: 'custom',
+      scopeName: '自定义人员',
+      owner: '当前用户',
+      ownerIds: [100],
+      memberCount: 3,
+      status: 'enabled',
+      createTime: '2024-03-01 10:00:00',
+      description: '2024年度重点项目沟通群',
+      members: [
+        { id: 100, name: '当前用户', employeeNo: 'E100', department: '公司总部' },
+        { id: 2, name: '李四', employeeNo: 'E002', department: '技术部' },
+        { id: 3, name: '王五', employeeNo: 'E003', department: '产品部' }
+      ],
+      isSystem: false
+    },
+    {
+      id: 6,
+      groupId: 'GRP-006',
+      name: '财务部群组',
+      parentId: null,
+      parentName: '根群组',
+      type: 'department',
+      typeName: '部门群',
+      scope: 'department',
+      scopeName: '财务部',
+      owner: '周八',
+      ownerIds: [6],
+      memberCount: 2,
+      status: 'disabled',
+      createTime: '2024-01-10 10:00:00',
+      description: '财务部门内部群组',
+      members: [
+        { id: 6, name: '周八', employeeNo: 'E006', department: '财务部' },
+        { id: 16, name: '罗十八', employeeNo: 'E016', department: '财务部' }
+      ],
+      isSystem: false
+    }
+  ]
+  total.value = groupData.value.length
 }
 
-const handleAddCommand = (command) => {
-  editingGroup.value = null
-  if (command === 'manual') {
-    showAddDialog.value = true
-  } else if (command === 'template') {
-    ElMessage.info('模板建群功能开发中')
-  }
+// 加载群组树
+const loadGroupTree = () => {
+  groupTree.value = [
+    { id: 0, name: '根群组', children: [
+        { id: 1, name: '全公司全员群', children: [] },
+        { id: 2, name: '技术部群组', children: [
+            { id: 3, name: '前端开发组', children: [] }
+          ]
+        },
+        { id: 4, name: '产品部群组', children: [] },
+        { id: 5, name: '2024年度项目群', children: [] },
+        { id: 6, name: '财务部群组', children: [] }
+      ]
+    }
+  ]
 }
 
+// 加载部门树
+const loadDepartmentTree = () => {
+  departmentTree.value = [
+    { id: 1, name: '公司总部', children: [
+        { id: 2, name: '技术部', children: [
+            { id: 3, name: '前端开发组', children: [] },
+            { id: 4, name: '后端开发组', children: [] }
+          ]
+        },
+        { id: 5, name: '产品部', children: [] },
+        { id: 6, name: '财务部', children: [] }
+      ]
+    }
+  ]
+}
+
+// 加载岗位列表
+const loadPositions = () => {
+  positionsList.value = [
+    { id: 1, name: '前端开发岗', departmentId: 2 },
+    { id: 2, name: '后端开发岗', departmentId: 2 },
+    { id: 3, name: '技术经理岗', departmentId: 2 },
+    { id: 4, name: '产品岗', departmentId: 5 },
+    { id: 5, name: '财务岗', departmentId: 6 }
+  ]
+}
+
+// 加载所有用户
+const loadAllUsers = () => {
+  allUsers.value = [
+    { id: 1, name: '系统管理员', employeeNo: 'ADMIN', department: '公司总部' },
+    { id: 2, name: '李四', employeeNo: 'E002', department: '技术部' },
+    { id: 3, name: '王五', employeeNo: 'E003', department: '产品部' },
+    { id: 4, name: '赵六', employeeNo: 'E004', department: '后端开发组' },
+    { id: 5, name: '孙七', employeeNo: 'E005', department: '产品部' },
+    { id: 6, name: '周八', employeeNo: 'E006', department: '财务部' },
+    { id: 8, name: '郑十', employeeNo: 'E010', department: '前端开发组' },
+    { id: 15, name: '马十七', employeeNo: 'E015', department: '产品部' },
+    { id: 16, name: '罗十八', employeeNo: 'E016', department: '财务部' },
+    { id: 100, name: '当前用户', employeeNo: 'E100', department: '公司总部' }
+  ]
+}
+
+// ==================== 事件处理 ====================
+
+// 选择变化
 const handleSelectionChange = (selection) => {
-  selectedGroups.value = selection
+  selectedRows.value = selection
 }
 
-const handleRowClick = (row) => {
-  handleViewGroup(row)
+// 新增
+const handleAdd = () => {
+  drawerType.value = 'add'
+  currentGroup.value = null
+  showDrawer.value = true
 }
 
-const handleEditGroup = (row) => {
-  editingGroup.value = row
-  drawerVisible.value = false
-  showAddDialog.value = true
+// 编辑
+const handleEdit = (row) => {
+  drawerType.value = 'edit'
+  currentGroup.value = { ...row }
+  showDrawer.value = true
+  showDetailDrawer.value = false
 }
 
-const handleViewGroup = (row) => {
+// 查看
+const handleView = (row) => {
   currentGroup.value = row
-  Object.assign(groupBasicForm, { ...row })
-
-  // 加载成员列表
-  groupMembers.value = [
-    { id: 1, name: '张三', position: '技术总监', joinTime: '2026-01-15 10:00:00', isOwner: true },
-    { id: 2, name: '李四', position: '前端工程师', joinTime: '2026-01-15 10:05:00', isOwner: false },
-    { id: 3, name: '王五', position: '后端工程师', joinTime: '2026-01-16 09:00:00', isOwner: false }
-  ]
-
-  // 加载操作日志
-  groupLogs.value = [
-    { operator: '管理员', time: '2026-01-15 10:00:00', type: 'create', content: '创建群组', ip: '192.168.1.100' },
-    { operator: '张三', time: '2026-01-15 10:05:00', type: 'add_member', content: '添加成员：李四', ip: '192.168.1.101' },
-    { operator: '张三', time: '2026-01-16 09:00:00', type: 'add_member', content: '添加成员：王五', ip: '192.168.1.101' }
-  ]
-
-  drawerActiveTab.value = 'basic'
-  drawerVisible.value = true
+  showDetailDrawer.value = true
 }
 
-const handleConfirmGroup = (formData) => {
+// 管理成员
+const handleManageMembers = (row) => {
+  currentGroup.value = row
+  showMembersDialog.value = true
+}
+
+// 切换状态
+const handleToggleStatus = (row) => {
+  if (row.isSystem) {
+    ElMessage.warning('系统群组不可禁用')
+    return
+  }
+
+  const action = row.status === 'enabled' ? '禁用' : '启用'
+  ElMessageBox.confirm(`确定要${action}群组「${row.name}」吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    row.status = row.status === 'enabled' ? 'disabled' : 'enabled'
+    ElMessage.success(`${action}成功`)
+  }).catch(() => {})
+}
+
+// 解散群组
+const handleDissolve = (row) => {
+  if (row.isSystem) {
+    ElMessage.warning('系统群组不可解散')
+    return
+  }
+
+  ElMessageBox.confirm(
+      `确定要解散群组「${row.name}」吗？解散后不可恢复！`,
+      '警告',
+      {
+        confirmButtonText: '确定解散',
+        cancelButtonText: '取消',
+        type: 'error',
+        confirmButtonClass: 'el-button--danger'
+      }
+  ).then(() => {
+    groupData.value = groupData.value.filter(item => item.id !== row.id)
+    ElMessage.success('解散成功')
+  }).catch(() => {})
+}
+
+// 确认保存
+const handleConfirmSave = (formData) => {
   if (formData.id) {
-    const index = groups.value.findIndex(item => item.id === formData.id)
+    // 编辑模式
+    const index = groupData.value.findIndex(item => item.id === formData.id)
     if (index !== -1) {
-      groups.value[index] = { ...groups.value[index], ...formData }
+      groupData.value[index] = { ...groupData.value[index], ...formData }
     }
     ElMessage.success('编辑成功')
   } else {
-    formData.id = groups.value.length + 1
-    formData.groupId = `GRP${String(formData.id).padStart(3, '0')}`
+    // 新增模式
+    formData.id = Date.now()
+    formData.groupId = `GRP-${String(groupData.value.length + 1).padStart(3, '0')}`
     formData.memberCount = 0
-    formData.linkedProcesses = 0
-    formData.createTime = new Date().toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).replace(/\//g, '-')
-    groups.value.push(formData)
-    ElMessage.success('创建成功')
+    formData.members = []
+    formData.createTime = new Date().toLocaleString()
+    groupData.value.push(formData)
+    ElMessage.success('新增成功')
   }
-  showAddDialog.value = false
-  editingGroup.value = null
-  loadGroups()
+  showDrawer.value = false
+  total.value = groupData.value.length
 }
 
-const handleDisableGroup = (row) => {
-  ElMessageBox.confirm(`确定要禁用群组「${row.name}」吗？禁用后群聊不可发消息。`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    row.status = 'disabled'
-    ElMessage.success('禁用成功')
-    if (drawerVisible.value) {
-      loadGroups()
-    }
-  })
+// 确认成员管理
+const handleConfirmMembers = (members) => {
+  if (currentGroup.value) {
+    currentGroup.value.members = members
+    currentGroup.value.memberCount = members.length
+    ElMessage.success('成员更新成功')
+  }
+  showMembersDialog.value = false
 }
 
-const handleEnableGroup = (row) => {
-  ElMessageBox.confirm(`确定要启用群组「${row.name}」吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    row.status = 'enabled'
-    ElMessage.success('启用成功')
-    if (drawerVisible.value) {
-      loadGroups()
-    }
-  })
-}
-
-const handleDisbandGroup = (row) => {
-  ElMessageBox.confirm(
-      `解散后群数据将归档，无法恢复，是否继续解散「${row.name}」？`,
-      '警告',
-      {
-        confirmButtonText: '确定解散',
-        cancelButtonText: '取消',
-        type: 'error',
-        distinguishCancelAndClose: true
-      }
-  ).then(() => {
-    groups.value = groups.value.filter(item => item.id !== row.id)
-    ElMessage.success('解散成功，数据已归档')
-    drawerVisible.value = false
-    loadGroups()
-  })
-}
-
-const handleBatchDisband = () => {
-  ElMessageBox.confirm(
-      `解散后群数据将归档，无法恢复，确定要解散选中的 ${selectedGroups.value.length} 个群组吗？`,
-      '警告',
-      {
-        confirmButtonText: '确定解散',
-        cancelButtonText: '取消',
-        type: 'error',
-        distinguishCancelAndClose: true
-      }
-  ).then(() => {
-    groups.value = groups.value.filter(item => {
-      return !selectedGroups.value.find(sel => sel.id === item.id)
-    })
-    ElMessage.success('批量解散成功，数据已归档')
-    selectedGroups.value = []
-    loadGroups()
-  })
-}
-
+// 批量禁用
 const handleBatchDisable = () => {
-  ElMessageBox.confirm(`确定要批量禁用 ${selectedGroups.value.length} 个群组吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    selectedGroups.value.forEach(row => {
+  if (selectedRows.value.length === 0) return
+
+  const systemGroups = selectedRows.value.filter(row => row.isSystem)
+  if (systemGroups.length > 0) {
+    ElMessage.warning('选中的群组中包含系统群组，无法批量禁用')
+    return
+  }
+
+  ElMessageBox.confirm(
+      `确定要批量禁用 ${selectedRows.value.length} 个群组吗？`,
+      '批量禁用',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+  ).then(() => {
+    selectedRows.value.forEach(row => {
       row.status = 'disabled'
     })
     ElMessage.success('批量禁用成功')
-    selectedGroups.value = []
-    loadGroups()
-  })
+    selectedRows.value = []
+  }).catch(() => {})
 }
 
-const handleExportGroups = () => {
-  ElMessage.success('导出成功')
+// 批量解散
+const handleBatchDissolve = () => {
+  if (selectedRows.value.length === 0) return
+
+  const systemGroups = selectedRows.value.filter(row => row.isSystem)
+  if (systemGroups.length > 0) {
+    ElMessage.warning('选中的群组中包含系统群组，无法批量解散')
+    return
+  }
+
+  ElMessageBox.confirm(
+      `确定要解散选中的 ${selectedRows.value.length} 个群组吗？解散后不可恢复！`,
+      '警告',
+      {
+        confirmButtonText: '确定解散',
+        cancelButtonText: '取消',
+        type: 'error',
+        confirmButtonClass: 'el-button--danger'
+      }
+  ).then(() => {
+    const ids = selectedRows.value.map(row => row.id)
+    groupData.value = groupData.value.filter(item => !ids.includes(item.id))
+    ElMessage.success('批量解散成功')
+    selectedRows.value = []
+    total.value = groupData.value.length
+  }).catch(() => {})
 }
 
+// 导出
+const handleExport = () => {
+  ElMessage.success('群组数据导出成功')
+}
+
+// 刷新
+const handleRefresh = () => {
+  loadGroupData()
+  ElMessage.success('刷新成功')
+}
+
+// 搜索和筛选
+const handleSearch = () => {}
+const handleFilter = () => {}
+
+// 分页
+const handleSizeChange = (val) => {
+  pageSize.value = val
+}
+
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+}
+
+// 导入
 const downloadTemplate = () => {
   ElMessage.success('模板下载成功')
 }
@@ -470,115 +549,7 @@ const downloadTemplate = () => {
 const handleConfirmImport = () => {
   ElMessage.success('导入成功')
   showImportDialog.value = false
-  loadGroups()
-}
-
-const handleAddMembers = () => {
-  showAddMemberDialog.value = true
-}
-
-const handleConfirmAddMembers = () => {
-  if (selectedUsers.value.length === 0) {
-    ElMessage.warning('请选择要添加的成员')
-    return
-  }
-
-  // 模拟添加成员
-  selectedUsers.value.forEach(user => {
-    groupMembers.value.push({
-      id: user.id,
-      name: user.name,
-      position: user.position || '未设置',
-      joinTime: new Date().toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      }).replace(/\//g, '-'),
-      isOwner: false
-    })
-  })
-
-  // 更新成员数
-  if (currentGroup.value) {
-    currentGroup.value.memberCount = groupMembers.value.length
-  }
-
-  ElMessage.success(`成功添加 ${selectedUsers.value.length} 名成员`)
-  showAddMemberDialog.value = false
-  selectedUsers.value = []
-}
-
-const handleRemoveMember = (member) => {
-  ElMessageBox.confirm(`确定要将「${member.name}」移出群组吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    const index = groupMembers.value.findIndex(m => m.id === member.id)
-    if (index !== -1) {
-      groupMembers.value.splice(index, 1)
-    }
-
-    // 更新成员数
-    if (currentGroup.value) {
-      currentGroup.value.memberCount = groupMembers.value.length
-    }
-
-    ElMessage.success('移除成功')
-  })
-}
-
-const handleTransferOwner = (member) => {
-  transferForm.newOwnerId = member.id
-  transferForm.remark = ''
-  showTransferDialog.value = true
-}
-
-const handleConfirmTransfer = () => {
-  if (!transferForm.newOwnerId) {
-    ElMessage.warning('请选择新群主')
-    return
-  }
-
-  // 找到新群主信息
-  const newOwner = groupMembers.value.find(m => m.id === transferForm.newOwnerId)
-
-  // 更新所有成员的群主标识
-  groupMembers.value.forEach(member => {
-    member.isOwner = member.id === transferForm.newOwnerId
-  })
-
-  // 更新群组基本信息
-  if (currentGroup.value && newOwner) {
-    currentGroup.value.ownerId = newOwner.id
-    currentGroup.value.ownerName = newOwner.name
-    groupBasicForm.ownerId = newOwner.id
-    groupBasicForm.ownerName = newOwner.name
-  }
-
-  // 添加操作日志
-  groupLogs.value.unshift({
-    operator: '管理员',
-    time: new Date().toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).replace(/\//g, '-'),
-    type: 'transfer_owner',
-    content: `转让群主给：${newOwner?.name}`,
-    ip: '192.168.1.100'
-  })
-
-  ElMessage.success('群主转让成功')
-  showTransferDialog.value = false
-  transferForm.newOwnerId = null
-  transferForm.remark = ''
+  loadGroupData()
 }
 </script>
 
@@ -588,12 +559,19 @@ const handleConfirmTransfer = () => {
   height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
+  background: #f5f7fa;
+
+  .breadcrumb {
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
 
   .main-card {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-radius: 8px;
 
     :deep(.el-card__body) {
       flex: 1;
@@ -604,26 +582,11 @@ const handleConfirmTransfer = () => {
     }
   }
 
-  .toolbar {
+  .pagination-wrapper {
+    margin-top: 16px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #ebeef5;
-
-    .toolbar-left,
-    .toolbar-center,
-    .toolbar-right {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-  }
-
-  .content-wrapper {
-    flex: 1;
-    overflow: hidden;
+    justify-content: flex-end;
+    flex-shrink: 0;
   }
 }
 </style>

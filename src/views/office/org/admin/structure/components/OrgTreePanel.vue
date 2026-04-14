@@ -1,43 +1,68 @@
 <template>
   <div class="org-tree-panel" :style="{ width: panelWidth + 'px' }">
     <div class="tree-header">
-      <span class="tree-title">部门树</span>
-      <div class="tree-actions">
-        <el-button link size="small" @click="$emit('expandAll')">全部展开</el-button>
-        <el-button link size="small" @click="$emit('collapseAll')">全部收起</el-button>
-      </div>
+      <h3 class="tree-title">组织架构</h3>
+      <el-dropdown trigger="click" @command="handleQuickAction">
+        <el-button size="small" icon="More">
+          快捷操作
+          <el-icon class="el-icon--right"><arrow-down /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="add-sub">新增子部门</el-dropdown-item>
+            <el-dropdown-item command="add-sibling">新增同级部门</el-dropdown-item>
+            <el-dropdown-item command="edit" :disabled="!currentNode">编辑</el-dropdown-item>
+            <el-dropdown-item command="delete" :disabled="!currentNode">删除</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
 
     <el-tree
         ref="treeRef"
-        :data="filteredTreeData"
+        :data="treeData"
         :props="treeProps"
-        node-key="id"
-        show-checkbox
-        highlight-current
-        draggable
+        :default-expand-all="treeSettings.autoExpand"
+        :highlight-current="true"
+        :draggable="true"
         :allow-drag="allowDrag"
         :allow-drop="allowDrop"
+        node-key="id"
         @node-click="handleNodeClick"
-        @check="handleCheck"
         @node-drag-end="handleNodeDragEnd"
-        :class="`density-${treeSettings.density}`"
     >
       <template #default="{ node, data }">
-        <span class="tree-node" :class="{ disabled: data.status === 'disabled' }">
-          <el-icon class="node-icon department">
-            <OfficeBuilding />
-          </el-icon>
-          <span class="node-label">{{ node.label }}</span>
-          <el-tag v-if="data.status === 'enabled'" size="small" type="success" class="node-status">启用</el-tag>
-          <el-tag v-else size="small" type="danger" class="node-status">禁用</el-tag>
-          <span v-if="treeSettings.showMemberCount" class="node-meta">
-            ({{ data.memberCount || 0 }}人)
+        <div class="tree-node" :class="{ 'is-disabled': data.status === 'disabled' }">
+          <span class="node-name">{{ node.label }}</span>
+
+          <span v-if="treeSettings.showCode" class="node-code">({{ data.code }})</span>
+
+          <span v-if="treeSettings.showMemberCount && data.memberCount" class="node-meta">
+            {{ data.memberCount }}人
           </span>
-          <span v-if="data.leader && treeSettings.showLeader" class="node-meta">
+
+          <span v-if="treeSettings.showLeader && data.leader" class="node-leader">
             - {{ data.leader }}
           </span>
-        </span>
+
+          <div class="node-actions" @click.stop>
+            <el-dropdown trigger="click" size="small">
+              <el-button link size="small" icon="MoreFilled" />
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="$emit('quick-add', data)">新增子部门</el-dropdown-item>
+                  <el-dropdown-item @click="$emit('quick-edit', data)">编辑</el-dropdown-item>
+                  <el-dropdown-item
+                      :disabled="data.id === 1 || data.memberCount > 0"
+                      @click="$emit('quick-delete', data)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
       </template>
     </el-tree>
   </div>
@@ -45,137 +70,151 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { OfficeBuilding } from '@element-plus/icons-vue'
+import { ArrowDown, MoreFilled } from '@element-plus/icons-vue'
 
 const props = defineProps({
-  treeData: Array,
-  treeSettings: Object,
-  searchKeyword: String,
-  statusFilter: String
+  treeData: {
+    type: Array,
+    default: () => []
+  },
+  treeSettings: {
+    type: Object,
+    default: () => ({})
+  },
+  searchKeyword: {
+    type: String,
+    default: ''
+  }
 })
 
-const emit = defineEmits(['nodeClick', 'nodeCheck', 'nodeDragEnd', 'expandAll', 'collapseAll'])
+const emit = defineEmits(['node-click', 'node-drag-end', 'quick-add', 'quick-edit', 'quick-delete'])
 
 const treeRef = ref(null)
-const panelWidth = ref(window.innerWidth * 0.3)
+const currentNode = ref(null)
+const panelWidth = ref(320)
 
 const treeProps = {
   children: 'children',
   label: 'name'
 }
 
-const filteredTreeData = computed(() => {
-  let data = JSON.parse(JSON.stringify(props.treeData))
-
-  if (props.statusFilter) {
-    data = filterByStatus(data, props.statusFilter)
-  }
-
-  if (props.searchKeyword) {
-    data = filterByKeyword(data, props.searchKeyword)
-  }
-
-  return data
-})
-
-const filterByStatus = (nodes, status) => {
-  return nodes.filter(node => {
-    const match = node.status === status
-    if (node.children) {
-      node.children = filterByStatus(node.children, status)
-    }
-    return match || (node.children && node.children.length > 0)
-  })
-}
-
-const filterByKeyword = (nodes, keyword) => {
-  return nodes.filter(node => {
-    const match = node.name.includes(keyword) || (node.leader && node.leader.includes(keyword))
-    if (node.children) {
-      node.children = filterByKeyword(node.children, keyword)
-    }
-    return match || (node.children && node.children.length > 0)
-  })
-}
-
-const allowDrag = (draggingNode) => {
-  return draggingNode.data.status === 'enabled'
-}
-
-const allowDrop = (draggingNode, dropNode, type) => {
-  return dropNode.data.status === 'enabled'
-}
-
 const handleNodeClick = (data) => {
-  emit('nodeClick', data)
-}
-
-const handleCheck = (checkedNode, checkedInfo) => {
-  emit('nodeCheck', checkedInfo.checkedNodes)
+  currentNode.value = data
+  emit('node-click', data)
 }
 
 const handleNodeDragEnd = (draggingNode, dropNode, dropType) => {
-  emit('nodeDragEnd', draggingNode, dropNode, dropType)
+  emit('node-drag-end', draggingNode.data, dropNode?.data, dropType)
 }
 
+const handleQuickAction = (command) => {
+  if (!currentNode.value && command !== 'add-sub') {
+    return
+  }
+
+  switch (command) {
+    case 'add-sub':
+      emit('quick-add', currentNode.value || { id: 1 })
+      break
+    case 'add-sibling':
+      emit('quick-add', { id: currentNode.value?.parentId || 1 })
+      break
+    case 'edit':
+      emit('quick-edit', currentNode.value)
+      break
+    case 'delete':
+      emit('quick-delete', currentNode.value)
+      break
+  }
+}
+
+const allowDrag = (draggingNode) => {
+  return draggingNode.data.id !== 1
+}
+
+const allowDrop = (draggingNode, dropNode, type) => {
+  if (type === 'inner') {
+    return true
+  }
+  return dropNode.data.id !== 1
+}
+
+// 全部展开
 const expandAll = () => {
-  if (treeRef.value && treeRef.value.store && treeRef.value.store.nodesMap) {
-    Object.values(treeRef.value.store.nodesMap).forEach(node => {
-      node.expanded = true
-    })
+  const expandNode = (node) => {
+    node.expanded = true
+    if (node.childNodes?.length) {
+      node.childNodes.forEach(expandNode)
+    }
+  }
+
+  if (treeRef.value) {
+    const rootNodes = treeRef.value.store.rootNode.childNodes
+    rootNodes.forEach(expandNode)
   }
 }
 
+// 全部收起
 const collapseAll = () => {
-  if (treeRef.value && treeRef.value.store && treeRef.value.store.nodesMap) {
-    Object.values(treeRef.value.store.nodesMap).forEach(node => {
-      node.expanded = false
-    })
+  const collapseNode = (node) => {
+    node.expanded = false
+    if (node.childNodes?.length) {
+      node.childNodes.forEach(collapseNode)
+    }
+  }
+
+  if (treeRef.value) {
+    const rootNodes = treeRef.value.store.rootNode.childNodes
+    rootNodes.forEach(collapseNode)
   }
 }
 
-defineExpose({ expandAll, collapseAll })
+defineExpose({
+  expandAll,
+  collapseAll
+})
 </script>
 
 <style lang="scss" scoped>
 .org-tree-panel {
-  border: 1px solid #dcdfe6;
+  width: 320px;
+  min-width: 250px;
+  max-width: 600px;
+  background: #fff;
+  border: 1px solid #e4e7ed;
   border-radius: 4px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   flex-shrink: 0;
 
   .tree-header {
-    padding: 12px;
-    border-bottom: 1px solid #dcdfe6;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e4e7ed;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f5f7fa;
+    background: #fafafa;
 
     .tree-title {
-      font-weight: 600;
+      margin: 0;
       font-size: 14px;
+      font-weight: 600;
+      color: #303133;
     }
   }
 
   :deep(.el-tree) {
+    flex: 1;
+    overflow: auto;
     padding: 8px;
 
-    &.density-compact {
-      .el-tree-node__content {
-        height: 28px;
-      }
-    }
+    .el-tree-node__content {
+      height: 36px;
+      padding: 0 8px;
 
-    &.density-standard {
-      .el-tree-node__content {
-        height: 36px;
-      }
-    }
-
-    &.density-loose {
-      .el-tree-node__content {
-        height: 44px;
+      &:hover {
+        background-color: #f5f7fa;
       }
     }
 
@@ -184,27 +223,44 @@ defineExpose({ expandAll, collapseAll })
       align-items: center;
       gap: 6px;
       flex: 1;
+      padding: 2px 0;
 
-      &.disabled {
-        color: #c0c4cc;
+      &.is-disabled {
+        opacity: 0.6;
       }
 
-      .node-icon {
-        font-size: 16px;
-        color: #409eff;
+      .node-name {
+        font-size: 13px;
+        color: #303133;
+        font-weight: 500;
       }
 
-      .node-label {
-        flex: 1;
-      }
-
-      .node-status {
-        margin-left: 4px;
+      .node-code {
+        font-size: 11px;
+        color: #909399;
       }
 
       .node-meta {
-        font-size: 12px;
-        color: #909399;
+        font-size: 11px;
+        color: #409eff;
+        background: #ecf5ff;
+        padding: 1px 6px;
+        border-radius: 10px;
+      }
+
+      .node-leader {
+        font-size: 11px;
+        color: #606266;
+      }
+
+      .node-actions {
+        margin-left: auto;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      &:hover .node-actions {
+        opacity: 1;
       }
     }
   }

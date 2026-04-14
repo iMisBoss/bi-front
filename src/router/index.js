@@ -360,6 +360,11 @@ const routes = [
         component: () => import('@/views/message/email/Index.vue')
     },
     {
+        path: '/message/email-admin',
+        name: 'MessageEmailAdmin',
+        component: () => import('@/views/message/email-admin/Index.vue')
+    },
+    {
         path: '/message/station',
         name: 'MessageStation',
         component: () => import('@/views/message/station/Index.vue')

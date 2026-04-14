@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <div class="categories-page">
     <div class="page-header">

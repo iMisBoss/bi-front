@@ -1,91 +1,186 @@
 <template>
   <el-dialog
-      v-model="dialogVisible"
-      title="导入职务数据"
-      width="500px"
+      v-model="visible"
+      :title="`${typeName}导入`"
+      width="600px"
+      :close-on-click-modal="false"
+      @close="handleClose"
   >
-    <el-alert
-        title="导入说明"
-        type="info"
-        :closable="false"
-        style="margin-bottom: 16px"
-    >
-      <p>1. 请下载模板，严格按照模板格式填写；</p>
-      <p>2. 职务编码必须唯一，重复的编码将被跳过；</p>
-      <p>3. 支持.xls和.xlsx格式文件。</p>
-    </el-alert>
-    <el-upload
-        drag
-        action="#"
-        :auto-upload="false"
-        :on-change="handleFileChange"
-        accept=".xls,.xlsx"
-        :limit="1"
-    >
-      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text">
-        将文件拖到此处，或<em>点击上传</em>
-      </div>
-      <template #tip>
-        <div class="el-upload__tip">
-          只能上传xls/xlsx文件
+    <div class="import-content">
+      <el-alert
+          title="导入说明"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 16px"
+      >
+        <p>1. 请先下载模板，按照模板格式填写数据</p>
+        <p>2. 支持批量导入，单次最多导入500条数据</p>
+        <p>3. 编码重复的数据将会被跳过</p>
+        <p>4. 导入成功后将自动刷新列表</p>
+      </el-alert>
+
+      <el-upload
+          ref="uploadRef"
+          class="upload-area"
+          drag
+          :auto-upload="false"
+          :limit="1"
+          accept=".xlsx,.xls"
+          :on-change="handleFileChange"
+          :on-exceed="handleExceed"
+      >
+        <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+        <div class="el-upload__text">
+          将文件拖到此处，或<em>点击上传</em>
         </div>
-      </template>
-    </el-upload>
+        <template #tip>
+          <div class="el-upload__tip">
+            只能上传 xlsx/xls 文件
+          </div>
+        </template>
+      </el-upload>
+
+      <div v-if="fileName" class="file-info">
+        <el-icon><Document /></el-icon>
+        <span>{{ fileName }}</span>
+        <el-button link type="danger" @click="clearFile">
+          <el-icon><Close /></el-icon>
+        </el-button>
+      </div>
+    </div>
+
     <template #footer>
-      <el-button @click="handleDownloadTemplate">下载模板</el-button>
-      <el-button @click="dialogVisible = false">取消</el-button>
-      <el-button type="primary" :disabled="!selectedFile" @click="handleConfirm">开始导入</el-button>
+      <div class="dialog-footer">
+        <el-button @click="handleDownloadTemplate">
+          <el-icon><Download /></el-icon>
+          下载模板
+        </el-button>
+        <el-button @click="handleClose">取消</el-button>
+        <el-button
+            type="primary"
+            @click="handleConfirmImport"
+            :disabled="!file"
+            :loading="importing"
+        >
+          开始导入
+        </el-button>
+      </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { UploadFilled } from '@element-plus/icons-vue'
+import { UploadFilled, Document, Close, Download } from '@element-plus/icons-vue'
 
 const props = defineProps({
-  modelValue: Boolean
+  modelValue: {
+    type: Boolean,
+    default: false
+  },
+  type: {
+    type: String,
+    default: 'level'
+  }
 })
 
 const emit = defineEmits(['update:modelValue', 'download-template', 'confirm-import'])
 
-const dialogVisible = ref(false)
-const selectedFile = ref(null)
+const visible = ref(props.modelValue)
+const uploadRef = ref(null)
+const file = ref(null)
+const fileName = ref('')
+const importing = ref(false)
+
+const typeName = computed(() => {
+  return props.type === 'level' ? '职级' : '职务'
+})
 
 watch(() => props.modelValue, (val) => {
-  dialogVisible.value = val
+  visible.value = val
   if (!val) {
-    selectedFile.value = null
+    clearFile()
   }
 })
 
-watch(dialogVisible, (val) => {
+watch(visible, (val) => {
   emit('update:modelValue', val)
 })
 
-const handleFileChange = (file) => {
-  selectedFile.value = file
+const handleFileChange = (uploadFile) => {
+  file.value = uploadFile.raw
+  fileName.value = uploadFile.name
+}
+
+const handleExceed = () => {
+  ElMessage.warning('只能上传一个文件')
+}
+
+const clearFile = () => {
+  file.value = null
+  fileName.value = ''
+  uploadRef.value?.clearFiles()
 }
 
 const handleDownloadTemplate = () => {
   emit('download-template')
 }
 
-const handleConfirm = () => {
-  if (!selectedFile.value) {
+const handleConfirmImport = () => {
+  if (!file.value) {
     ElMessage.warning('请先选择文件')
     return
   }
-  emit('confirm-import', selectedFile.value)
+
+  importing.value = true
+
+  // 模拟导入过程
+  setTimeout(() => {
+    importing.value = false
+    emit('confirm-import')
+    clearFile()
+  }, 1500)
+}
+
+const handleClose = () => {
+  visible.value = false
+  clearFile()
 }
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-upload__tip) {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #909399;
+.import-content {
+  .upload-area {
+    margin: 20px 0;
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f5f7fa;
+    border-radius: 4px;
+    margin-top: 12px;
+
+    .el-icon {
+      font-size: 18px;
+      color: #409eff;
+    }
+
+    span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

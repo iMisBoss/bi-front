@@ -1,84 +1,60 @@
 <template>
-  <div class="job-management-page">
+  <div class="job-level-page">
+    <!-- 面包屑 -->
+    <el-breadcrumb separator="/" class="breadcrumb">
+      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
+      <el-breadcrumb-item>组织人事管理</el-breadcrumb-item>
+      <el-breadcrumb-item>职务职级管理</el-breadcrumb-item>
+    </el-breadcrumb>
+
     <el-card class="main-card" shadow="never">
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <el-button-group>
-            <el-button @click="handleBatchEnable" :disabled="selectedRows.length === 0">批量启用</el-button>
-            <el-button @click="handleBatchDisable" :disabled="selectedRows.length === 0">批量禁用</el-button>
-            <el-button @click="handleBatchDelete" :disabled="selectedRows.length === 0">批量删除</el-button>
-            <el-button @click="handleExport">导出</el-button>
-          </el-button-group>
-        </div>
+      <!-- 顶部工具栏 -->
+      <JobToolbar
+          :selected-count="selectedRows.length"
+          :active-tab="activeTab"
+          @batch-enable="handleBatchEnable"
+          @batch-disable="handleBatchDisable"
+          @batch-delete="handleBatchDelete"
+          @export="handleExport"
+          @add="handleAdd"
+          @import="showImportDialog = true"
+          @refresh="handleRefresh"
+          @copy="handleCopy"
+          @search="handleSearch"
+          @filter="handleFilter"
+      />
 
-        <div class="toolbar-center">
-          <el-button type="primary" @click="handleAdd">新增</el-button>
-          <el-button @click="showImportDialog = true">导入</el-button>
-          <el-button @click="handleRefresh">刷新</el-button>
-          <el-button @click="showSettings = true"> 显示设置 </el-button>
-        </div>
-
-        <div class="toolbar-right">
-          <el-input
-              v-model="searchKeyword"
-              placeholder="输入职务名称搜索"
-              prefix-icon="Search"
-              clearable
-              style="width: 200px"
-              @input="handleSearch"
+      <!-- Tab切换 -->
+      <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="content-tabs">
+        <!-- Tab1: 职级管理 -->
+        <el-tab-pane label="职级管理" name="level">
+          <LevelManagement
+              ref="levelRef"
+              :table-data="filteredLevelData"
+              @selection-change="handleSelectionChange"
+              @edit="handleEdit"
+              @view="handleView"
+              @delete="handleDelete"
+              @toggle-status="handleToggleStatus"
           />
-          <el-select v-model="levelFilter" placeholder="职级级别" style="width: 120px" @change="handleFilter">
-            <el-option label="全部" value="" />
-            <el-option label="基层" value="基层" />
-            <el-option label="中层" value="中层" />
-            <el-option label="高层" value="高层" />
-            <el-option label="高管" value="高管" />
-          </el-select>
-          <el-select v-model="statusFilter" placeholder="状态" style="width: 100px" @change="handleFilter">
-            <el-option label="全部" value="" />
-            <el-option label="启用" value="enabled" />
-            <el-option label="禁用" value="disabled" />
-          </el-select>
-        </div>
-      </div>
+        </el-tab-pane>
 
-      <div class="content-wrapper">
-        <el-table
-            :data="filteredTableData"
-            border
-            @selection-change="handleSelectionChange"
-            row-key="id"
-        >
-          <el-table-column type="selection" width="50" />
-          <el-table-column prop="sort" label="职级排序" width="100" />
-          <el-table-column prop="name" label="职务名称" width="150" />
-          <el-table-column prop="code" label="职务编码" width="120" />
-          <el-table-column prop="level" label="职级级别" width="100" />
-          <el-table-column prop="status" label="状态" width="100">
-            <template #default="{ row }">
-              <el-tag :type="row.status === 'enabled' ? 'success' : 'info'">
-                {{ row.status === 'enabled' ? '启用' : '禁用' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" fixed="right" width="200">
-            <template #default="{ row }">
-              <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-              <el-button link type="primary" size="small" @click="handleView(row)">查看</el-button>
-              <el-button
-                  link
-                  type="danger"
-                  size="small"
-                  :disabled="row.linkedPositions > 0"
-                  @click="handleDelete(row)"
-              >
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+        <!-- Tab2: 职务管理 -->
+        <el-tab-pane label="职务管理" name="position">
+          <PositionManagement
+              ref="positionRef"
+              :table-data="filteredPositionData"
+              :level-options="levelOptions"
+              @selection-change="handleSelectionChange"
+              @edit="handleEdit"
+              @view="handleView"
+              @delete="handleDelete"
+              @toggle-status="handleToggleStatus"
+          />
+        </el-tab-pane>
+      </el-tabs>
 
+      <!-- 底部分页 -->
       <div class="pagination-wrapper">
         <el-pagination
             v-model:current-page="currentPage"
@@ -86,215 +62,93 @@
             :total="total"
             :page-sizes="[10, 20, 50, 100]"
             layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
 
-    <JobSettings
-        v-model="showSettings"
-        @save="saveSettings"
+    <!-- 新增/编辑抽屉 -->
+    <JobDrawer
+        v-model="showDrawer"
+        :type="drawerType"
+        :data="currentData"
+        :level-options="levelOptions"
+        @confirm="handleConfirmSave"
     />
 
-    <JobAddDialog
-        v-model="showAddDialog"
-        :job-data="currentJob"
-        @confirm="handleConfirmAdd"
-    />
-
+    <!-- 导入对话框 -->
     <JobImportDialog
         v-model="showImportDialog"
+        :type="activeTab"
         @download-template="downloadTemplate"
         @confirm-import="handleConfirmImport"
     />
 
-    <el-drawer
-        v-model="drawerVisible"
-        :title="`${currentJob?.name || ''}（职务）`"
-        size="600px"
-    >
-      <template #header>
-        <div class="drawer-header">
-          <h3 class="drawer-title">{{ currentJob?.name }}（职务）</h3>
-          <div class="drawer-actions">
-            <el-button size="small" @click="handleEdit(currentJob)">编辑</el-button>
-            <el-button
-                v-if="currentJob?.status === 'enabled'"
-                size="small"
-                type="warning"
-                @click="handleToggleStatus(currentJob)"
-            >
-              禁用
-            </el-button>
-            <el-button
-                v-else
-                size="small"
-                type="success"
-                @click="handleToggleStatus(currentJob)"
-            >
-              启用
-            </el-button>
-            <el-button
-                size="small"
-                type="danger"
-                :disabled="currentJob?.linkedPositions > 0"
-                @click="handleDelete(currentJob)"
-            >
-              删除
-            </el-button>
-          </div>
-        </div>
-      </template>
-
-      <el-tabs v-model="activeTab">
-        <el-tab-pane label="基本信息" name="basic">
-          <el-form :model="basicForm" label-width="100px" class="basic-form">
-            <el-form-item label="职务名称" required>
-              <el-input v-model="basicForm.name" />
-            </el-form-item>
-            <el-form-item label="职务编码" required>
-              <el-input v-model="basicForm.code" />
-            </el-form-item>
-            <el-form-item label="职级级别" required>
-              <el-select v-model="basicForm.level" placeholder="请选择">
-                <el-option label="基层" value="基层" />
-                <el-option label="中层" value="中层" />
-                <el-option label="高层" value="高层" />
-                <el-option label="高管" value="高管" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="排序号" required>
-              <el-input-number v-model="basicForm.sort" :min="1" :max="999" />
-            </el-form-item>
-            <el-form-item label="状态" required>
-              <el-radio-group v-model="basicForm.status">
-                <el-radio label="enabled">启用</el-radio>
-                <el-radio label="disabled">禁用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="备注">
-              <el-input
-                  v-model="basicForm.remark"
-                  type="textarea"
-                  :rows="3"
-                  maxlength="200"
-                  show-word-limit
-              />
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-
-        <el-tab-pane label="关联岗位" name="positions">
-          <el-table :data="linkedPositions" border>
-            <el-table-column prop="name" label="岗位名称" />
-            <el-table-column prop="department" label="所属部门" />
-            <el-table-column prop="memberCount" label="在岗人数" width="100" />
-          </el-table>
-        </el-tab-pane>
-
-        <el-tab-pane label="操作日志" name="logs">
-          <div class="logs-toolbar">
-            <el-select v-model="logOperatorFilter" placeholder="操作人" size="small" style="width: 120px" clearable>
-              <el-option v-for="op in logOperators" :key="op" :label="op" :value="op" />
-            </el-select>
-            <el-date-picker
-                v-model="logDateRange"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                size="small"
-                style="width: 240px"
-            />
-            <el-select v-model="logTypeFilter" placeholder="操作类型" size="small" style="width: 120px" clearable>
-              <el-option label="新增" value="create" />
-              <el-option label="编辑" value="edit" />
-              <el-option label="删除" value="delete" />
-              <el-option label="禁用" value="disable" />
-              <el-option label="启用" value="enable" />
-              <el-option label="排序调整" value="sort" />
-            </el-select>
-            <el-button size="small" @click="handleExportLogs">导出日志</el-button>
-          </div>
-          <el-table :data="filteredLogs" border>
-            <el-table-column prop="operator" label="操作人" width="120" />
-            <el-table-column prop="time" label="操作时间" width="180" />
-            <el-table-column prop="type" label="操作类型" width="100">
-              <template #default="{ row }">
-                <el-tag :type="getLogTypeTag(row.type)">{{ getLogTypeLabel(row.type) }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="content" label="变更内容" min-width="250" />
-            <el-table-column prop="ip" label="操作IP" width="130" />
-          </el-table>
-        </el-tab-pane>
-      </el-tabs>
-    </el-drawer>
+    <!-- 查看详情抽屉 -->
+    <JobDetailDrawer
+        v-model="showDetailDrawer"
+        :data="currentData"
+        :type="activeTab"
+        @edit="handleEdit"
+        @toggle-status="handleToggleStatus"
+        @delete="handleDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
-import JobSettings from './components/JobSettings.vue'
-import JobAddDialog from './components/JobAddDialog.vue'
+import JobToolbar from './components/JobToolbar.vue'
+import LevelManagement from './components/LevelManagement.vue'
+import PositionManagement from './components/PositionManagement.vue'
+import JobDrawer from './components/JobDrawer.vue'
 import JobImportDialog from './components/JobImportDialog.vue'
+import JobDetailDrawer from './components/JobDetailDrawer.vue'
 
+const activeTab = ref('level')
 const selectedRows = ref([])
-const currentJob = ref(null)
-const drawerVisible = ref(false)
-const activeTab = ref('basic')
-const searchKeyword = ref('')
-const levelFilter = ref('')
-const statusFilter = ref('')
-const showSettings = ref(false)
-const showAddDialog = ref(false)
+const currentData = ref(null)
+const drawerType = ref('add') // add, edit
+const showDrawer = ref(false)
 const showImportDialog = ref(false)
+const showDetailDrawer = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 
-const logOperatorFilter = ref('')
-const logDateRange = ref([])
-const logTypeFilter = ref('')
+const searchKeyword = ref('')
+const levelFilter = ref('')
+const statusFilter = ref('')
 
-const basicForm = reactive({
-  id: null,
-  name: '',
-  code: '',
-  level: '',
-  sort: 1,
-  status: 'enabled',
-  remark: ''
+// 职级数据
+const levelData = ref([])
+// 职务数据
+const positionData = ref([])
+
+// 职级选项（用于职务关联）
+const levelOptions = computed(() => {
+  return levelData.value
+      .filter(item => item.status === 'enabled')
+      .map(item => ({
+        label: item.name,
+        value: item.id
+      }))
 })
 
-const tableData = ref([])
-const linkedPositions = ref([])
-const logs = ref([])
+// 过滤后的职级数据
+const filteredLevelData = computed(() => {
+  let data = [...levelData.value]
 
-onMounted(() => {
-  loadTableData()
-})
-
-const loadTableData = () => {
-  tableData.value = [
-    { id: 1, name: '专员', code: 'JOB-001', level: '基层', sort: 1, status: 'enabled', linkedPositions: 15, remark: '' },
-    { id: 2, name: '主管', code: 'JOB-002', level: '中层', sort: 2, status: 'enabled', linkedPositions: 8, remark: '' },
-    { id: 3, name: '经理', code: 'JOB-003', level: '中层', sort: 3, status: 'enabled', linkedPositions: 5, remark: '' },
-    { id: 4, name: '总监', code: 'JOB-004', level: '高层', sort: 4, status: 'enabled', linkedPositions: 3, remark: '' },
-    { id: 5, name: '总经理', code: 'JOB-005', level: '高管', sort: 5, status: 'enabled', linkedPositions: 1, remark: '' }
-  ]
-  total.value = tableData.value.length
-}
-
-const filteredTableData = computed(() => {
-  let data = [...tableData.value]
-
-  if (searchKeyword.value) {
-    data = data.filter(item => item.name.includes(searchKeyword.value))
+  if (searchKeyword.value && activeTab.value === 'level') {
+    data = data.filter(item =>
+        item.name?.includes(searchKeyword.value) ||
+        item.code?.includes(searchKeyword.value)
+    )
   }
 
-  if (levelFilter.value) {
+  if (levelFilter.value && activeTab.value === 'level') {
     data = data.filter(item => item.level === levelFilter.value)
   }
 
@@ -305,137 +159,359 @@ const filteredTableData = computed(() => {
   return data
 })
 
-const filteredLogs = computed(() => {
-  let data = logs.value
+// 过滤后的职务数据
+const filteredPositionData = computed(() => {
+  let data = [...positionData.value]
 
-  if (logOperatorFilter.value) {
-    data = data.filter(log => log.operator === logOperatorFilter.value)
+  if (searchKeyword.value && activeTab.value === 'position') {
+    data = data.filter(item =>
+        item.name?.includes(searchKeyword.value) ||
+        item.code?.includes(searchKeyword.value)
+    )
   }
 
-  if (logTypeFilter.value) {
-    data = data.filter(log => log.type === logTypeFilter.value)
-  }
-
-  if (logDateRange.value && logDateRange.value.length === 2) {
-    const [start, end] = logDateRange.value
-    data = data.filter(log => {
-      const logTime = new Date(log.time)
-      return logTime >= start && logTime <= end
-    })
+  if (statusFilter.value) {
+    data = data.filter(item => item.status === statusFilter.value)
   }
 
   return data
 })
 
-const logOperators = computed(() => {
-  return [...new Set(logs.value.map(log => log.operator))]
+onMounted(() => {
+  loadLevelData()
+  loadPositionData()
 })
 
+// 加载职级数据
+const loadLevelData = () => {
+  levelData.value = [
+    {
+      id: 1,
+      name: '专员',
+      code: 'LEVEL-001',
+      level: '基层',
+      salaryGrade: 'P1',
+      approvalLimit: 5000,
+      sort: 1,
+      status: 'enabled',
+      memberCount: 45,
+      description: '基础执行层'
+    },
+    {
+      id: 2,
+      name: '主管',
+      code: 'LEVEL-002',
+      level: '中层',
+      salaryGrade: 'P3',
+      approvalLimit: 20000,
+      sort: 2,
+      status: 'enabled',
+      memberCount: 20,
+      description: '团队管理层'
+    },
+    {
+      id: 3,
+      name: '经理',
+      code: 'LEVEL-003',
+      level: '中层',
+      salaryGrade: 'M1',
+      approvalLimit: 50000,
+      sort: 3,
+      status: 'enabled',
+      memberCount: 12,
+      description: '部门管理层'
+    },
+    {
+      id: 4,
+      name: '总监',
+      code: 'LEVEL-004',
+      level: '高层',
+      salaryGrade: 'M3',
+      approvalLimit: 200000,
+      sort: 4,
+      status: 'enabled',
+      memberCount: 5,
+      description: '事业部管理层'
+    },
+    {
+      id: 5,
+      name: '总经理',
+      code: 'LEVEL-005',
+      level: '高管',
+      salaryGrade: 'E1',
+      approvalLimit: 1000000,
+      sort: 5,
+      status: 'enabled',
+      memberCount: 2,
+      description: '公司决策层'
+    }
+  ]
+  updateTotal()
+}
+
+// 加载职务数据
+const loadPositionData = () => {
+  positionData.value = [
+    {
+      id: 1,
+      name: '前端开发工程师',
+      code: 'POS-001',
+      levelId: 2,
+      levelName: '主管',
+      sequence: '技术序列',
+      sort: 1,
+      status: 'enabled',
+      memberCount: 8,
+      department: '技术部'
+    },
+    {
+      id: 2,
+      name: '后端开发工程师',
+      code: 'POS-002',
+      levelId: 2,
+      levelName: '主管',
+      sequence: '技术序列',
+      sort: 2,
+      status: 'enabled',
+      memberCount: 12,
+      department: '技术部'
+    },
+    {
+      id: 3,
+      name: '产品经理',
+      code: 'POS-003',
+      levelId: 3,
+      levelName: '经理',
+      sequence: '产品序列',
+      sort: 3,
+      status: 'enabled',
+      memberCount: 5,
+      department: '产品部'
+    },
+    {
+      id: 4,
+      name: '财务专员',
+      code: 'POS-004',
+      levelId: 1,
+      levelName: '专员',
+      sequence: '职能序列',
+      sort: 4,
+      status: 'enabled',
+      memberCount: 6,
+      department: '财务部'
+    },
+    {
+      id: 5,
+      name: '人事经理',
+      code: 'POS-005',
+      levelId: 3,
+      levelName: '经理',
+      sequence: '职能序列',
+      sort: 5,
+      status: 'disabled',
+      memberCount: 0,
+      department: '人事部'
+    }
+  ]
+  updateTotal()
+}
+
+// 更新总数
+const updateTotal = () => {
+  total.value = activeTab.value === 'level' ? levelData.value.length : positionData.value.length
+}
+
+// ==================== 事件处理 ====================
+
+// Tab切换
+const handleTabChange = (tab) => {
+  selectedRows.value = []
+  searchKeyword.value = ''
+  levelFilter.value = ''
+  statusFilter.value = ''
+  updateTotal()
+}
+
+// 选择变化
 const handleSelectionChange = (selection) => {
   selectedRows.value = selection
 }
 
+// 新增
 const handleAdd = () => {
-  Object.assign(basicForm, {
-    id: null,
-    name: '',
-    code: '',
-    level: '',
-    sort: tableData.value.length + 1,
-    status: 'enabled',
-    remark: ''
-  })
-  currentJob.value = null
-  showAddDialog.value = true
+  drawerType.value = 'add'
+  currentData.value = null
+  showDrawer.value = true
 }
 
+// 编辑
 const handleEdit = (row) => {
-  Object.assign(basicForm, { ...row })
-  currentJob.value = row
-  showAddDialog.value = true
-  drawerVisible.value = false
+  drawerType.value = 'edit'
+  currentData.value = { ...row }
+  showDrawer.value = true
+  showDetailDrawer.value = false
 }
 
+// 查看
 const handleView = (row) => {
-  currentJob.value = row
-  Object.assign(basicForm, { ...row })
-
-  linkedPositions.value = [
-    { id: 1, name: '前端开发岗', department: '技术部', memberCount: 5 },
-    { id: 2, name: '后端开发岗', department: '技术部', memberCount: 8 }
-  ]
-
-  logs.value = [
-    { operator: '管理员', time: '2026-04-13 10:00:00', type: 'create', content: '新增职务', ip: '192.168.1.100' },
-    { operator: '管理员', time: '2026-04-13 11:00:00', type: 'edit', content: '修改职务编码', ip: '192.168.1.100' }
-  ]
-
-  drawerVisible.value = true
+  currentData.value = row
+  showDetailDrawer.value = true
 }
 
-const handleConfirmAdd = (formData) => {
-  if (formData.id) {
-    const index = tableData.value.findIndex(item => item.id === formData.id)
-    if (index !== -1) {
-      tableData.value[index] = { ...tableData.value[index], ...formData }
-    }
-    ElMessage.success('编辑成功')
-  } else {
-    formData.id = tableData.value.length + 1
-    formData.linkedPositions = 0
-    tableData.value.push(formData)
-    ElMessage.success('新增成功')
+// 删除
+const handleDelete = (row) => {
+  const typeName = activeTab.value === 'level' ? '职级' : '职务'
+
+  if (row.memberCount > 0) {
+    ElMessageBox.alert(
+        `该${typeName}下存在 ${row.memberCount} 名员工，无法删除。请先将人员调动至其他${typeName}后再删除。`,
+        '删除失败',
+        {
+          confirmButtonText: '知道了',
+          type: 'warning'
+        }
+    )
+    return
   }
-  showAddDialog.value = false
-  loadTableData()
+
+  ElMessageBox.confirm(
+      `确定要删除该${typeName}吗？删除后不可恢复！`,
+      '警告',
+      {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'error',
+        confirmButtonClass: 'el-button--danger'
+      }
+  ).then(() => {
+    if (activeTab.value === 'level') {
+      levelData.value = levelData.value.filter(item => item.id !== row.id)
+    } else {
+      positionData.value = positionData.value.filter(item => item.id !== row.id)
+    }
+    ElMessage.success('删除成功')
+    updateTotal()
+  })
 }
 
+// 切换状态
 const handleToggleStatus = (row) => {
+  const typeName = activeTab.value === 'level' ? '职级' : '职务'
+
+  if (row.status === 'enabled' && row.memberCount > 0) {
+    ElMessageBox.alert(
+        `该${typeName}下存在 ${row.memberCount} 名在职员工，无法禁用。请先将人员调动后再禁用。`,
+        '禁用失败',
+        {
+          confirmButtonText: '知道了',
+          type: 'warning'
+        }
+    )
+    return
+  }
+
   const action = row.status === 'enabled' ? '禁用' : '启用'
-  ElMessageBox.confirm(`确定要${action}该职务吗？`, '提示', {
+  ElMessageBox.confirm(`确定要${action}该${typeName}吗？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
     row.status = row.status === 'enabled' ? 'disabled' : 'enabled'
     ElMessage.success(`${action}成功`)
-    if (drawerVisible.value) {
-      loadTableData()
-    }
   })
 }
 
-const handleDelete = (row) => {
-  if (row.linkedPositions > 0) {
-    ElMessage.warning('该职务已关联岗位，无法删除')
+// 复制
+const handleCopy = (row) => {
+  drawerType.value = 'add'
+  currentData.value = {
+    ...row,
+    id: null,
+    name: `${row.name}(副本)`,
+    code: ''
+  }
+  showDrawer.value = true
+}
+
+// 确认保存
+const handleConfirmSave = (formData) => {
+  if (formData.id) {
+    // 编辑模式
+    if (activeTab.value === 'level') {
+      const index = levelData.value.findIndex(item => item.id === formData.id)
+      if (index !== -1) {
+        levelData.value[index] = { ...levelData.value[index], ...formData }
+      }
+    } else {
+      const index = positionData.value.findIndex(item => item.id === formData.id)
+      if (index !== -1) {
+        positionData.value[index] = { ...positionData.value[index], ...formData }
+      }
+    }
+    ElMessage.success('编辑成功')
+  } else {
+    // 新增模式
+    formData.id = Date.now()
+    if (activeTab.value === 'level') {
+      levelData.value.push(formData)
+    } else {
+      positionData.value.push(formData)
+    }
+    ElMessage.success('新增成功')
+  }
+  showDrawer.value = false
+  updateTotal()
+}
+
+// 批量启用
+const handleBatchEnable = () => {
+  if (selectedRows.value.length === 0) return
+
+  ElMessageBox.confirm(
+      `确定要批量启用 ${selectedRows.value.length} 条数据吗？`,
+      '批量启用',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+  ).then(() => {
+    selectedRows.value.forEach(row => {
+      row.status = 'enabled'
+    })
+    ElMessage.success('批量启用成功')
+    selectedRows.value = []
+  })
+}
+
+// 批量禁用
+const handleBatchDisable = () => {
+  if (selectedRows.value.length === 0) return
+
+  const invalidRows = selectedRows.value.filter(row => row.memberCount > 0)
+
+  if (invalidRows.length > 0) {
+    const names = invalidRows.map(row => row.name).join('、')
+    ElMessageBox.alert(
+        `以下数据存在绑定人员，无法禁用：${names}`,
+        '批量禁用失败',
+        {
+          confirmButtonText: '知道了',
+          type: 'warning'
+        }
+    )
     return
   }
-  ElMessageBox.confirm('确定要删除该职务吗？', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    tableData.value = tableData.value.filter(item => item.id !== row.id)
-    ElMessage.success('删除成功')
-    drawerVisible.value = false
-    loadTableData()
-  })
-}
 
-const handleBatchEnable = () => {
-  selectedRows.value.forEach(row => {
-    row.status = 'enabled'
-  })
-  ElMessage.success(`批量启用 ${selectedRows.value.length} 个职务`)
-  selectedRows.value = []
-}
-
-const handleBatchDisable = () => {
-  ElMessageBox.confirm(`确定要批量禁用 ${selectedRows.value.length} 个职务吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
+  ElMessageBox.confirm(
+      `确定要批量禁用 ${selectedRows.value.length} 条数据吗？`,
+      '批量禁用',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+  ).then(() => {
     selectedRows.value.forEach(row => {
       row.status = 'disabled'
     })
@@ -444,43 +520,76 @@ const handleBatchDisable = () => {
   })
 }
 
+// 批量删除
 const handleBatchDelete = () => {
-  const canDelete = selectedRows.value.filter(row => row.linkedPositions === 0)
-  if (canDelete.length === 0) {
-    ElMessage.warning('选中的职务均已关联岗位，无法删除')
+  if (selectedRows.value.length === 0) return
+
+  const invalidRows = selectedRows.value.filter(row => row.memberCount > 0)
+
+  if (invalidRows.length > 0) {
+    const names = invalidRows.map(row => row.name).join('、')
+    ElMessageBox.alert(
+        `以下数据存在绑定人员，无法删除：${names}`,
+        '批量删除失败',
+        {
+          confirmButtonText: '知道了',
+          type: 'warning'
+        }
+    )
     return
   }
-  ElMessageBox.confirm(`确定要删除选中的 ${canDelete.length} 个职务吗？删除后不可恢复！`, '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    tableData.value = tableData.value.filter(item => {
-      return !selectedRows.value.find(sel => sel.id === item.id) || item.linkedPositions > 0
-    })
+
+  ElMessageBox.confirm(
+      `确定要删除选中的 ${selectedRows.value.length} 条数据吗？删除后不可恢复！`,
+      '警告',
+      {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'error',
+        confirmButtonClass: 'el-button--danger'
+      }
+  ).then(() => {
+    const ids = selectedRows.value.map(row => row.id)
+    if (activeTab.value === 'level') {
+      levelData.value = levelData.value.filter(item => !ids.includes(item.id))
+    } else {
+      positionData.value = positionData.value.filter(item => !ids.includes(item.id))
+    }
     ElMessage.success('批量删除成功')
     selectedRows.value = []
-    loadTableData()
+    updateTotal()
   })
 }
 
+// 导出
 const handleExport = () => {
-  ElMessage.success('导出成功')
+  ElMessage.success(`${activeTab.value === 'level' ? '职级' : '职务'}数据导出成功`)
 }
 
+// 刷新
 const handleRefresh = () => {
-  loadTableData()
+  if (activeTab.value === 'level') {
+    loadLevelData()
+  } else {
+    loadPositionData()
+  }
   ElMessage.success('刷新成功')
 }
 
+// 搜索和筛选
 const handleSearch = () => {}
-
 const handleFilter = () => {}
 
-const saveSettings = () => {
-  ElMessage.success('设置已保存')
+// 分页
+const handleSizeChange = (val) => {
+  pageSize.value = val
 }
 
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+}
+
+// 导入
 const downloadTemplate = () => {
   ElMessage.success('模板下载成功')
 }
@@ -488,50 +597,33 @@ const downloadTemplate = () => {
 const handleConfirmImport = () => {
   ElMessage.success('导入成功')
   showImportDialog.value = false
-  loadTableData()
-}
-
-const handleExportLogs = () => {
-  ElMessage.success('日志导出成功')
-}
-
-const getLogTypeTag = (type) => {
-  const tags = {
-    create: 'success',
-    edit: 'primary',
-    delete: 'danger',
-    disable: 'warning',
-    enable: 'success',
-    sort: 'info'
+  if (activeTab.value === 'level') {
+    loadLevelData()
+  } else {
+    loadPositionData()
   }
-  return tags[type] || ''
-}
-
-const getLogTypeLabel = (type) => {
-  const labels = {
-    create: '新增',
-    edit: '编辑',
-    delete: '删除',
-    disable: '禁用',
-    enable: '启用',
-    sort: '排序调整'
-  }
-  return labels[type] || type
 }
 </script>
 
 <style lang="scss" scoped>
-.job-management-page {
+.job-level-page {
   padding: 20px;
   height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
+  background: #f5f7fa;
+
+  .breadcrumb {
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
 
   .main-card {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-radius: 8px;
 
     :deep(.el-card__body) {
       flex: 1;
@@ -542,76 +634,36 @@ const getLogTypeLabel = (type) => {
     }
   }
 
-  .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #ebeef5;
-
-    .toolbar-left,
-    .toolbar-center,
-    .toolbar-right {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-  }
-
-  .content-wrapper {
+  .content-tabs {
     flex: 1;
-    overflow: auto;
-    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    :deep(.el-tabs__header) {
+      margin: 0 0 16px 0;
+      padding-bottom: 0;
+      border-bottom: 1px solid #ebeef5;
+    }
+
+    :deep(.el-tabs__content) {
+      flex: 1;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    :deep(.el-tab-pane) {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .pagination-wrapper {
     margin-top: 16px;
     display: flex;
     justify-content: flex-end;
-  }
-
-  .footer-tips {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: #f5f7fa;
-    border-radius: 4px;
-    font-size: 12px;
-    color: #909399;
-
-    p {
-      margin: 4px 0;
-    }
-  }
-
-  .drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-
-    .drawer-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .drawer-actions {
-      display: flex;
-      gap: 8px;
-    }
-  }
-
-  .basic-form {
-    max-width: 500px;
-  }
-
-  .logs-toolbar {
-    margin-bottom: 16px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-shrink: 0;
   }
 }
 </style>

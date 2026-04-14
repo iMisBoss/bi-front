@@ -183,7 +183,7 @@ export const backMenus = [
         icon: 'Briefcase',
         children: [
             { title: '会议管理', path: '/office/meeting-admin' },
-            { title: '内部邮件管控', path: '/message/email' }
+            { title: '内部邮件管控', path: '/message/email-admin' }
         ]
     },
     {

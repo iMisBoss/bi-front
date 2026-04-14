@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <div class="portal-components-lib">
     <!-- 面包屑导航 -->
