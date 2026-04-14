@@ -1,33 +1,38 @@
 <template>
-  <div class="permission-admin-page">
+  <div class="audit-center-page">
     <!-- 面包屑 -->
     <el-breadcrumb separator="/" class="breadcrumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
       <el-breadcrumb-item>系统管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限菜单管理中心</el-breadcrumb-item>
+      <el-breadcrumb-item>审计管理中心</el-breadcrumb-item>
     </el-breadcrumb>
 
     <el-card class="main-card" shadow="never">
       <!-- Tab导航栏 -->
-      <el-tabs v-model="activeTab" class="permission-tabs">
-        <!-- Tab1: 系统菜单管理 -->
-        <el-tab-pane label="系统菜单管理" name="menu">
-          <SystemMenuManage ref="menuRef" />
+      <el-tabs v-model="activeTab" class="audit-tabs">
+        <!-- Tab1: 全量操作日志 -->
+        <el-tab-pane label="全量操作日志" name="operations">
+          <OperationLogs ref="opsRef" />
         </el-tab-pane>
 
-        <!-- Tab2: 角色权限配置 -->
-        <el-tab-pane label="角色权限配置" name="role">
-          <RolePermission ref="roleRef" />
+        <!-- Tab2: 登录登出日志 -->
+        <el-tab-pane label="登录登出日志" name="login">
+          <LoginLogs ref="loginRef" />
         </el-tab-pane>
 
-        <!-- Tab3: 门户导航配置 -->
-        <el-tab-pane label="门户导航配置" name="navigation">
-          <PortalNavigation ref="navRef" />
+        <!-- Tab3: 审计规则配置 -->
+        <el-tab-pane label="审计规则配置" name="rules">
+          <AuditRules ref="rulesRef" />
         </el-tab-pane>
 
-        <!-- Tab4: 权限运维同步 -->
-        <el-tab-pane label="权限运维同步" name="operations">
-          <PermissionOperations ref="opsRef" />
+        <!-- Tab4: 敏感行为告警 -->
+        <el-tab-pane label="敏感行为告警" name="alerts">
+          <SensitiveAlerts ref="alertsRef" />
+        </el-tab-pane>
+
+        <!-- Tab5: 日志归档管理 -->
+        <el-tab-pane label="日志归档管理" name="archive">
+          <LogArchive ref="archiveRef" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -36,16 +41,17 @@
 
 <script setup>
 import { ref } from 'vue'
-import SystemMenuManage from './components/SystemMenuManage.vue'
-import RolePermission from './components/RolePermission.vue'
-import PortalNavigation from './components/PortalNavigation.vue'
-import PermissionOperations from './components/PermissionOperations.vue'
+import OperationLogs from './components/OperationLogs.vue'
+import LoginLogs from './components/LoginLogs.vue'
+import AuditRules from './components/AuditRules.vue'
+import SensitiveAlerts from './components/SensitiveAlerts.vue'
+import LogArchive from './components/LogArchive.vue'
 
-const activeTab = ref('menu')
+const activeTab = ref('operations')
 </script>
 
 <style lang="scss" scoped>
-.permission-admin-page {
+.audit-center-page {
   padding: 20px;
   height: calc(100vh - 60px);
   display: flex;
@@ -73,7 +79,7 @@ const activeTab = ref('menu')
     }
   }
 
-  .permission-tabs {
+  .audit-tabs {
     flex: 1;
     display: flex;
     flex-direction: column;

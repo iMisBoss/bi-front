@@ -1,33 +1,38 @@
 <template>
-  <div class="permission-admin-page">
+  <div class="ops-center-page">
     <!-- 面包屑 -->
     <el-breadcrumb separator="/" class="breadcrumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
       <el-breadcrumb-item>系统管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限菜单管理中心</el-breadcrumb-item>
+      <el-breadcrumb-item>运维管理中心</el-breadcrumb-item>
     </el-breadcrumb>
 
     <el-card class="main-card" shadow="never">
       <!-- Tab导航栏 -->
-      <el-tabs v-model="activeTab" class="permission-tabs">
-        <!-- Tab1: 系统菜单管理 -->
-        <el-tab-pane label="系统菜单管理" name="menu">
-          <SystemMenuManage ref="menuRef" />
+      <el-tabs v-model="activeTab" class="ops-tabs">
+        <!-- Tab1: 日志采集配置 -->
+        <el-tab-pane label="日志采集配置" name="logCollect">
+          <LogCollectConfig ref="logCollectRef" />
         </el-tab-pane>
 
-        <!-- Tab2: 角色权限配置 -->
-        <el-tab-pane label="角色权限配置" name="role">
-          <RolePermission ref="roleRef" />
+        <!-- Tab2: IP黑白名单 -->
+        <el-tab-pane label="IP黑白名单" name="ipBlackWhite">
+          <IPBlackWhiteList ref="ipRef" />
         </el-tab-pane>
 
-        <!-- Tab3: 门户导航配置 -->
-        <el-tab-pane label="门户导航配置" name="navigation">
-          <PortalNavigation ref="navRef" />
+        <!-- Tab3: 系统服务监控 -->
+        <el-tab-pane label="系统服务监控" name="serviceMonitor">
+          <ServiceMonitor ref="monitorRef" />
         </el-tab-pane>
 
-        <!-- Tab4: 权限运维同步 -->
-        <el-tab-pane label="权限运维同步" name="operations">
-          <PermissionOperations ref="opsRef" />
+        <!-- Tab4: 数据备份规则 -->
+        <el-tab-pane label="数据备份规则" name="backupRule">
+          <BackupRule ref="backupRuleRef" />
+        </el-tab-pane>
+
+        <!-- Tab5: 备份执行记录 -->
+        <el-tab-pane label="备份执行记录" name="backupRecord">
+          <BackupRecord ref="backupRecordRef" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -36,16 +41,17 @@
 
 <script setup>
 import { ref } from 'vue'
-import SystemMenuManage from './components/SystemMenuManage.vue'
-import RolePermission from './components/RolePermission.vue'
-import PortalNavigation from './components/PortalNavigation.vue'
-import PermissionOperations from './components/PermissionOperations.vue'
+import LogCollectConfig from './components/LogCollectConfig.vue'
+import IPBlackWhiteList from './components/IPBlackWhiteList.vue'
+import ServiceMonitor from './components/ServiceMonitor.vue'
+import BackupRule from './components/BackupRule.vue'
+import BackupRecord from './components/BackupRecord.vue'
 
-const activeTab = ref('menu')
+const activeTab = ref('logCollect')
 </script>
 
 <style lang="scss" scoped>
-.permission-admin-page {
+.ops-center-page {
   padding: 20px;
   height: calc(100vh - 60px);
   display: flex;
@@ -73,7 +79,7 @@ const activeTab = ref('menu')
     }
   }
 
-  .permission-tabs {
+  .ops-tabs {
     flex: 1;
     display: flex;
     flex-direction: column;

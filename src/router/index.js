@@ -448,17 +448,12 @@ const routes = [
     {
         path: '/system/config',
         name: 'SystemConfig',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
-        path: '/system/role',
-        name: 'SystemRole',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/system/config-center/Index.vue')
     },
     {
         path: '/system/audit',
         name: 'SystemAudit',
-        component: () => import('@/views/system/audit/Index.vue')
+        component: () => import('@/views/system/audit-center/Index.vue')
     },
     {
         path: '/system/log',
@@ -468,12 +463,7 @@ const routes = [
     {
         path: '/system/operations',
         name: 'SystemOperations',
-        component: () => import('@/views/system/operations/Index.vue')
-    },
-    {
-        path: '/system/backup',
-        name: 'SystemBackup',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/system/ops-center/Index.vue')
     },
     {
         path: '/system/version',

@@ -216,8 +216,7 @@ export const backMenus = [
         icon: 'Setting',
         children: [
             { title: '权限菜单管理', path: '/system/permission' },
-            { title: '系统参数配置', path: '/system/config' },
-            { title: '角色管理', path: '/system/role' }
+            { title: '系统参数配置', path: '/system/config' }
         ]
     },
     {

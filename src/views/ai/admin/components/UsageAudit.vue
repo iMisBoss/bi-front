@@ -13,7 +13,7 @@
         <el-option label="文档总结" value="summary" />
         <el-option label="文案生成" value="writing" />
       </el-select>
-      <el-select v-model="filters.status" placeholder="操作状态" clearable style="width="120px">
+      <el-select v-model="filters.status" placeholder="操作状态" clearable style="width: 120px">
       <el-option label="正常" value="normal" />
       <el-option label="拦截" value="intercepted" />
       <el-option label="异常" value="error" />
