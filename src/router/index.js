@@ -313,17 +313,39 @@ const routes = [
     {
         path: '/cms/document/document-number',
         name: 'CmsDocumentNumber',
-        component: () => import('@/views/cms/document/document-number/Index.vue')
+        component: () => import('@/views/Empty.vue')
+    },
+    // ========== 公文管理（管理员后台） ==========
+    {
+        path: '/cms/document-admin/templates',
+        name: 'CmsDocumentAdminTemplates',
+        component: () => import('@/views/cms/document-admin/templates/Index.vue')
     },
     {
-        path: '/cms/document-admin',
-        name: 'CmsDocumentAdmin',
-        component: () => import('@/views/cms/document-admin/Index.vue')
+        path: '/cms/document-admin/numbers',
+        name: 'CmsDocumentAdminNumbers',
+        component: () => import('@/views/cms/document-admin/numbers/Index.vue')
     },
+    {
+        path: '/cms/document-admin/workflow',
+        name: 'CmsDocumentAdminWorkflow',
+        component: () => import('@/views/cms/document-admin/workflow/Index.vue')
+    },
+    {
+        path: '/cms/document-admin/security',
+        name: 'CmsDocumentAdminSecurity',
+        component: () => import('@/views/cms/document-admin/security/Index.vue')
+    },
+    {
+        path: '/cms/document-admin/archive',
+        name: 'CmsDocumentAdminArchive',
+        component: () => import('@/views/cms/document-admin/archive/Index.vue')
+    },
+    // ========== 内容管理中心（管理员后台） ==========
     {
         path: '/cms/content-admin',
         name: 'CmsContentAdmin',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/content-admin/Index.vue')
     },
 
     // ========== AI 智能助手 ==========

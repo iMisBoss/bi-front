@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <el-drawer
       v-model="visible"

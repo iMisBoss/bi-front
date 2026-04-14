@@ -190,7 +190,17 @@ export const backMenus = [
         title: '公文与内容管理',
         icon: 'Reading',
         children: [
-            { title: '公文管理', path: '/cms/document-admin' },
+            {
+                title: '公文管理',
+                icon: 'DocumentChecked',
+                children: [
+                    { title: '公文模板管理', path: '/cms/document-admin/templates' },
+                    { title: '文号规则管理', path: '/cms/document-admin/numbers' },
+                    { title: '公文流程配置', path: '/cms/document-admin/workflow' },
+                    { title: '权限与涉密管控', path: '/cms/document-admin/security' },
+                    { title: '归档与数据管理', path: '/cms/document-admin/archive' }
+                ]
+            },
             { title: '内容管理', path: '/cms/content-admin' }
         ]
     },

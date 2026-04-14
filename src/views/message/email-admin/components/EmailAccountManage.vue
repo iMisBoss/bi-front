@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <div class="email-account-manage">
     <!-- 顶部工具栏 -->

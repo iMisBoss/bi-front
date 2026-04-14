@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <div class="email-data-control">
     <!-- 顶部工具栏 -->
@@ -332,25 +331,43 @@ const handleArchive = (row) => {
 const handleBatchDelete = () => {
   if (selectedRows.value.length === 0) return
 
+  if (selectedRows.value.length > 100) {
+    ElMessage.warning('批量删除单次最多100条，请分批操作')
+    return
+  }
+
   ElMessageBox.confirm(
-      `确定要批量删除 ${selectedRows.value.length} 封邮件吗？`,
-      '批量删除',
+      `确定要批量删除 ${selectedRows.value.length} 封邮件吗？此操作需要二次验证。`,
+      '批量删除（需二次验证）',
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }
   ).then(() => {
-    selectedRows.value.forEach(row => {
-      row.status = 'deleted'
-      row.logs.push({
-        action: '删除',
-        operator: '管理员',
-        time: new Date().toLocaleString()
-      })
-    })
-    ElMessage.success('批量删除成功')
-    selectedRows.value = []
+    // 弹出验证码输入框
+    ElMessageBox.prompt('请输入验证码以确认删除操作', '二次验证', {
+      confirmButtonText: '确认删除',
+      cancelButtonText: '取消',
+      inputPattern: /\d{4}/,
+      inputErrorMessage: '请输入4位验证码'
+    }).then(({ value }) => {
+      // 模拟验证码验证
+      if (value === '1234') {
+        selectedRows.value.forEach(row => {
+          row.status = 'deleted'
+          row.logs.push({
+            action: '删除',
+            operator: '管理员',
+            time: new Date().toLocaleString()
+          })
+        })
+        ElMessage.success('批量删除成功')
+        selectedRows.value = []
+      } else {
+        ElMessage.error('验证码错误')
+      }
+    }).catch(() => {})
   }).catch(() => {})
 }
 

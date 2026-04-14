@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <div class="email-global-config">
     <el-form
