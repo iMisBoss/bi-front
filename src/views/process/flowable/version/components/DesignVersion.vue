@@ -129,10 +129,10 @@ const historyVisible = ref(false)
 const currentVersions = ref([])
 
 const tableData = ref([
-  { id: 1, name: '请假审批流程', category: 'hr', version: '1.3', status: 'draft', creator: '系统管理员', updateTime: '2024-03-15 14:20' },
-  { id: 2, name: '加班审批流程', category: 'hr', version: '1.2', status: 'draft', creator: '系统管理员', updateTime: '2024-02-20 16:45' },
-  { id: 3, name: '费用报销流程', category: 'finance', version: '1.1', status: 'draft', creator: '财务管理员', updateTime: '2024-01-10 17:30' },
-  { id: 4, name: '会议申请流程', category: 'admin', version: '1.0', status: 'draft', creator: '行政管理员', updateTime: '2024-01-05 09:00' },
+  { id: 1, name: '请假审批流程', category: 'hr', version: '1.3', status: 'draft', creator: '系统管理员', updateTime: '2026-03-15 14:20' },
+  { id: 2, name: '加班审批流程', category: 'hr', version: '1.2', status: 'draft', creator: '系统管理员', updateTime: '2026-02-20 16:45' },
+  { id: 3, name: '费用报销流程', category: 'finance', version: '1.1', status: 'draft', creator: '财务管理员', updateTime: '2026-01-10 17:30' },
+  { id: 4, name: '会议申请流程', category: 'admin', version: '1.0', status: 'draft', creator: '行政管理员', updateTime: '2026-01-05 09:00' },
   { id: 5, name: '车辆申请流程', category: 'admin', version: '0.9', status: 'abandoned', creator: '系统管理员', updateTime: '2023-12-01 18:00' }
 ])
 
@@ -160,7 +160,7 @@ const handlePublish = (row) => {
 const handleVersionHistory = (row) => {
   currentVersions.value = [
     { version: row.version, status: row.status === 'draft' ? 'draft' : 'published', statusLabel: row.status === 'draft' ? '草稿' : '已发布', time: row.updateTime, desc: '当前版本' },
-    { version: '1.0', status: 'published', statusLabel: '已发布', time: '2024-01-10 10:00', desc: '初始版本发布' }
+    { version: '1.0', status: 'published', statusLabel: '已发布', time: '2026-01-10 10:00', desc: '初始版本发布' }
   ]
   historyVisible.value = true
 }

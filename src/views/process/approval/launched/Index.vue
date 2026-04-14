@@ -328,7 +328,7 @@ const tableData = ref([
     processName: '请假审批流程',
     applicant: '张三',
     department: '信息技术部',
-    applyTime: '2024-01-15 09:30',
+    applyTime: '2026-01-15 09:30',
     currentNode: '部门经理审批',
     stayTime: '2 小时',
     status: 'processing',
@@ -345,7 +345,7 @@ const tableData = ref([
       {
         node: '发起人提交',
         processor: '张三',
-        time: '2024-01-15 09:30:00',
+        time: '2026-01-15 09:30:00',
         status: '已提交',
         statusType: 'success',
         color: '#67C23A',
@@ -359,7 +359,7 @@ const tableData = ref([
     processName: '会议申请流程',
     applicant: '张三',
     department: '信息技术部',
-    applyTime: '2024-01-14 14:20',
+    applyTime: '2026-01-14 14:20',
     currentNode: '已完成',
     stayTime: '-',
     status: 'passed',
@@ -375,7 +375,7 @@ const tableData = ref([
     processName: '用车申请流程',
     applicant: '张三',
     department: '信息技术部',
-    applyTime: '2024-01-13 11:15',
+    applyTime: '2026-01-13 11:15',
     currentNode: '行政部审批',
     stayTime: '1 天',
     status: 'processing',
@@ -391,7 +391,7 @@ const tableData = ref([
     processName: '用印申请流程',
     applicant: '张三',
     department: '信息技术部',
-    applyTime: '2024-01-12 10:00',
+    applyTime: '2026-01-12 10:00',
     currentNode: '已完成',
     stayTime: '-',
     status: 'rejected',
@@ -725,6 +725,23 @@ onMounted(() => {
     margin-top: 20px;
     display: flex;
     justify-content: flex-end;
+  }
+}
+
+// 防止操作按钮组换行
+:deep(.el-table__body .el-table__cell .cell) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+
+  .el-button {
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
+
+  .el-dropdown {
+    white-space: nowrap !important;
   }
 }
 

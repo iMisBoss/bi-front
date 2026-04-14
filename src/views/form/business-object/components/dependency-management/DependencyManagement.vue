@@ -130,17 +130,17 @@ const dependencyTab = ref('forms')
 const refreshing = ref(false)
 
 const dependencyForms = ref([
-  { formName: '请假申请表单', status: 'enabled', creator: '系统管理员', createTime: '2024-01-10 09:00:00', description: '员工请假申请使用的标准表单' },
-  { formName: '加班申请表单', status: 'enabled', creator: '系统管理员', createTime: '2024-01-12 14:30:00', description: '员工加班申请使用的标准表单' }
+  { formName: '请假申请表单', status: 'enabled', creator: '系统管理员', createTime: '2026-01-10 09:00:00', description: '员工请假申请使用的标准表单' },
+  { formName: '加班申请表单', status: 'enabled', creator: '系统管理员', createTime: '2026-01-12 14:30:00', description: '员工加班申请使用的标准表单' }
 ])
 
 const dependencyProcesses = ref([
-  { processName: '请假审批流程', status: 'enabled', creator: '流程管理员', createTime: '2024-01-11 10:00:00', description: '员工请假审批的标准流程' }
+  { processName: '请假审批流程', status: 'enabled', creator: '流程管理员', createTime: '2026-01-11 10:00:00', description: '员工请假审批的标准流程' }
 ])
 
 const dependencyRules = ref([
-  { ruleName: '请假天数校验规则', ruleType: '数据校验', status: 'enabled', creator: '系统管理员', createTime: '2024-01-10 10:00:00', description: '校验请假天数是否在合理范围内' },
-  { ruleName: '自动编号生成规则', ruleType: '自动编号', status: 'enabled', creator: '系统管理员', createTime: '2024-01-01 00:00:00', description: '自动生成单据编号' }
+  { ruleName: '请假天数校验规则', ruleType: '数据校验', status: 'enabled', creator: '系统管理员', createTime: '2026-01-10 10:00:00', description: '校验请假天数是否在合理范围内' },
+  { ruleName: '自动编号生成规则', ruleType: '自动编号', status: 'enabled', creator: '系统管理员', createTime: '2026-01-01 00:00:00', description: '自动生成单据编号' }
 ])
 
 // 计算是否有数据

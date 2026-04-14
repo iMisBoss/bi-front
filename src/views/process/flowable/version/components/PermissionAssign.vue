@@ -60,8 +60,8 @@ const loading = ref(false)
 const permMode = ref('init')
 
 const initPermList = ref([
-  { id: 1, name: '请假审批流程', authScope: ['全体员工'], authBy: '系统管理员', authTime: '2024-03-01 10:00' },
-  { id: 2, name: '加班审批流程', authScope: ['技术部', '产品部'], authBy: '系统管理员', authTime: '2024-02-15 14:30' },
+  { id: 1, name: '请假审批流程', authScope: ['全体员工'], authBy: '系统管理员', authTime: '2026-03-01 10:00' },
+  { id: 2, name: '加班审批流程', authScope: ['技术部', '产品部'], authBy: '系统管理员', authTime: '2026-02-15 14:30' },
   { id: 3, name: '费用报销流程', authScope: [], authBy: '-', authTime: '-' }
 ])
 

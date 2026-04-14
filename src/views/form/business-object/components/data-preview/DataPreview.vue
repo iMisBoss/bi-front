@@ -126,11 +126,11 @@ const loading = ref(false)
 const saving = ref(false)
 
 const previewList = ref([
-  { billNo: 'QJ20240115001', initiator: '张三', department: '技术部', field1: '事假', field2: '2 天', status: 'approved' },
-  { billNo: 'QJ20240115002', initiator: '李四', department: '财务部', field1: '年假', field2: '5 天', status: 'approving' },
-  { billNo: 'QJ20240115003', initiator: '王五', department: '人事部', field1: '病假', field2: '3 天', status: 'draft' },
-  { billNo: 'QJ20240115004', initiator: '赵六', department: '市场部', field1: '调休', field2: '1 天', status: 'rejected' },
-  { billNo: 'QJ20240115005', initiator: '钱七', department: '运营部', field1: '婚假', field2: '10 天', status: 'draft' }
+  { billNo: 'QJ20260115001', initiator: '张三', department: '技术部', field1: '事假', field2: '2 天', status: 'approved' },
+  { billNo: 'QJ20260115002', initiator: '李四', department: '财务部', field1: '年假', field2: '5 天', status: 'approving' },
+  { billNo: 'QJ20260115003', initiator: '王五', department: '人事部', field1: '病假', field2: '3 天', status: 'draft' },
+  { billNo: 'QJ20260115004', initiator: '赵六', department: '市场部', field1: '调休', field2: '1 天', status: 'rejected' },
+  { billNo: 'QJ20260115005', initiator: '钱七', department: '运营部', field1: '婚假', field2: '10 天', status: 'draft' }
 ])
 
 const pageSize = ref(10)

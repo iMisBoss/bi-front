@@ -112,7 +112,7 @@
       <el-table-column prop="currentNode" label="当前节点" width="120" show-overflow-tooltip />
       <el-table-column prop="applicant" label="申请人" width="100" />
       <el-table-column prop="applyTime" label="发起时间" width="160" sortable />
-      <el-table-column prop="priority" label="紧急程度" width="90" sortable>
+      <el-table-column prop="priority" label="紧急程度" width="110" sortable>
         <template #default="{ row }">
           <el-tag :type="getPriorityType(row.priority)" size="small" effect="plain">
             {{ getPriorityText(row.priority) }}
@@ -126,7 +126,7 @@
           <el-tag v-else-if="row.taskType === 'assist'" type="info" size="small">征询意见</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="280" fixed="right">
+      <el-table-column label="操作" width="300" fixed="right">
         <template #default="scope">
           <el-button size="small" type="primary" @click="handleApprove(scope.row)" icon="Check">
             审批
@@ -350,7 +350,7 @@ const tableData = ref([
     processName: '请假审批流程',
     currentNode: '部门经理审批',
     applicant: '张三',
-    applyTime: '2024-01-15 09:30',
+    applyTime: '2026-01-15 09:30',
     priority: 'urgent',
     status: '待审批',
     taskType: 'approve',
@@ -362,7 +362,7 @@ const tableData = ref([
     processName: '会议申请流程',
     currentNode: '分管领导审批',
     applicant: '李四',
-    applyTime: '2024-01-15 10:20',
+    applyTime: '2026-01-15 10:20',
     priority: 'high',
     status: '待审批',
     taskType: 'approve',
@@ -374,7 +374,7 @@ const tableData = ref([
     processName: '用车申请流程',
     currentNode: '综合部确认',
     applicant: '王五',
-    applyTime: '2024-01-15 11:15',
+    applyTime: '2026-01-15 11:15',
     priority: 'medium',
     status: '待审批',
     taskType: 'assist',
@@ -386,7 +386,7 @@ const tableData = ref([
     processName: '采购申请流程',
     currentNode: '财务审核',
     applicant: '赵六',
-    applyTime: '2024-01-15 14:00',
+    applyTime: '2026-01-15 14:00',
     priority: 'high',
     status: '待处理',
     taskType: 'add',
@@ -398,7 +398,7 @@ const tableData = ref([
     processName: '费用报销流程',
     currentNode: '总经理审批',
     applicant: '孙七',
-    applyTime: '2024-01-15 15:30',
+    applyTime: '2026-01-15 15:30',
     priority: 'urgent',
     status: '待审批',
     taskType: 'approve',
@@ -775,6 +775,28 @@ onMounted(() => {
     margin-top: 20px;
     display: flex;
     justify-content: flex-end;
+  }
+}
+
+// 防止紧急程度标签换行
+:deep(.el-table__body .el-table__cell .cell .el-tag) {
+  white-space: nowrap !important;
+}
+
+// 防止操作按钮组换行 - 使用更强的选择器
+:deep(.el-table__body .el-table__cell .cell) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+
+  .el-button {
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
+
+  .el-dropdown {
+    white-space: nowrap !important;
   }
 }
 

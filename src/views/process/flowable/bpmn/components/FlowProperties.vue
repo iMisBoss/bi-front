@@ -15,7 +15,7 @@
       </el-form-item>
 
       <el-form-item label="流程编号">
-        <el-input v-model="localFlowInfo.flowCode" placeholder="如：FLOW-2024-001" @input="emitChange" />
+        <el-input v-model="localFlowInfo.flowCode" placeholder="如：FLOW-2026-001" @input="emitChange" />
         <div class="tip">自动生成，用于流程追溯</div>
       </el-form-item>
 

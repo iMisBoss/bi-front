@@ -496,7 +496,7 @@ const fetchData = () => {
         portals: ['员工门户', '管理员门户'],
         status: 'enabled',
         configurer: '张三/技术部',
-        configureTime: '2024-01-15 10:30'
+        configureTime: '2026-01-15 10:30'
       },
       {
         id: 2,
@@ -505,7 +505,7 @@ const fetchData = () => {
         portals: ['管理员门户'],
         status: 'testing',
         configurer: '李四/人事部',
-        configureTime: '2024-01-14 15:20'
+        configureTime: '2026-01-14 15:20'
       },
       {
         id: 3,
@@ -514,7 +514,7 @@ const fetchData = () => {
         portals: ['员工门户'],
         status: 'disabled',
         configurer: '王五/财务部',
-        configureTime: '2024-01-13 09:15'
+        configureTime: '2026-01-13 09:15'
       }
     ]
     pagination.total = 3

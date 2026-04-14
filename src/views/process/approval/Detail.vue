@@ -81,7 +81,7 @@ const approvalInfo = reactive({
   status: '审批中',
   applicant: '张三',
   department: '信息技术部',
-  applyTime: '2024-01-15 09:30:00',
+  applyTime: '2026-01-15 09:30:00',
   templateName: '公司事务申请'
 })
 

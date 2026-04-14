@@ -410,7 +410,7 @@ const variableList = ref([
     varType: 'string',
     category: 'flow',
     defaultValue: '',
-    description: '系统自动生成的流程唯一编号，格式：FL202404070001',
+    description: '系统自动生成的流程唯一编号，格式：FL202604070001',
     scenarios: ['form', 'print'],
     status: 'enabled'
   },

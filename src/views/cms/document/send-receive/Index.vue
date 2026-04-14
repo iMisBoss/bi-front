@@ -78,13 +78,13 @@ const activeTab = ref('incoming')
 const loading = ref(false)
 
 const incomingList = ref([
-  { id: 1, title: '关于报送2024年工作计划的通知', docType: '通知', docNumber: '上级发〔2024〕10号', sourceUnit: '上级机关', receiveDate: '2024-01-15', status: '待办理' },
-  { id: 2, title: '关于开展安全生产检查的通知', docType: '通知', docNumber: '安委发〔2024〕5号', sourceUnit: '安委办', receiveDate: '2024-01-14', status: '办理中' }
+  { id: 1, title: '关于报送2026年工作计划的通知', docType: '通知', docNumber: '上级发〔2026〕10号', sourceUnit: '上级机关', receiveDate: '2026-01-15', status: '待办理' },
+  { id: 2, title: '关于开展安全生产检查的通知', docType: '通知', docNumber: '安委发〔2026〕5号', sourceUnit: '安委办', receiveDate: '2026-01-14', status: '办理中' }
 ])
 
 const outgoingList = ref([
-  { id: 101, title: '关于调整春节放假安排的通知', docType: '通知', docNumber: '建信发〔2024〕1号', targetUnit: '全体员工', sendDate: '2024-01-13', status: '已发布' },
-  { id: 102, title: '关于申请增加编制的请示', docType: '请示', docNumber: '建信请〔2024〕2号', targetUnit: '上级机关', sendDate: '2024-01-12', status: '草稿' }
+  { id: 101, title: '关于调整春节放假安排的通知', docType: '通知', docNumber: '建信发〔2026〕1号', targetUnit: '全体员工', sendDate: '2026-01-13', status: '已发布' },
+  { id: 102, title: '关于申请增加编制的请示', docType: '请示', docNumber: '建信请〔2026〕2号', targetUnit: '上级机关', sendDate: '2026-01-12', status: '草稿' }
 ])
 
 const handleTabChange = (tab) => {

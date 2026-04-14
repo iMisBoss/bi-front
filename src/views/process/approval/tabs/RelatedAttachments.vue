@@ -102,7 +102,7 @@ const attachmentList = ref([
     type: 'pdf',
     size: 1024 * 1024 * 2.5, // 2.5MB
     uploader: '张三',
-    uploadTime: '2024-01-15 09:30:00'
+    uploadTime: '2026-01-15 09:30:00'
   },
   {
     name: '证明文件.docx',
@@ -110,7 +110,7 @@ const attachmentList = ref([
     type: 'docx',
     size: 1024 * 512, // 512KB
     uploader: '张三',
-    uploadTime: '2024-01-15 09:35:00'
+    uploadTime: '2026-01-15 09:35:00'
   },
   {
     name: '现场照片.jpg',
@@ -118,7 +118,7 @@ const attachmentList = ref([
     type: 'image',
     size: 1024 * 1024 * 3.2, // 3.2MB
     uploader: '李四',
-    uploadTime: '2024-01-15 14:20:00'
+    uploadTime: '2026-01-15 14:20:00'
   }
 ])
 

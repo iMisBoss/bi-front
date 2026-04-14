@@ -112,21 +112,21 @@ const nodes = ref([
   {
     name: '开始',
     handler: '张三',
-    time: '2024-01-01 09:00:00',
+    time: '2026-01-01 09:00:00',
     status: 'completed',
     comment: '同意'
   },
   {
     name: '部门经理审批',
     handler: '李四',
-    time: '2024-01-01 14:30:00',
+    time: '2026-01-01 14:30:00',
     status: 'completed',
     comment: '同意，请尽快推进'
   },
   {
     name: '分管领导审批',
     handler: '王五',
-    time: '2024-01-02 10:15:00',
+    time: '2026-01-02 10:15:00',
     status: 'current',
     comment: ''
   },

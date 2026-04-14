@@ -34,7 +34,7 @@
         </el-form-item>
         <el-form-item label="年份">
           <el-select v-model="filterForm.year" placeholder="全部年份" clearable style="width: 120px">
-            <el-option label="2024" value="2024" />
+            <el-option label="2026" value="2026" />
             <el-option label="2023" value="2023" />
             <el-option label="2022" value="2022" />
             <el-option label="2021" value="2021" />
@@ -140,27 +140,27 @@ const queryList = ref([
     id: 1,
     title: '关于加强春节放假期间安全管理的通知',
     docType: '通知',
-    docNumber: '建信发〔2024〕1号',
+    docNumber: '建信发〔2026〕1号',
     sender: '行政部',
-    sendDate: '2024-01-15',
+    sendDate: '2026-01-15',
     status: '已发布'
   },
   {
     id: 2,
-    title: '关于2024年度工作计划的报告',
+    title: '关于2026年度工作计划的报告',
     docType: '报告',
-    docNumber: '建信报〔2024〕2号',
+    docNumber: '建信报〔2026〕2号',
     sender: '综合办公室',
-    sendDate: '2024-01-14',
+    sendDate: '2026-01-14',
     status: '已发布'
   },
   {
     id: 3,
     title: '关于申请增加部门编制的请示',
     docType: '请示',
-    docNumber: '建信请〔2024〕3号',
+    docNumber: '建信请〔2026〕3号',
     sender: '人力资源部',
-    sendDate: '2024-01-13',
+    sendDate: '2026-01-13',
     status: '审批中'
   }
 ])
@@ -174,8 +174,8 @@ const archivedList = ref([
     docNumber: '建信发〔2023〕15号',
     sender: '行政部',
     sendDate: '2023-12-25',
-    archiveDate: '2024-01-10',
-    archiveNo: 'GD-2024-001'
+    archiveDate: '2026-01-10',
+    archiveNo: 'GD-2026-001'
   },
   {
     id: 102,
@@ -184,8 +184,8 @@ const archivedList = ref([
     docNumber: '建信通〔2023〕12号',
     sender: '安委办',
     sendDate: '2023-12-20',
-    archiveDate: '2024-01-08',
-    archiveNo: 'GD-2024-002'
+    archiveDate: '2026-01-08',
+    archiveNo: 'GD-2026-002'
   },
   {
     id: 103,
@@ -194,8 +194,8 @@ const archivedList = ref([
     docNumber: '建信决〔2023〕8号',
     sender: '总经理办公室',
     sendDate: '2023-12-15',
-    archiveDate: '2024-01-05',
-    archiveNo: 'GD-2024-003'
+    archiveDate: '2026-01-05',
+    archiveNo: 'GD-2026-003'
   }
 ])
 

@@ -10,7 +10,7 @@
       <div class="node-info">
         <div class="node-title">部门负责人审批</div>
         <div class="node-processor">处理人：李四（部门负责人）</div>
-        <div class="node-time">到达时间：2024-01-15 10:00:00</div>
+        <div class="node-time">到达时间：2026-01-15 10:00:00</div>
         <div class="node-status">状态：<el-tag type="warning">待处理</el-tag></div>
       </div>
     </el-card>
@@ -79,7 +79,7 @@ const records = [
   {
     node: '发起人提交',
     processor: '张三',
-    time: '2024-01-15 09:30:00',
+    time: '2026-01-15 09:30:00',
     status: '已提交',
     statusType: 'success',
     color: '#67C23A',
@@ -89,7 +89,7 @@ const records = [
   {
     node: '部门初审',
     processor: '王五（部门主管）',
-    time: '2024-01-15 09:45:00',
+    time: '2026-01-15 09:45:00',
     status: '已通过',
     statusType: 'success',
     color: '#67C23A',
@@ -103,21 +103,21 @@ const processNodes = ref([
   {
     name: '开始',
     handler: '张三',
-    time: '2024-01-01 09:00:00',
+    time: '2026-01-01 09:00:00',
     status: '已完成',
     comment: '同意'
   },
   {
     name: '部门经理审批',
     handler: '李四',
-    time: '2024-01-01 14:30:00',
+    time: '2026-01-01 14:30:00',
     status: '已完成',
     comment: '同意，请尽快推进'
   },
   {
     name: '分管领导审批',
     handler: '王五',
-    time: '2024-01-02 10:15:00',
+    time: '2026-01-02 10:15:00',
     status: '处理中',
     comment: ''
   },

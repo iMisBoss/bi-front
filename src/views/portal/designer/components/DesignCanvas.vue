@@ -181,7 +181,7 @@
                     </div>
                     <div class="article-content">
                       <div class="article-title">公司新闻标题示例 {{ i }}</div>
-                      <div class="article-time">2024-01-{{ 10 + i }} 10:00</div>
+                      <div class="article-time">2026-01-{{ 10 + i }} 10:00</div>
                     </div>
                   </div>
                 </div>
@@ -215,7 +215,7 @@
                       <span class="todo-time">2小时前</span>
                     </div>
                     <div class="todo-title">请假申请 - 张三</div>
-                    <div class="todo-desc">申请时间：2024-01-15 至 2024-01-17</div>
+                    <div class="todo-desc">申请时间：2026-01-15 至 2026-01-17</div>
                   </div>
                 </div>
               </template>
@@ -424,9 +424,9 @@ const mockShortcuts = [
 ]
 
 const mockFormData = [
-  { name: '请假申请', status: '已完成', time: '2024-01-15' },
-  { name: '报销申请', status: '审批中', time: '2024-01-16' },
-  { name: '出差申请', status: '已完成', time: '2024-01-17' }
+  { name: '请假申请', status: '已完成', time: '2026-01-15' },
+  { name: '报销申请', status: '审批中', time: '2026-01-16' },
+  { name: '出差申请', status: '已完成', time: '2026-01-17' }
 ]
 
 watch(() => props.gridVisible, (val) => { localGridVisible.value = val })

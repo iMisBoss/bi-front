@@ -393,7 +393,7 @@ const loadUserList = () => {
       status: 'disabled',
       isAdmin: false,
       joinDate: '2022-11-15',
-      disableDate: '2024-02-15',
+      disableDate: '2026-02-15',
       disableReason: '停薪留职',
       reportTo: '李四',
       avatar: ''
@@ -410,7 +410,7 @@ const loadUserList = () => {
       status: 'disabled',
       isAdmin: false,
       joinDate: '2022-04-20',
-      disableDate: '2024-01-10',
+      disableDate: '2026-01-10',
       disableReason: '长期病假',
       reportTo: '王五',
       avatar: ''
@@ -427,7 +427,7 @@ const loadUserList = () => {
       status: 'resigned',
       isAdmin: false,
       joinDate: '2020-01-05',
-      resignDate: '2024-01-31',
+      resignDate: '2026-01-31',
       resignReason: '个人发展',
       avatar: ''
     },
@@ -443,7 +443,7 @@ const loadUserList = () => {
       status: 'resigned',
       isAdmin: false,
       joinDate: '2021-06-10',
-      resignDate: '2024-02-28',
+      resignDate: '2026-02-28',
       resignReason: '跳槽',
       avatar: ''
     },
@@ -564,7 +564,7 @@ const loadUserList = () => {
       status: 'resigned',
       isAdmin: false,
       joinDate: '2022-07-20',
-      resignDate: '2024-03-15',
+      resignDate: '2026-03-15',
       resignReason: '转行',
       avatar: ''
     },

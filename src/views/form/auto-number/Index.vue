@@ -413,7 +413,7 @@ const ruleList = ref([
     ruleCode: 'JQSQ001',
     businessObject: '请假申请',
     numberFormat: 'QJ{YYYY}{MM}{DD}-{SEQ:4}',
-    currentNumber: 'QJ20240408-0015',
+    currentNumber: 'QJ20260408-0015',
     formatItems: [
       { type: 'constant', value: 'QJ' },
       { type: 'datetime', format: 'YYYY' },
@@ -429,7 +429,7 @@ const ruleList = ref([
     maintainScopeText: '系统管理员',
     sort: 1,
     creator: '系统管理员',
-    createTime: '2024-01-10 09:00:00'
+    createTime: '2026-01-10 09:00:00'
   },
   {
     id: 2,
@@ -437,7 +437,7 @@ const ruleList = ref([
     ruleCode: 'JBSQ001',
     businessObject: '加班申请',
     numberFormat: 'JB{YYYY}{MM}{DD}-{SEQ:4}',
-    currentNumber: 'JB20240408-0008',
+    currentNumber: 'JB20260408-0008',
     formatItems: [
       { type: 'constant', value: 'JB' },
       { type: 'datetime', format: 'YYYY' },
@@ -453,7 +453,7 @@ const ruleList = ref([
     maintainScopeText: '系统管理员',
     sort: 2,
     creator: '系统管理员',
-    createTime: '2024-01-12 14:30:00'
+    createTime: '2026-01-12 14:30:00'
   },
   {
     id: 3,
@@ -476,7 +476,7 @@ const ruleList = ref([
     maintainScopeText: '系统管理员',
     sort: 3,
     creator: '行政管理员',
-    createTime: '2024-02-15 10:00:00'
+    createTime: '2026-02-15 10:00:00'
   },
   {
     id: 4,
@@ -484,7 +484,7 @@ const ruleList = ref([
     ruleCode: 'HYSQ001',
     businessObject: '会议申请',
     numberFormat: 'HY{YYYY}{MM}-{SEQ:4}',
-    currentNumber: 'HY202404-0023',
+    currentNumber: 'HY202604-0023',
     formatItems: [
       { type: 'constant', value: 'HY' },
       { type: 'datetime', format: 'YYYY' },
@@ -499,7 +499,7 @@ const ruleList = ref([
     maintainScopeText: '系统管理员',
     sort: 4,
     creator: '流程管理员',
-    createTime: '2024-02-01 10:00:00'
+    createTime: '2026-02-01 10:00:00'
   },
   {
     id: 5,
@@ -507,7 +507,7 @@ const ruleList = ref([
     ruleCode: 'FYBX001',
     businessObject: '费用报销',
     numberFormat: 'BX{YYYY}{MM}{DD}-{SEQ:6}',
-    currentNumber: 'BX20240408-000042',
+    currentNumber: 'BX20260408-000042',
     formatItems: [
       { type: 'constant', value: 'BX' },
       { type: 'datetime', format: 'YYYY' },
@@ -523,7 +523,7 @@ const ruleList = ref([
     maintainScopeText: '财务管理员',
     sort: 5,
     creator: '财务管理员',
-    createTime: '2024-03-01 09:30:00'
+    createTime: '2026-03-01 09:30:00'
   },
   {
     id: 6,
@@ -531,7 +531,7 @@ const ruleList = ref([
     ruleCode: 'ZZTCAP001',
     businessObject: '资金安排',
     numberFormat: 'ZZTCAP-{YYYY}{MM}{DD}-{SEQ:4}',
-    currentNumber: 'ZZTCAP-20240408-0001',
+    currentNumber: 'ZZTCAP-20260408-0001',
     formatItems: [
       { type: 'constant', value: 'ZZTCAP-' },
       { type: 'datetime', format: 'YYYY' },
@@ -547,7 +547,7 @@ const ruleList = ref([
     maintainScopeText: '财务总监',
     sort: 6,
     creator: '财务总监',
-    createTime: '2024-03-15 14:00:00'
+    createTime: '2026-03-15 14:00:00'
   },
   {
     id: 7,
@@ -555,7 +555,7 @@ const ruleList = ref([
     ruleCode: 'HTSP001',
     businessObject: '合同审批',
     numberFormat: 'HT{YYYY}-{SEQ:5}',
-    currentNumber: 'HT2024-00125',
+    currentNumber: 'HT2026-00125',
     formatItems: [
       { type: 'constant', value: 'HT' },
       { type: 'datetime', format: 'YYYY' },
@@ -569,7 +569,7 @@ const ruleList = ref([
     maintainScopeText: '法务管理员',
     sort: 7,
     creator: '法务管理员',
-    createTime: '2024-01-20 11:00:00'
+    createTime: '2026-01-20 11:00:00'
   },
   {
     id: 8,
@@ -577,7 +577,7 @@ const ruleList = ref([
     ruleCode: 'CGSQ001',
     businessObject: '采购申请',
     numberFormat: 'CG{YYYYMM}{SEQ:4}',
-    currentNumber: 'CG2024040089',
+    currentNumber: 'CG2026040089',
     formatItems: [
       { type: 'constant', value: 'CG' },
       { type: 'datetime', format: 'YYYYMM' },
@@ -590,7 +590,7 @@ const ruleList = ref([
     maintainScopeText: '采购管理员',
     sort: 8,
     creator: '采购管理员',
-    createTime: '2024-02-10 16:30:00'
+    createTime: '2026-02-10 16:30:00'
   },
   {
     id: 9,
@@ -598,7 +598,7 @@ const ruleList = ref([
     ruleCode: 'CLBX001',
     businessObject: '差旅报销',
     numberFormat: '差旅[{YYYY-MM}]-{SEQ:3}',
-    currentNumber: '差旅[2024-04]-056',
+    currentNumber: '差旅[2026-04]-056',
     formatItems: [
       { type: 'constant', value: '差旅[' },
       { type: 'datetime', format: 'YYYY-MM' },
@@ -612,7 +612,7 @@ const ruleList = ref([
     maintainScopeText: '财务管理员',
     sort: 9,
     creator: '财务管理员',
-    createTime: '2024-03-05 09:00:00'
+    createTime: '2026-03-05 09:00:00'
   },
   {
     id: 10,
@@ -620,7 +620,7 @@ const ruleList = ref([
     ruleCode: 'YYSQ001',
     businessObject: '用印申请',
     numberFormat: '印章{YYYYMMDD}{SEQ:4}',
-    currentNumber: '印章202404080234',
+    currentNumber: '印章202604080234',
     formatItems: [
       { type: 'constant', value: '印章' },
       { type: 'datetime', format: 'YYYYMMDD' },
@@ -633,7 +633,7 @@ const ruleList = ref([
     maintainScopeText: '行政管理员',
     sort: 10,
     creator: '行政管理员',
-    createTime: '2024-01-25 13:00:00'
+    createTime: '2026-01-25 13:00:00'
   }
 ])
 

@@ -562,7 +562,7 @@ const dictionaryList = ref([
       { label: '年假', value: 'annual' },
       { label: '调休', value: 'compensatory' }
     ],
-    updateTime: '2024-04-01 10:00:00'
+    updateTime: '2026-04-01 10:00:00'
   },
   {
     id: 2,
@@ -576,7 +576,7 @@ const dictionaryList = ref([
       { label: '办公费', value: 'office' },
       { label: '招待费', value: 'entertainment' }
     ],
-    updateTime: '2024-04-01 10:30:00'
+    updateTime: '2026-04-01 10:30:00'
   },
   {
     id: 3,
@@ -590,7 +590,7 @@ const dictionaryList = ref([
       { label: '办公家具', value: 'furniture' },
       { label: '耗材', value: 'consumables' }
     ],
-    updateTime: '2024-04-02 09:00:00'
+    updateTime: '2026-04-02 09:00:00'
   },
   {
     id: 4,
@@ -604,7 +604,7 @@ const dictionaryList = ref([
       { label: '紧急', value: 'urgent' },
       { label: '特急', value: 'critical' }
     ],
-    updateTime: '2024-04-01 11:00:00'
+    updateTime: '2026-04-01 11:00:00'
   }
 ])
 
@@ -637,7 +637,7 @@ const datasourceList = ref([
     type: 'system',
     connectionUrl: '内置数据源',
     connectionStatus: 'success',
-    lastSyncTime: '2024-04-07 08:00:00',
+    lastSyncTime: '2026-04-07 08:00:00',
     isSystem: true
   },
   {
@@ -646,7 +646,7 @@ const datasourceList = ref([
     type: 'system',
     connectionUrl: '内置数据源',
     connectionStatus: 'success',
-    lastSyncTime: '2024-04-07 08:00:00',
+    lastSyncTime: '2026-04-07 08:00:00',
     isSystem: true
   },
   {
@@ -655,7 +655,7 @@ const datasourceList = ref([
     type: 'mysql',
     connectionUrl: 'jdbc:mysql://192.168.1.100:3306/hr_system',
     connectionStatus: 'success',
-    lastSyncTime: '2024-04-06 12:00:00',
+    lastSyncTime: '2026-04-06 12:00:00',
     isSystem: false
   },
   {
@@ -664,7 +664,7 @@ const datasourceList = ref([
     type: 'oracle',
     connectionUrl: 'jdbc:oracle:thin:@192.168.1.200:1521:finance',
     connectionStatus: 'failed',
-    lastSyncTime: '2024-04-05 10:00:00',
+    lastSyncTime: '2026-04-05 10:00:00',
     isSystem: false
   }
 ])

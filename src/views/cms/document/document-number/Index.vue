@@ -32,7 +32,7 @@
         </el-form-item>
         <el-form-item label="年份">
           <el-select v-model="filterForm.year" placeholder="全部年份" clearable style="width: 120px">
-            <el-option label="2024" value="2024" />
+            <el-option label="2026" value="2026" />
             <el-option label="2023" value="2023" />
             <el-option label="2022" value="2022" />
           </el-select>
@@ -163,62 +163,62 @@ const filterForm = reactive({
 const numberList = ref([
   {
     id: 1,
-    docNumber: '建信发〔2024〕1号',
+    docNumber: '建信发〔2026〕1号',
     docType: '通知',
-    year: '2024',
+    year: '2026',
     sequenceNo: '001',
     title: '关于加强春节放假期间安全管理的通知',
     applicant: '张三',
-    applyDate: '2024-01-10',
-    useDate: '2024-01-15',
+    applyDate: '2026-01-10',
+    useDate: '2026-01-15',
     status: '已使用'
   },
   {
     id: 2,
-    docNumber: '建信发〔2024〕2号',
+    docNumber: '建信发〔2026〕2号',
     docType: '通知',
-    year: '2024',
+    year: '2026',
     sequenceNo: '002',
     title: '',
     applicant: '李四',
-    applyDate: '2024-01-12',
+    applyDate: '2026-01-12',
     useDate: '',
     status: '未使用'
   },
   {
     id: 3,
-    docNumber: '建信报〔2024〕1号',
+    docNumber: '建信报〔2026〕1号',
     docType: '报告',
-    year: '2024',
+    year: '2026',
     sequenceNo: '001',
-    title: '关于2024年度工作计划的报告',
+    title: '关于2026年度工作计划的报告',
     applicant: '王五',
-    applyDate: '2024-01-08',
-    useDate: '2024-01-14',
+    applyDate: '2026-01-08',
+    useDate: '2026-01-14',
     status: '已使用'
   },
   {
     id: 4,
-    docNumber: '建信请〔2024〕1号',
+    docNumber: '建信请〔2026〕1号',
     docType: '请示',
-    year: '2024',
+    year: '2026',
     sequenceNo: '001',
     title: '',
     applicant: '赵六',
-    applyDate: '2024-01-14',
+    applyDate: '2026-01-14',
     useDate: '',
     status: '未使用'
   },
   {
     id: 5,
-    docNumber: '建信通〔2024〕1号',
+    docNumber: '建信通〔2026〕1号',
     docType: '通报',
-    year: '2024',
+    year: '2026',
     sequenceNo: '001',
     title: '关于2023年度工作考核情况的通报',
     applicant: '孙七',
-    applyDate: '2024-01-05',
-    useDate: '2024-01-12',
+    applyDate: '2026-01-05',
+    useDate: '2026-01-12',
     status: '已使用'
   }
 ])
@@ -279,9 +279,9 @@ const handleSubmitApply = () => {
         // 添加新文号
         const newNumber = {
           id: numberList.value.length + 1,
-          docNumber: `建信${getDocTypePrefix(applyForm.docType)}〔2024〕${String(numberList.value.filter(item => item.docType === applyForm.docType).length + 1).padStart(3, '0')}号`,
+          docNumber: `建信${getDocTypePrefix(applyForm.docType)}〔2026〕${String(numberList.value.filter(item => item.docType === applyForm.docType).length + 1).padStart(3, '0')}号`,
           docType: getDocTypeName(applyForm.docType),
-          year: '2024',
+          year: '2026',
           sequenceNo: String(numberList.value.filter(item => item.docType === applyForm.docType).length + 1).padStart(3, '0'),
           title: '',
           applicant: '当前用户',

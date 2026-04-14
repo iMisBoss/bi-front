@@ -521,9 +521,9 @@ const fetchData = () => {
   loading.value = true
   setTimeout(() => {
     tableData.value = [
-      { id: 1, name: '员工门户', category: 'office', version: 'V1.2', creator: '张三/技术部', updater: '李四/技术部', updateTime: '2024-01-15 10:30', status: 'draft' },
-      { id: 2, name: '管理员门户', category: 'admin', version: 'V1.0', creator: '王五/人事部', updater: '王五/人事部', updateTime: '2024-01-14 15:20', status: 'published' },
-      { id: 3, name: '部门门户', category: 'office', version: 'V2.1', creator: '赵六/财务部', updater: '赵六/财务部', updateTime: '2024-01-13 09:15', status: 'disabled' }
+      { id: 1, name: '员工门户', category: 'office', version: 'V1.2', creator: '张三/技术部', updater: '李四/技术部', updateTime: '2026-01-15 10:30', status: 'draft' },
+      { id: 2, name: '管理员门户', category: 'admin', version: 'V1.0', creator: '王五/人事部', updater: '王五/人事部', updateTime: '2026-01-14 15:20', status: 'published' },
+      { id: 3, name: '部门门户', category: 'office', version: 'V2.1', creator: '赵六/财务部', updater: '赵六/财务部', updateTime: '2026-01-13 09:15', status: 'disabled' }
     ]
     pagination.total = 3
     loading.value = false
@@ -534,8 +534,8 @@ const fetchPublishData = () => {
   publishLoading.value = true
   setTimeout(() => {
     publishData.value = [
-      { id: 2, name: '管理员门户', category: 'admin', version: 'V1.0', publisher: '王五', publishTime: '2024-01-14 15:20', runStatus: 'enabled', isHome: true, visibleScope: '全员可见' },
-      { id: 4, name: '数据看板', category: 'data', version: 'V1.1', publisher: '张三', publishTime: '2024-01-12 11:00', runStatus: 'enabled', isHome: false, visibleScope: '技术部+财务部' }
+      { id: 2, name: '管理员门户', category: 'admin', version: 'V1.0', publisher: '王五', publishTime: '2026-01-14 15:20', runStatus: 'enabled', isHome: true, visibleScope: '全员可见' },
+      { id: 4, name: '数据看板', category: 'data', version: 'V1.1', publisher: '张三', publishTime: '2026-01-12 11:00', runStatus: 'enabled', isHome: false, visibleScope: '技术部+财务部' }
     ]
     publishPagination.total = 2
     publishLoading.value = false
@@ -546,8 +546,8 @@ const fetchPermissionData = () => {
   permissionLoading.value = true
   setTimeout(() => {
     permissionData.value = [
-      { id: 2, name: '管理员门户', category: 'admin', runStatus: 'enabled', visibleScope: '全员可见', scopeType: 'all', authorizer: '系统管理员', authorizeTime: '2024-01-14 15:20' },
-      { id: 4, name: '数据看板', category: 'data', runStatus: 'enabled', visibleScope: '技术部+财务部', scopeType: 'department', authorizer: '张三', authorizeTime: '2024-01-12 11:00' }
+      { id: 2, name: '管理员门户', category: 'admin', runStatus: 'enabled', visibleScope: '全员可见', scopeType: 'all', authorizer: '系统管理员', authorizeTime: '2026-01-14 15:20' },
+      { id: 4, name: '数据看板', category: 'data', runStatus: 'enabled', visibleScope: '技术部+财务部', scopeType: 'department', authorizer: '张三', authorizeTime: '2026-01-12 11:00' }
     ]
     permissionPagination.total = 2
     permissionLoading.value = false
@@ -571,7 +571,7 @@ const fetchRecycleData = () => {
   recycleLoading.value = true
   setTimeout(() => {
     recycleData.value = [
-      { id: 5, name: '测试门户', deleter: '张三', deleteTime: '2024-01-10 14:30', originalCategory: 'office' }
+      { id: 5, name: '测试门户', deleter: '张三', deleteTime: '2026-01-10 14:30', originalCategory: 'office' }
     ]
     recyclePagination.total = 1
     recycleLoading.value = false

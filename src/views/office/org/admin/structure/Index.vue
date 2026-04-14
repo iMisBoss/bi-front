@@ -332,7 +332,7 @@ const loadTreeData = () => {
       leaderIds: [1],
       parentId: null,
       sortOrder: 1,
-      createTime: '2024-01-01 10:00:00',
+      createTime: '2026-01-01 10:00:00',
       lastModifier: '系统管理员',
       children: [
         {
@@ -346,7 +346,7 @@ const loadTreeData = () => {
           leaderIds: [2],
           parentId: 1,
           sortOrder: 1,
-          createTime: '2024-01-15 10:00:00',
+          createTime: '2026-01-15 10:00:00',
           lastModifier: '张三',
           children: [
             {
@@ -360,7 +360,7 @@ const loadTreeData = () => {
               leaderIds: [3],
               parentId: 2,
               sortOrder: 1,
-              createTime: '2024-02-01 10:00:00',
+              createTime: '2026-02-01 10:00:00',
               lastModifier: '李四',
               children: []
             },
@@ -375,7 +375,7 @@ const loadTreeData = () => {
               leaderIds: [4],
               parentId: 2,
               sortOrder: 2,
-              createTime: '2024-02-01 10:00:00',
+              createTime: '2026-02-01 10:00:00',
               lastModifier: '李四',
               children: []
             }
@@ -392,7 +392,7 @@ const loadTreeData = () => {
           leaderIds: [5],
           parentId: 1,
           sortOrder: 2,
-          createTime: '2024-01-20 10:00:00',
+          createTime: '2026-01-20 10:00:00',
           lastModifier: '张三',
           children: []
         },
@@ -407,7 +407,7 @@ const loadTreeData = () => {
           leaderIds: [6],
           parentId: 1,
           sortOrder: 3,
-          createTime: '2024-01-10 10:00:00',
+          createTime: '2026-01-10 10:00:00',
           lastModifier: '张三',
           children: []
         }
@@ -626,14 +626,14 @@ const loadNodeDetail = (node) => {
   logs.value = [
     {
       operator: '系统管理员',
-      time: '2024-01-01 10:00:00',
+      time: '2026-01-01 10:00:00',
       type: 'create',
       content: '创建部门',
       ip: '192.168.1.100'
     },
     {
       operator: '张三',
-      time: '2024-02-15 14:30:00',
+      time: '2026-02-15 14:30:00',
       type: 'update',
       content: '修改部门负责人',
       ip: '192.168.1.101'
@@ -730,7 +730,7 @@ const handleViewAuditLog = () => {
   auditLogs.value = [
     {
       operator: '系统管理员',
-      operationTime: '2024-01-01 10:00:00',
+      operationTime: '2026-01-01 10:00:00',
       operationType: 'create',
       fieldName: '-',
       oldValue: '-',
@@ -739,7 +739,7 @@ const handleViewAuditLog = () => {
     },
     {
       operator: '张三',
-      operationTime: '2024-02-15 14:30:00',
+      operationTime: '2026-02-15 14:30:00',
       operationType: 'update',
       fieldName: '负责人',
       oldValue: '李四',

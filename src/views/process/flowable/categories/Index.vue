@@ -167,21 +167,21 @@ const total = ref(0)
 
 const tableData = ref([
   {
-    id: 1, parentId: null, name: '人事管理', code: 'hr', sort: 10, enabled: true, processCount: 5, createTime: '2024-01-01 10:00',
+    id: 1, parentId: null, name: '人事管理', code: 'hr', sort: 10, enabled: true, processCount: 5, createTime: '2026-01-01 10:00',
     children: [
-      { id: 11, parentId: 1, name: '请假', code: 'hr_leave', sort: 1, enabled: true, processCount: 2, createTime: '2024-01-01 10:30' },
-      { id: 12, parentId: 1, name: '入职', code: 'hr_onboard', sort: 2, enabled: true, processCount: 1, createTime: '2024-01-01 10:30' },
-      { id: 13, parentId: 1, name: '转正', code: 'hr_regular', sort: 3, enabled: false, processCount: 2, createTime: '2024-01-01 10:30' }
+      { id: 11, parentId: 1, name: '请假', code: 'hr_leave', sort: 1, enabled: true, processCount: 2, createTime: '2026-01-01 10:30' },
+      { id: 12, parentId: 1, name: '入职', code: 'hr_onboard', sort: 2, enabled: true, processCount: 1, createTime: '2026-01-01 10:30' },
+      { id: 13, parentId: 1, name: '转正', code: 'hr_regular', sort: 3, enabled: false, processCount: 2, createTime: '2026-01-01 10:30' }
     ]
   },
   {
-    id: 2, parentId: null, name: '财务管理', code: 'finance', sort: 20, enabled: true, processCount: 3, createTime: '2024-01-05 14:00',
+    id: 2, parentId: null, name: '财务管理', code: 'finance', sort: 20, enabled: true, processCount: 3, createTime: '2026-01-05 14:00',
     children: [
-      { id: 21, parentId: 2, name: '报销', code: 'finance_reimburse', sort: 1, enabled: true, processCount: 3, createTime: '2024-01-05 14:30' }
+      { id: 21, parentId: 2, name: '报销', code: 'finance_reimburse', sort: 1, enabled: true, processCount: 3, createTime: '2026-01-05 14:30' }
     ]
   },
   {
-    id: 3, parentId: null, name: '行政管理', code: 'admin', sort: 30, enabled: true, processCount: 2, createTime: '2024-01-10 09:00',
+    id: 3, parentId: null, name: '行政管理', code: 'admin', sort: 30, enabled: true, processCount: 2, createTime: '2026-01-10 09:00',
     children: []
   }
 ])

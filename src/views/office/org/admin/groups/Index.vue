@@ -169,7 +169,7 @@ const loadGroupData = () => {
       ownerIds: [1],
       memberCount: 3,
       status: 'enabled',
-      createTime: '2024-01-01 10:00:00',
+      createTime: '2026-01-01 10:00:00',
       description: '公司全员通讯群组',
       members: [
         { id: 100, name: '系统管理员', employeeNo: 'ADMIN', department: '公司总部' },
@@ -192,7 +192,7 @@ const loadGroupData = () => {
       ownerIds: [2],
       memberCount: 3,
       status: 'enabled',
-      createTime: '2024-01-15 10:00:00',
+      createTime: '2026-01-15 10:00:00',
       description: '技术部门内部群组',
       members: [
         { id: 2, name: '李四', employeeNo: 'E002', department: '技术部' },
@@ -215,7 +215,7 @@ const loadGroupData = () => {
       ownerIds: [1],
       memberCount: 2,
       status: 'enabled',
-      createTime: '2024-02-01 10:00:00',
+      createTime: '2026-02-01 10:00:00',
       description: '前端开发团队群组',
       members: [
         { id: 1, name: '张三', employeeNo: 'E001', department: '前端开发组' },
@@ -237,7 +237,7 @@ const loadGroupData = () => {
       ownerIds: [3],
       memberCount: 3,
       status: 'enabled',
-      createTime: '2024-01-20 10:00:00',
+      createTime: '2026-01-20 10:00:00',
       description: '产品部门内部群组',
       members: [
         { id: 3, name: '王五', employeeNo: 'E003', department: '产品部' },
@@ -249,7 +249,7 @@ const loadGroupData = () => {
     {
       id: 5,
       groupId: 'GRP-005',
-      name: '2024年度项目群',
+      name: '2026年度项目群',
       parentId: null,
       parentName: '根群组',
       type: 'project',
@@ -260,8 +260,8 @@ const loadGroupData = () => {
       ownerIds: [100],
       memberCount: 3,
       status: 'enabled',
-      createTime: '2024-03-01 10:00:00',
-      description: '2024年度重点项目沟通群',
+      createTime: '2026-03-01 10:00:00',
+      description: '2026年度重点项目沟通群',
       members: [
         { id: 100, name: '当前用户', employeeNo: 'E100', department: '公司总部' },
         { id: 2, name: '李四', employeeNo: 'E002', department: '技术部' },
@@ -283,7 +283,7 @@ const loadGroupData = () => {
       ownerIds: [6],
       memberCount: 2,
       status: 'disabled',
-      createTime: '2024-01-10 10:00:00',
+      createTime: '2026-01-10 10:00:00',
       description: '财务部门内部群组',
       members: [
         { id: 6, name: '周八', employeeNo: 'E006', department: '财务部' },
@@ -305,7 +305,7 @@ const loadGroupTree = () => {
           ]
         },
         { id: 4, name: '产品部群组', children: [] },
-        { id: 5, name: '2024年度项目群', children: [] },
+        { id: 5, name: '2026年度项目群', children: [] },
         { id: 6, name: '财务部群组', children: [] }
       ]
     }

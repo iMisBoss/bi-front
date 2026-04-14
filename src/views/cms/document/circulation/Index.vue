@@ -78,13 +78,13 @@ const activeTab = ref('circulation')
 const loading = ref(false)
 
 const circulationList = ref([
-  { id: 1, title: '关于2024年度工作部署的通知', docType: '通知', docNumber: '建信发〔2024〕1号', sender: '张三', sendTime: '2024-01-15 09:00', readStatus: '已读' },
-  { id: 2, title: '关于加强安全生产的通知', docType: '通知', docNumber: '建信发〔2024〕2号', sender: '李四', sendTime: '2024-01-14 10:00', readStatus: '未读' }
+  { id: 1, title: '关于2026年度工作部署的通知', docType: '通知', docNumber: '建信发〔2026〕1号', sender: '张三', sendTime: '2026-01-15 09:00', readStatus: '已读' },
+  { id: 2, title: '关于加强安全生产的通知', docType: '通知', docNumber: '建信发〔2026〕2号', sender: '李四', sendTime: '2026-01-14 10:00', readStatus: '未读' }
 ])
 
 const supervisionList = ref([
-  { id: 101, title: '关于整改安全隐患的通报', docType: '通报', docNumber: '建信通〔2024〕3号', handler: '王五', deadline: '2024-01-20', status: '未办理' },
-  { id: 102, title: '关于报送工作总结的通知', docType: '通知', docNumber: '建信发〔2024〕4号', handler: '赵六', deadline: '2024-01-18', status: '办理中' }
+  { id: 101, title: '关于整改安全隐患的通报', docType: '通报', docNumber: '建信通〔2026〕3号', handler: '王五', deadline: '2026-01-20', status: '未办理' },
+  { id: 102, title: '关于报送工作总结的通知', docType: '通知', docNumber: '建信发〔2026〕4号', handler: '赵六', deadline: '2026-01-18', status: '办理中' }
 ])
 
 const handleTabChange = (tab) => {

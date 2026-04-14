@@ -16,7 +16,7 @@
           <div class="version-info-bar">
             <span>基于正式版本 V{{ originalVersion }} 创建</span>
             <span class="divider">|</span>
-            <span>原版本生效时间：{{ data?.createTime || '2024-01-01' }}</span>
+            <span>原版本生效时间：{{ data?.createTime || '2026-01-01' }}</span>
             <span class="divider">|</span>
             <span>新版本创建人：当前用户</span>
             <span class="divider">|</span>

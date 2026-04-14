@@ -14,7 +14,6 @@ const currentUser = computed(() => userStore.currentUser)
 const isAdmin = computed(() => userStore.isAdmin)
 const collapsed = ref(false)
 
-// 根据角色动态获取菜单
 const menus = computed(() => {
   return getMenusByRole(userStore.userRole)
 })
@@ -94,7 +93,7 @@ const currentRouteName = computed(() => {
     '/cms/document/send-receive': '收发文管理',
     '/cms/document/circulation': '流转与督办',
     '/cms/document/query-archive': '查询与归档',
-    '/cms/document/document-numbe': '文号管理',
+    '/cms/document/document-number': '文号管理',
     '/cms/regulation': '规章制度',
     '/cms/knowledge': '企业知识库',
     '/cms/archive-library': '文档中心',
@@ -143,6 +142,7 @@ const handleMenuSelect = (index) => {
 
 const toggleCollapse = () => {
   collapsed.value = !collapsed.value
+  localStorage.setItem('sidebar-collapsed', collapsed.value)
 }
 
 const goToMessage = () => {
@@ -155,9 +155,7 @@ const handleLogout = async () => {
 }
 
 const handlePortalChange = (portal) => {
-  // 更新面包屑
   if (route.path === '/') {
-    // 如果在首页，刷新首页内容
     router.replace('/?portal=' + portal.id)
   }
 }
@@ -166,6 +164,11 @@ onMounted(async () => {
   if (route.path !== '/login') {
     await userStore.loadUserInfo()
     loadUnreadCount()
+
+    const savedCollapsed = localStorage.getItem('sidebar-collapsed')
+    if (savedCollapsed !== null) {
+      collapsed.value = savedCollapsed === 'true'
+    }
   }
 })
 
@@ -181,47 +184,45 @@ const loadUnreadCount = async () => {
 
 <template>
   <div id="bi-front-app">
-    <!-- 登录页面 -->
     <template v-if="route.path === '/login'">
       <router-view />
     </template>
 
-    <!-- 主界面 -->
     <el-container v-else>
-      <!-- 左侧菜单栏 -->
-      <el-aside width="220px" class="app-aside">
+      <el-aside
+          :width="collapsed ? '64px' : '220px'"
+          class="app-aside"
+          :class="{ 'is-collapsed': collapsed }"
+      >
         <div class="logo-wrapper">
           <el-icon :size="32" color="#1890ff"><OfficeBuilding /></el-icon>
-          <span>{{ isAdmin ? '管理后台' : '建信消金 OA' }}</span>
+          <span v-if="!collapsed">{{ isAdmin ? '管理后台' : '建信消金 OA' }}</span>
         </div>
 
         <el-menu
             :default-active="activeMenu"
             class="side-menu"
+            :collapse="collapsed"
+            :collapse-transition="true"
             background-color="#001529"
             text-color="rgba(255,255,255,0.65)"
             active-text-color="#1890ff"
             :router="false"
             @select="handleMenuSelect"
         >
-          <!-- 递归渲染菜单 -->
           <template v-for="(menu, index) in menus" :key="index">
-            <!-- 有子菜单 -->
             <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.title">
               <template #title>
                 <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
                 <span>{{ menu.title }}</span>
               </template>
 
-              <!-- 递归渲染子菜单 -->
               <template v-for="(child, childIndex) in menu.children" :key="childIndex">
-                <!-- 三级菜单 -->
                 <el-sub-menu v-if="child.children && child.children.length > 0" :index="child.title">
                   <template #title>
                     <span>{{ child.title }}</span>
                   </template>
 
-                  <!-- 四级菜单项 -->
                   <el-menu-item
                       v-for="(grandChild, grandChildIndex) in child.children"
                       :key="grandChildIndex"
@@ -231,7 +232,6 @@ const loadUnreadCount = async () => {
                   </el-menu-item>
                 </el-sub-menu>
 
-                <!-- 二级菜单项 -->
                 <el-menu-item v-else :index="child.path">
                   <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
                   <span>{{ child.title }}</span>
@@ -239,7 +239,6 @@ const loadUnreadCount = async () => {
               </template>
             </el-sub-menu>
 
-            <!-- 无子菜单 -->
             <el-menu-item v-else :index="menu.path">
               <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
               <span>{{ menu.title }}</span>
@@ -249,21 +248,28 @@ const loadUnreadCount = async () => {
       </el-aside>
 
       <el-container>
-        <!-- 顶部导航 -->
         <el-header class="app-header">
           <div class="header-content">
             <div class="header-left">
-              <el-button link class="collapse-btn" @click="toggleCollapse">
+              <el-button
+                  link
+                  class="collapse-btn"
+                  @click="toggleCollapse"
+                  :title="collapsed ? '展开菜单' : '收起菜单'"
+              >
                 <el-icon v-if="!collapsed"><Fold /></el-icon>
                 <el-icon v-else><Expand /></el-icon>
               </el-button>
 
-              <!-- 门户切换器（仅普通用户显示） -->
               <PortalSwitcher v-if="!isAdmin" @portal-change="handlePortalChange" />
 
               <el-breadcrumb separator="/">
-                <el-breadcrumb-item :to="{ path: isAdmin ? '/admin/home' : '/' }">{{ isAdmin ? '后台首页' : '首页' }}</el-breadcrumb-item>
-                <el-breadcrumb-item v-if="currentRouteName">{{ currentRouteName }}</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{ path: isAdmin ? '/admin/home' : '/' }">
+                  {{ isAdmin ? '后台首页' : '首页' }}
+                </el-breadcrumb-item>
+                <el-breadcrumb-item v-if="currentRouteName">
+                  {{ currentRouteName }}
+                </el-breadcrumb-item>
               </el-breadcrumb>
             </div>
 
@@ -274,7 +280,9 @@ const loadUnreadCount = async () => {
               <el-dropdown>
                 <span class="user-name">
                   {{ currentUser?.name || '用户' }}
-                  <el-tag v-if="isAdmin" size="small" type="danger" style="margin-left: 8px;">管理员</el-tag>
+                  <el-tag v-if="isAdmin" size="small" type="danger" style="margin-left: 8px;">
+                    管理员
+                  </el-tag>
                   <el-icon><arrow-down /></el-icon>
                 </span>
                 <template #dropdown>
@@ -288,7 +296,6 @@ const loadUnreadCount = async () => {
           </div>
         </el-header>
 
-        <!-- 主内容区 -->
         <el-main class="app-main">
           <div class="app-main-wrapper">
             <router-view />
@@ -302,14 +309,17 @@ const loadUnreadCount = async () => {
 <style lang="scss" scoped>
 #bi-front-app {
   height: 100vh;
+  overflow: hidden;
 }
 
 .app-aside {
   background: #001529;
-  transition: width 0.3s;
-  overflow-y: auto;
-  overflow-x: hidden;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  overflow: hidden;
   height: 100vh;
+  flex-shrink: 0;
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -326,6 +336,16 @@ const loadUnreadCount = async () => {
       background: rgba(255, 255, 255, 0.3);
     }
   }
+
+  &.is-collapsed {
+    .logo-wrapper {
+      span {
+        opacity: 0;
+        width: 0;
+      }
+    }
+  }
+
   .logo-wrapper {
     height: 60px;
     display: flex;
@@ -334,9 +354,12 @@ const loadUnreadCount = async () => {
     gap: 10px;
     background: #002140;
     flex-shrink: 0;
+    overflow: hidden;
+    padding: 0 16px;
 
     img {
       height: 32px;
+      flex-shrink: 0;
     }
 
     span {
@@ -344,26 +367,33 @@ const loadUnreadCount = async () => {
       font-size: 16px;
       font-weight: 600;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      transition: all 0.3s;
+      opacity: 1;
     }
   }
 
   .side-menu {
     border-right: none;
-
     max-height: calc(100vh - 60px);
     overflow-y: auto;
     overflow-x: hidden;
+    height: calc(100vh - 60px);
 
-    .el-sub-menu__title:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+    :deep(.el-sub-menu__title) {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+      }
     }
 
-    .el-menu-item:hover {
-      background-color: rgba(255, 255, 255, 0.08);
-    }
+    :deep(.el-menu-item) {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+      }
 
-    .el-menu-item.is-active {
-      background-color: #096dd9;
+      &.is-active {
+        background-color: #096dd9 !important;
+      }
     }
   }
 }
@@ -373,6 +403,7 @@ const loadUnreadCount = async () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 0;
   height: 60px;
+  flex-shrink: 0;
 
   .header-content {
     display: flex;
@@ -387,8 +418,19 @@ const loadUnreadCount = async () => {
       gap: 15px;
 
       .collapse-btn {
-        font-size: 18px;
+        font-size: 20px;
         cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #f5f7fa;
+        }
+
+        &:active {
+          background-color: #e4e7ed;
+        }
       }
     }
 
@@ -399,7 +441,14 @@ const loadUnreadCount = async () => {
 
       .message-badge {
         cursor: pointer;
-        font-size: 18px;
+        font-size: 20px;
+        padding: 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #f5f7fa;
+        }
       }
 
       .user-name {
@@ -407,9 +456,14 @@ const loadUnreadCount = async () => {
         color: #606266;
         display: flex;
         align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.2s;
 
         &:hover {
           color: #1890ff;
+          background-color: #f5f7fa;
         }
       }
     }
@@ -420,6 +474,7 @@ const loadUnreadCount = async () => {
   background: #f0f2f5;
   padding: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   height: calc(100vh - 60px);
 
   &::-webkit-scrollbar {
@@ -442,6 +497,7 @@ const loadUnreadCount = async () => {
 
   .app-main-wrapper {
     min-height: 100%;
+    padding: 16px;
   }
 }
 </style>

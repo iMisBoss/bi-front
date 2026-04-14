@@ -97,13 +97,13 @@ const activeTab = ref('todo')
 const loading = ref(false)
 
 const todoList = ref([
-  { id: 1, title: '关于加强春节放假通知', docType: '通知', docNumber: '建信发〔2024〕1号', sender: '行政部', receiveTime: '2024-01-15 09:00', status: '待办理' },
-  { id: 2, title: '2024年度工作计划报告', docType: '报告', docNumber: '建信报〔2024〕2号', sender: '财务部', receiveTime: '2024-01-14 14:00', status: '办理中' }
+  { id: 1, title: '关于加强春节放假通知', docType: '通知', docNumber: '建信发〔2026〕1号', sender: '行政部', receiveTime: '2026-01-15 09:00', status: '待办理' },
+  { id: 2, title: '2026年度工作计划报告', docType: '报告', docNumber: '建信报〔2026〕2号', sender: '财务部', receiveTime: '2026-01-14 14:00', status: '办理中' }
 ])
 
 const myList = ref([
-  { id: 101, title: '关于申请采购办公用品的请示', docType: '请示', docNumber: '建信请〔2024〕5号', sendTime: '2024-01-13 10:00', status: '审批中' },
-  { id: 102, title: '关于调整会议安排的通知', docType: '通知', docNumber: '建信发〔2024〕3号', sendTime: '2024-01-12 16:00', status: '已发布' }
+  { id: 101, title: '关于申请采购办公用品的请示', docType: '请示', docNumber: '建信请〔2026〕5号', sendTime: '2026-01-13 10:00', status: '审批中' },
+  { id: 102, title: '关于调整会议安排的通知', docType: '通知', docNumber: '建信发〔2026〕3号', sendTime: '2026-01-12 16:00', status: '已发布' }
 ])
 
 const docTypes = ref([

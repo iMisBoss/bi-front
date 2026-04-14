@@ -311,55 +311,55 @@ const filterForm = reactive({
 const processList = ref([
   {
     id: 1,
-    processNo: 'LC20240115001',
+    processNo: 'LC20260115001',
     processName: '请假审批流程',
-    title: '张三 - 2024 年春节请假申请',
+    title: '张三 - 2026 年春节请假申请',
     initiator: '张三',
-    startTime: '2024-01-15 09:00:00',
+    startTime: '2026-01-15 09:00:00',
     status: 'processing',
     currentNode: '部门经理审批',
     isInitiator: true
   },
   {
     id: 2,
-    processNo: 'LC20240114001',
+    processNo: 'LC20260114001',
     processName: '采购申请流程',
     title: '李四 - 办公电脑采购申请',
     initiator: '李四',
-    startTime: '2024-01-14 10:30:00',
+    startTime: '2026-01-14 10:30:00',
     status: 'processing',
     currentNode: '财务审批',
     isInitiator: false
   },
   {
     id: 3,
-    processNo: 'LC20240113001',
+    processNo: 'LC20260113001',
     processName: '费用报销流程',
     title: '王五 - 差旅费报销',
     initiator: '王五',
-    startTime: '2024-01-13 14:20:00',
+    startTime: '2026-01-13 14:20:00',
     status: 'completed',
     currentNode: '已结束',
     isInitiator: true
   },
   {
     id: 4,
-    processNo: 'LC20240112001',
+    processNo: 'LC20260112001',
     processName: '会议申请流程',
     title: '赵六 - 年度总结会议申请',
     initiator: '赵六',
-    startTime: '2024-01-12 08:50:00',
+    startTime: '2026-01-12 08:50:00',
     status: 'processing',
     currentNode: '行政确认',
     isInitiator: true
   },
   {
     id: 5,
-    processNo: 'LC20240111001',
+    processNo: 'LC20260111001',
     processName: '用印申请流程',
     title: '孙七 - 合同盖章申请',
     initiator: '孙七',
-    startTime: '2024-01-11 16:00:00',
+    startTime: '2026-01-11 16:00:00',
     status: 'timeout',
     currentNode: '法务审核',
     isInitiator: true
@@ -552,7 +552,7 @@ const loadFlowNodes = (processId) => {
       id: 'node1',
       name: '发起人提交',
       handler: '张三',
-      handleTime: '2024-01-15 09:00:00',
+      handleTime: '2026-01-15 09:00:00',
       status: 'completed',
       isTimeout: false
     },
@@ -560,7 +560,7 @@ const loadFlowNodes = (processId) => {
       id: 'node2',
       name: '部门经理审批',
       handler: '李四',
-      handleTime: '2024-01-15 10:30:00',
+      handleTime: '2026-01-15 10:30:00',
       status: 'completed',
       isTimeout: false,
       timeoutDuration: null
@@ -601,8 +601,8 @@ const loadOperationLogs = (processId) => {
       type: 'start',
       operator: '张三',
       node: '发起人提交',
-      timestamp: '2024-01-15 09:00:00',
-      content: '发起请假审批流程，请假时间：2024-02-10 至 2024-02-17，共 7 天',
+      timestamp: '2026-01-15 09:00:00',
+      content: '发起请假审批流程，请假时间：2026-02-10 至 2026-02-17，共 7 天',
       color: '#409EFF',
       duration: null
     },
@@ -610,7 +610,7 @@ const loadOperationLogs = (processId) => {
       type: 'approve',
       operator: '李四',
       node: '部门经理审批',
-      timestamp: '2024-01-15 10:30:00',
+      timestamp: '2026-01-15 10:30:00',
       content: '同意。工作已安排妥当，请批准。',
       color: '#67C23A',
       duration: '1 小时 30 分钟'
@@ -619,7 +619,7 @@ const loadOperationLogs = (processId) => {
       type: 'timeout',
       operator: '系统',
       node: '人力资源审核',
-      timestamp: '2024-01-15 14:00:00',
+      timestamp: '2026-01-15 14:00:00',
       content: '该节点已超过规定处理时限（2 小时），已自动发送催办通知',
       color: '#E6A23C',
       duration: null
@@ -628,7 +628,7 @@ const loadOperationLogs = (processId) => {
       type: 'urge',
       operator: '张三',
       node: '人力资源审核',
-      timestamp: '2024-01-15 14:05:00',
+      timestamp: '2026-01-15 14:05:00',
       content: '发起人对当前节点发起催办',
       color: '#F56C6C',
       duration: null

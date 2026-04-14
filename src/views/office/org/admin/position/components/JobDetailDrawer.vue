@@ -159,14 +159,14 @@ const mockLogs = computed(() => {
   return [
     {
       operator: '系统管理员',
-      time: '2024-01-01 10:00:00',
+      time: '2026-01-01 10:00:00',
       type: 'create',
       content: `新增${props.type === 'level' ? '职级' : '职务'}`,
       ip: '192.168.1.100'
     },
     {
       operator: '张三',
-      time: '2024-02-15 14:30:00',
+      time: '2026-02-15 14:30:00',
       type: 'edit',
       content: '修改基本信息',
       ip: '192.168.1.101'

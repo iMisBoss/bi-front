@@ -74,7 +74,7 @@ const routes = [
     {
         path: '/process/approval/my-schedule',
         name: 'ProcessApprovalMySchedule',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/process/approval/my-schedule/Index.vue')
     },
 
     // ========== 流程后端（设计建模） ==========

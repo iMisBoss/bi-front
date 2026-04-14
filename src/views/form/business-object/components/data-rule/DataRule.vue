@@ -550,7 +550,7 @@ const autoNumberRules = ref([
     ruleName: '请假申请编号规则',
     businessObject: '请假申请',
     numberFormat: 'QJ{YYYY}{MM}{DD}-{SEQ:4}',
-    currentNumber: 'QJ20240408-0015',
+    currentNumber: 'QJ20260408-0015',
     startNumber: 1,
     resetRule: 'daily',
     description: '请假申请单自动生成编号，每日重置流水号'
@@ -560,7 +560,7 @@ const autoNumberRules = ref([
     ruleName: '加班申请编号规则',
     businessObject: '加班申请',
     numberFormat: 'JB{YYYY}{MM}{DD}-{SEQ:4}',
-    currentNumber: 'JB20240408-0008',
+    currentNumber: 'JB20260408-0008',
     startNumber: 1,
     resetRule: 'daily',
     description: '加班申请单自动生成编号'
@@ -570,7 +570,7 @@ const autoNumberRules = ref([
     ruleName: '会议申请编号规则',
     businessObject: '会议申请',
     numberFormat: 'HY{YYYY}{MM}-{SEQ:4}',
-    currentNumber: 'HY202404-0023',
+    currentNumber: 'HY202604-0023',
     startNumber: 1,
     resetRule: 'monthly',
     description: '会议申请单自动生成编号，每月重置'
@@ -580,7 +580,7 @@ const autoNumberRules = ref([
     ruleName: '车辆申请编号规则',
     businessObject: '车辆申请',
     numberFormat: 'CL{YYYY}{SEQ:6}',
-    currentNumber: 'CL2024000125',
+    currentNumber: 'CL2026000125',
     startNumber: 1,
     resetRule: 'yearly',
     description: '车辆申请单自动生成编号，每年重置'
@@ -590,7 +590,7 @@ const autoNumberRules = ref([
     ruleName: '费用报销编号规则',
     businessObject: '费用报销',
     numberFormat: 'BX{YYYY}{MM}{DD}-{SEQ:6}',
-    currentNumber: 'BX20240408-000042',
+    currentNumber: 'BX20260408-000042',
     startNumber: 1,
     resetRule: 'daily',
     description: '费用报销单自动生成编号'
