@@ -1,21 +1,21 @@
 <template>
   <div class="document-number-page">
-    <!-- 页面头部 -->
     <div class="page-header">
       <div class="header-left">
         <h2>文号管理</h2>
+        <el-tag type="info" size="small">公文编号规则管理</el-tag>
       </div>
       <div class="header-right">
         <el-button type="primary" @click="handleApply" icon="Plus">申请文号</el-button>
+        <el-button @click="handleExport" icon="Download">导出</el-button>
+        <el-button @click="handleRefresh" icon="Refresh" :loading="loading">刷新</el-button>
       </div>
     </div>
 
-    <!-- 搜索筛选区域 -->
     <el-card class="filter-card" shadow="hover">
       <el-form :inline="true" :model="filterForm" size="default">
         <el-form-item label="公文类型">
           <el-select v-model="filterForm.docType" placeholder="全部类型" clearable style="width: 150px">
-            <el-option label="全部类型" value="" />
             <el-option label="请示" value="request" />
             <el-option label="报告" value="report" />
             <el-option label="通知" value="notice" />
@@ -25,7 +25,6 @@
         </el-form-item>
         <el-form-item label="使用状态">
           <el-select v-model="filterForm.status" placeholder="全部状态" clearable style="width: 150px">
-            <el-option label="全部状态" value="" />
             <el-option label="已使用" value="used" />
             <el-option label="未使用" value="unused" />
           </el-select>
@@ -33,9 +32,13 @@
         <el-form-item label="年份">
           <el-select v-model="filterForm.year" placeholder="全部年份" clearable style="width: 120px">
             <el-option label="2026" value="2026" />
+            <el-option label="2025" value="2025" />
+            <el-option label="2024" value="2024" />
             <el-option label="2023" value="2023" />
-            <el-option label="2022" value="2022" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="申请人">
+          <el-input v-model="filterForm.applicant" placeholder="请输入" clearable style="width: 150px" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleFilter" icon="Search">查询</el-button>
@@ -44,16 +47,16 @@
       </el-form>
     </el-card>
 
-    <!-- 文号列表 -->
     <el-card class="tab-card" shadow="never">
-      <!-- 统计信息 -->
       <div class="stats-bar">
         <el-statistic title="总文号数" :value="total" />
-        <el-statistic title="已使用" :value="usedCount" />
-        <el-statistic title="未使用" :value="unusedCount" />
+        <el-statistic title="已使用" :value="usedCount" value-style="color: #67C23A" />
+        <el-statistic title="未使用" :value="unusedCount" value-style="color: #E6A23C" />
+        <el-statistic title="使用率" :value="usageRate" suffix="%" />
       </div>
 
-      <el-table :data="numberList" border v-loading="loading">
+      <el-table :data="filteredNumberList" border v-loading="loading" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="50" align="center" />
         <el-table-column prop="docNumber" label="文号" width="180" />
         <el-table-column prop="docType" label="公文类型" width="120" />
         <el-table-column prop="year" label="年份" width="100" />
@@ -64,12 +67,12 @@
         <el-table-column prop="useDate" label="使用日期" width="120" />
         <el-table-column prop="status" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === '已使用' ? 'success' : 'warning'" size="small" effect="plain">
+            <el-tag :type="row.status === '已使用' ? 'success' : 'warning'" size="small">
               {{ row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right" align="center">
+        <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
             <el-button v-if="row.status === '未使用'" link type="primary" size="small" @click="handleUse(row)">使用</el-button>
             <el-button link type="primary" size="small" @click="handleView(row)">查看</el-button>
@@ -78,9 +81,15 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
+      <div class="batch-actions" v-if="selectedRows.length > 0">
+        <el-alert type="info" :closable="false" show-icon>
+          已选择 {{ selectedRows.length }} 项
+          <el-button link type="danger" size="small" @click="handleBatchCancel">批量作废</el-button>
+        </el-alert>
+      </div>
+
       <div class="pagination">
-        <span class="total">共 {{ numberList.length }} 条</span>
+        <span class="total">共 {{ filteredNumberList.length }} 条</span>
         <el-select v-model="pageSize" size="small" style="width: 100px; margin: 0 10px;">
           <el-option label="10条/页" :value="10" />
           <el-option label="20条/页" :value="20" />
@@ -89,13 +98,12 @@
         <el-pagination
             v-model:current-page="currentPage"
             :page-size="pageSize"
-            :total="numberList.length"
+            :total="filteredNumberList.length"
             layout="prev, pager, next, jumper"
         />
       </div>
     </el-card>
 
-    <!-- 申请文号弹窗 -->
     <el-dialog
         v-model="applyDialogVisible"
         title="申请文号"
@@ -144,22 +152,22 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus } from '@element-plus/icons-vue'
+import { Search, Refresh, Plus, Download } from '@element-plus/icons-vue'
 
 const loading = ref(false)
 const submitting = ref(false)
 const applyDialogVisible = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const selectedRows = ref([])
 
-// 筛选表单
 const filterForm = reactive({
   docType: '',
   status: '',
-  year: ''
+  year: '',
+  applicant: ''
 })
 
-// 文号列表数据
 const numberList = ref([
   {
     id: 1,
@@ -223,12 +231,21 @@ const numberList = ref([
   }
 ])
 
-// 统计数据
 const total = computed(() => numberList.value.length)
 const usedCount = computed(() => numberList.value.filter(item => item.status === '已使用').length)
 const unusedCount = computed(() => numberList.value.filter(item => item.status === '未使用').length)
+const usageRate = computed(() => total.value > 0 ? Math.round(usedCount.value / total.value * 100) : 0)
 
-// 申请表单
+const filteredNumberList = computed(() => {
+  return numberList.value.filter(item => {
+    const matchType = !filterForm.docType || item.docType === getDocTypeName(filterForm.docType)
+    const matchStatus = !filterForm.status || (filterForm.status === 'used' ? item.status === '已使用' : item.status === '未使用')
+    const matchYear = !filterForm.year || item.year === filterForm.year
+    const matchApplicant = !filterForm.applicant || item.applicant.includes(filterForm.applicant)
+    return matchType && matchStatus && matchYear && matchApplicant
+  })
+})
+
 const applyFormRef = ref(null)
 const applyForm = reactive({
   docType: '',
@@ -242,7 +259,10 @@ const applyRules = {
   title: [{ required: true, message: '请输入公文标题', trigger: 'blur' }]
 }
 
-// 查询
+const handleSelectionChange = (selection) => {
+  selectedRows.value = selection
+}
+
 const handleFilter = () => {
   loading.value = true
   setTimeout(() => {
@@ -250,15 +270,14 @@ const handleFilter = () => {
   }, 500)
 }
 
-// 重置筛选
 const handleResetFilter = () => {
   filterForm.docType = ''
   filterForm.status = ''
   filterForm.year = ''
+  filterForm.applicant = ''
   handleFilter()
 }
 
-// 申请文号
 const handleApply = () => {
   applyDialogVisible.value = true
   applyForm.docType = ''
@@ -267,7 +286,6 @@ const handleApply = () => {
   applyForm.reason = ''
 }
 
-// 提交申请
 const handleSubmitApply = () => {
   applyFormRef.value.validate((valid) => {
     if (valid) {
@@ -276,13 +294,12 @@ const handleSubmitApply = () => {
         submitting.value = false
         applyDialogVisible.value = false
         ElMessage.success('文号申请已提交')
-        // 添加新文号
         const newNumber = {
           id: numberList.value.length + 1,
-          docNumber: `建信${getDocTypePrefix(applyForm.docType)}〔2026〕${String(numberList.value.filter(item => item.docType === applyForm.docType).length + 1).padStart(3, '0')}号`,
+          docNumber: `建信${getDocTypePrefix(applyForm.docType)}〔2026〕${String(numberList.value.filter(item => item.docType === getDocTypeName(applyForm.docType)).length + 1).padStart(3, '0')}号`,
           docType: getDocTypeName(applyForm.docType),
           year: '2026',
-          sequenceNo: String(numberList.value.filter(item => item.docType === applyForm.docType).length + 1).padStart(3, '0'),
+          sequenceNo: String(numberList.value.filter(item => item.docType === getDocTypeName(applyForm.docType)).length + 1).padStart(3, '0'),
           title: '',
           applicant: '当前用户',
           applyDate: new Date().toISOString().split('T')[0],
@@ -295,7 +312,6 @@ const handleSubmitApply = () => {
   })
 }
 
-// 使用文号
 const handleUse = (row) => {
   ElMessageBox.prompt('请输入公文标题', '使用文号', {
     confirmButtonText: '确定',
@@ -310,12 +326,10 @@ const handleUse = (row) => {
   }).catch(() => {})
 }
 
-// 查看
 const handleView = (row) => {
   ElMessage.info(`查看文号：${row.docNumber}`)
 }
 
-// 作废
 const handleCancel = (row) => {
   ElMessageBox.confirm(`确认作废文号"${row.docNumber}"吗？`, '作废确认', {
     confirmButtonText: '确定',
@@ -330,7 +344,33 @@ const handleCancel = (row) => {
   }).catch(() => {})
 }
 
-// 获取公文类型前缀
+const handleBatchCancel = () => {
+  ElMessageBox.confirm(`确认批量作废 ${selectedRows.value.length} 个文号？`, '批量作废', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    selectedRows.value.forEach(row => {
+      const index = numberList.value.findIndex(item => item.id === row.id)
+      if (index > -1) numberList.value.splice(index, 1)
+    })
+    selectedRows.value = []
+    ElMessage.success('批量作废成功')
+  }).catch(() => {})
+}
+
+const handleExport = () => {
+  ElMessage.success('导出成功')
+}
+
+const handleRefresh = () => {
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+    ElMessage.success('刷新成功')
+  }, 500)
+}
+
 const getDocTypePrefix = (type) => {
   const map = {
     'request': '请',
@@ -342,7 +382,6 @@ const getDocTypePrefix = (type) => {
   return map[type] || '发'
 }
 
-// 获取公文类型名称
 const getDocTypeName = (type) => {
   const map = {
     'request': '请示',
@@ -375,10 +414,15 @@ onMounted(() => {
     border-radius: 4px;
 
     .header-left h2 {
-      margin: 0;
+      margin: 0 0 8px 0;
       font-size: 18px;
       font-weight: 600;
       color: #303133;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 12px;
     }
   }
 
@@ -397,11 +441,16 @@ onMounted(() => {
     }
 
     .stats-bar {
-      display: flex;
-      gap: 40px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
       margin-bottom: 20px;
       padding-bottom: 20px;
       border-bottom: 1px solid #e8e8e8;
+    }
+
+    .batch-actions {
+      margin-top: 12px;
     }
 
     .pagination {

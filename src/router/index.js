@@ -220,7 +220,7 @@ const routes = [
     {
         path: '/office/org/contacts/my-card',
         name: 'OfficeOrgContactsMyCard',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/org/contacts/my-card/Index.vue')
     },
 
     // ========== 日常办公 ==========
@@ -263,7 +263,7 @@ const routes = [
     {
         path: '/office/reports',
         name: 'OfficeReports',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/reports/Index.vue')
     },
 
     // ========== 公文与内容管理 ==========
@@ -290,27 +290,27 @@ const routes = [
     {
         path: '/cms/document/personal',
         name: 'CmsDocumentPersonal',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/document/personal/Index.vue')
     },
     {
         path: '/cms/document/send-receive',
         name: 'CmsDocumentSendReceive',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/document/send-receive/Index.vue')
     },
     {
         path: '/cms/document/circulation',
         name: 'CmsDocumentCirculation',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/document/circulation/Index.vue')
     },
     {
         path: '/cms/document/query-archive',
         name: 'CmsDocumentQueryArchive',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/document/query-archive/Index.vue')
     },
     {
         path: '/cms/document/document-number',
         name: 'CmsDocumentNumber',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/cms/document/document-number/Index.vue')
     },
     // ========== 公文管理（管理员后台） ==========
     {
