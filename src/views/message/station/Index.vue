@@ -22,11 +22,17 @@
       </template>
 
       <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-        <el-tab-pane label="全部消息" name="all">
-          <span class="tab-badge">{{ totalCount }}</span>
+        <el-tab-pane name="all">
+          <template #label>
+            <span>全部消息</span>
+            <span class="tab-badge">{{ totalCount }}</span>
+          </template>
         </el-tab-pane>
-        <el-tab-pane label="未读消息" name="unread">
-          <span class="tab-badge">{{ unreadCount }}</span>
+        <el-tab-pane name="unread">
+          <template #label>
+            <span>未读消息</span>
+            <span class="tab-badge">{{ unreadCount }}</span>
+          </template>
         </el-tab-pane>
         <el-tab-pane label="已读消息" name="read" />
       </el-tabs>
@@ -242,7 +248,7 @@ const getTypeTag = (type) => {
   }
 
   .tab-badge {
-    margin-left: 8px;
+    margin-left: 6px;
     color: #409eff;
     font-size: 12px;
   }

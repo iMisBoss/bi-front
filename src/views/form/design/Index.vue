@@ -11,9 +11,6 @@
 
       <!-- 折叠/展开按钮 -->
       <div class="header-actions">
-        <el-button size="small" @click="toggleMenuTree" :title="menuTreeVisible ? '收起菜单树' : '展开菜单树'">
-          <el-icon><Fold v-if="menuTreeVisible" /><Expand v-else /></el-icon>
-        </el-button>
         <div class="header-toggle" @click="topPanelCollapsed = !topPanelCollapsed" :title="topPanelCollapsed ? '展开查询区域' : '收起查询区域'">
           <el-icon>
             <ArrowUp v-if="!topPanelCollapsed" />
@@ -355,11 +352,6 @@ const stopResize = () => {
   document.removeEventListener('mouseup', stopResize)
   document.body.style.cursor = ''
   document.body.style.userSelect = ''
-}
-
-// 切换菜单树显示/隐藏
-const toggleMenuTree = () => {
-  menuTreeVisible.value = !menuTreeVisible.value
 }
 
 // 撤销重做历史
@@ -1129,20 +1121,43 @@ onUnmounted(() => {
     background: #f5f7fa;
 
     &.canvas-cols-1 {
-      .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .form-field,
+      .container-field,
+      .detail-table-field {
         max-width: 100%;
+        width: 100%;
       }
     }
 
     &.canvas-cols-2 {
-      .form-field {
-        max-width: 50%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      align-content: start;
+
+      .form-field,
+      .container-field,
+      .detail-table-field {
+        max-width: 100%;
+        width: 100%;
       }
     }
 
     &.canvas-cols-3 {
-      .form-field {
-        max-width: 33.333%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      align-content: start;
+
+      .form-field,
+      .container-field,
+      .detail-table-field {
+        max-width: 100%;
+        width: 100%;
       }
     }
   }

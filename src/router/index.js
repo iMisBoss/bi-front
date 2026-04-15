@@ -64,7 +64,8 @@ const routes = [
     {
         path: '/process/approval/archive',
         name: 'ProcessApprovalArchive',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/process/approval/archive/Index.vue'),
+        meta: { title: '流程归档查询', icon: 'FolderOpened' }
     },
     {
         path: '/process/approval/message',
@@ -231,17 +232,18 @@ const routes = [
     {
         path: '/office/meeting/my-meetings',
         name: 'OfficeMeetingMyMeetings',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/meeting/my-meetings/Index.vue'),
     },
     {
-        path: '/office/meeting/create',
+        path: '/office/meeting/create-meeting',
         name: 'OfficeMeetingCreate',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/meeting/create/Index.vue'),
     },
     {
         path: '/office/meeting/room-booking',
         name: 'OfficeMeetingRoomBooking',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/meeting/room-booking/Index.vue'),
+        meta: { title: '会议室预约', icon: 'OfficeBuilding' }
     },
     {
         path: '/office/meeting/notifications',

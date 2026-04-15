@@ -30,12 +30,12 @@ export const frontMenus = [
             {
                 title: '会议管理',
                 children: [
-                    { title: '我的会议', path: '/office/meeting/my-meetings' },
-                    { title: '发起会议', path: '/office/meeting/create' },
+                    { title: '我的会议', path:  '/office/meeting/my-meetings' },
+                    { title: '发起会议', path: '/office/meeting/create-meeting' },
                     { title: '会议室预约', path: '/office/meeting/room-booking' },
                     { title: '会议通知', path: '/office/meeting/notifications' },
                     { title: '会议纪要', path: '/office/meeting/minutes' },
-                    { title: '会议统计分析', path: '/office/meeting/statistics' }
+                    { title: '会议统计分析', path: '/office/meeting/meeting/statistics' }
                 ]
             },
             {

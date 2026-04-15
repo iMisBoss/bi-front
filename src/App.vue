@@ -1,10 +1,121 @@
-<script setup>
+<template>
+  <div id="bi-front-app">
+    <template v-if="route.path === '/login'">
+      <router-view />
+    </template>
+
+    <el-container v-else>
+      <!-- 左侧菜单栏 -->
+      <el-aside v-show="sidebarVisible" :width="'220px'" class="app-aside">
+        <div class="logo-wrapper">
+          <el-icon :size="32" color="#1890ff"><OfficeBuilding /></el-icon>
+          <span>{{ isAdmin ? '管理后台' : '建信消金 OA' }}</span>
+        </div>
+
+        <el-menu
+            :default-active="activeMenu"
+            class="side-menu"
+            background-color="#001529"
+            text-color="rgba(255,255,255,0.65)"
+            active-text-color="#1890ff"
+            :router="false"
+            @select="handleMenuSelect"
+        >
+          <template v-for="(menu, index) in menus" :key="index">
+            <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.title">
+              <template #title>
+                <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
+                <span>{{ menu.title }}</span>
+              </template>
+
+              <template v-for="(child, childIndex) in menu.children" :key="childIndex">
+                <el-sub-menu v-if="child.children && child.children.length > 0" :index="child.title">
+                  <template #title>
+                    <span>{{ child.title }}</span>
+                  </template>
+
+                  <el-menu-item
+                      v-for="(grandChild, grandChildIndex) in child.children"
+                      :key="grandChildIndex"
+                      :index="grandChild.path"
+                  >
+                    {{ grandChild.title }}
+                  </el-menu-item>
+                </el-sub-menu>
+
+                <el-menu-item v-else :index="child.path">
+                  <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
+                  <span>{{ child.title }}</span>
+                </el-menu-item>
+              </template>
+            </el-sub-menu>
+
+            <el-menu-item v-else :index="menu.path">
+              <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
+              <span>{{ menu.title }}</span>
+            </el-menu-item>
+          </template>
+        </el-menu>
+      </el-aside>
+
+      <!-- 折叠按钮（侧栏边缘） -->
+      <div class="sidebar-toggle-btn" :style="{ left: sidebarVisible ? '220px' : '0px' }" @click="toggleSidebar" :title="sidebarVisible ? '收起菜单' : '展开菜单'">
+        <el-icon v-if="sidebarVisible"><Fold /></el-icon>
+        <el-icon v-else><Expand /></el-icon>
+      </div>
+
+      <el-container>
+        <!-- 顶部导航 -->
+        <el-header class="app-header">
+          <div class="header-content">
+            <div class="header-left">
+              <el-breadcrumb separator="/">
+                <el-breadcrumb-item :to="{ path: isAdmin ? '/admin/home' : '/' }">
+                  {{ isAdmin ? '后台首页' : '首页' }}
+                </el-breadcrumb-item>
+                <el-breadcrumb-item v-if="currentRouteName">{{ currentRouteName }}</el-breadcrumb-item>
+              </el-breadcrumb>
+            </div>
+
+            <div class="user-info">
+              <el-badge :value="unreadCount" class="message-badge" @click="goToMessage">
+                <el-icon><Bell /></el-icon>
+              </el-badge>
+              <el-dropdown>
+                <span class="user-name">
+                  {{ currentUser?.name || '用户' }}
+                  <el-tag v-if="isAdmin" size="small" type="danger" style="margin-left: 8px;">管理员</el-tag>
+                  <el-icon><ArrowDown /></el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>个人中心</el-dropdown-item>
+                    <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
+        </el-header>
+
+        <!-- 主内容区 -->
+        <el-main class="app-main">
+          <div class="app-main-wrapper">
+            <router-view />
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getMenusByRole } from '@/config/menus'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import PortalSwitcher from '@/components/PortalSwitcher.vue'
+import { Fold, Expand, OfficeBuilding, Bell, ArrowDown } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,7 +123,7 @@ const userStore = useUserStore()
 
 const currentUser = computed(() => userStore.currentUser)
 const isAdmin = computed(() => userStore.isAdmin)
-const collapsed = ref(false)
+const sidebarVisible = ref(true)
 
 const menus = computed(() => {
   return getMenusByRole(userStore.userRole)
@@ -23,7 +134,7 @@ const activeMenu = computed(() => {
   if (path === '/') return isAdmin.value ? '/admin/home' : '/'
   if (path === '/admin/home') return '/admin/home'
 
-  const findActiveMenu = (menuList) => {
+  const findActiveMenu = (menuList: any[]) => {
     for (const menu of menuList) {
       if (menu.path === path) {
         return menu.path
@@ -40,7 +151,7 @@ const activeMenu = computed(() => {
 })
 
 const currentRouteName = computed(() => {
-  const routeMap = {
+  const routeMap: Record<string, string> = {
     '/admin/home': '后台首页',
     '/': '首页看板',
     '/process/approval/start': '发起审批',
@@ -130,7 +241,7 @@ const currentRouteName = computed(() => {
 
 const unreadCount = ref(5)
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = (index: string) => {
   if (index && index !== '/') {
     router.push(index)
   } else if (isAdmin.value) {
@@ -140,9 +251,9 @@ const handleMenuSelect = (index) => {
   }
 }
 
-const toggleCollapse = () => {
-  collapsed.value = !collapsed.value
-  localStorage.setItem('sidebar-collapsed', collapsed.value)
+const toggleSidebar = () => {
+  sidebarVisible.value = !sidebarVisible.value
+  localStorage.setItem('sidebar-visible', String(sidebarVisible.value))
 }
 
 const goToMessage = () => {
@@ -154,20 +265,14 @@ const handleLogout = async () => {
   router.push('/login')
 }
 
-const handlePortalChange = (portal) => {
-  if (route.path === '/') {
-    router.replace('/?portal=' + portal.id)
-  }
-}
-
 onMounted(async () => {
   if (route.path !== '/login') {
     await userStore.loadUserInfo()
     loadUnreadCount()
 
-    const savedCollapsed = localStorage.getItem('sidebar-collapsed')
-    if (savedCollapsed !== null) {
-      collapsed.value = savedCollapsed === 'true'
+    const savedVisible = localStorage.getItem('sidebar-visible')
+    if (savedVisible !== null) {
+      sidebarVisible.value = savedVisible === 'true'
     }
   }
 })
@@ -182,142 +287,18 @@ const loadUnreadCount = async () => {
 }
 </script>
 
-<template>
-  <div id="bi-front-app">
-    <template v-if="route.path === '/login'">
-      <router-view />
-    </template>
-
-    <el-container v-else>
-      <el-aside
-          :width="collapsed ? '64px' : '220px'"
-          class="app-aside"
-          :class="{ 'is-collapsed': collapsed }"
-      >
-        <div class="logo-wrapper">
-          <el-icon :size="32" color="#1890ff"><OfficeBuilding /></el-icon>
-          <span v-if="!collapsed">{{ isAdmin ? '管理后台' : '建信消金 OA' }}</span>
-        </div>
-
-        <el-menu
-            :default-active="activeMenu"
-            class="side-menu"
-            :collapse="collapsed"
-            :collapse-transition="true"
-            background-color="#001529"
-            text-color="rgba(255,255,255,0.65)"
-            active-text-color="#1890ff"
-            :router="false"
-            @select="handleMenuSelect"
-        >
-          <template v-for="(menu, index) in menus" :key="index">
-            <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.title">
-              <template #title>
-                <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
-                <span>{{ menu.title }}</span>
-              </template>
-
-              <template v-for="(child, childIndex) in menu.children" :key="childIndex">
-                <el-sub-menu v-if="child.children && child.children.length > 0" :index="child.title">
-                  <template #title>
-                    <span>{{ child.title }}</span>
-                  </template>
-
-                  <el-menu-item
-                      v-for="(grandChild, grandChildIndex) in child.children"
-                      :key="grandChildIndex"
-                      :index="grandChild.path"
-                  >
-                    {{ grandChild.title }}
-                  </el-menu-item>
-                </el-sub-menu>
-
-                <el-menu-item v-else :index="child.path">
-                  <el-icon v-if="child.icon"><component :is="child.icon" /></el-icon>
-                  <span>{{ child.title }}</span>
-                </el-menu-item>
-              </template>
-            </el-sub-menu>
-
-            <el-menu-item v-else :index="menu.path">
-              <el-icon v-if="menu.icon"><component :is="menu.icon" /></el-icon>
-              <span>{{ menu.title }}</span>
-            </el-menu-item>
-          </template>
-        </el-menu>
-      </el-aside>
-
-      <el-container>
-        <el-header class="app-header">
-          <div class="header-content">
-            <div class="header-left">
-              <el-button
-                  link
-                  class="collapse-btn"
-                  @click="toggleCollapse"
-                  :title="collapsed ? '展开菜单' : '收起菜单'"
-              >
-                <el-icon v-if="!collapsed"><Fold /></el-icon>
-                <el-icon v-else><Expand /></el-icon>
-              </el-button>
-
-              <PortalSwitcher v-if="!isAdmin" @portal-change="handlePortalChange" />
-
-              <el-breadcrumb separator="/">
-                <el-breadcrumb-item :to="{ path: isAdmin ? '/admin/home' : '/' }">
-                  {{ isAdmin ? '后台首页' : '首页' }}
-                </el-breadcrumb-item>
-                <el-breadcrumb-item v-if="currentRouteName">
-                  {{ currentRouteName }}
-                </el-breadcrumb-item>
-              </el-breadcrumb>
-            </div>
-
-            <div class="user-info">
-              <el-badge :value="unreadCount" class="message-badge" @click="goToMessage">
-                <el-icon><Bell /></el-icon>
-              </el-badge>
-              <el-dropdown>
-                <span class="user-name">
-                  {{ currentUser?.name || '用户' }}
-                  <el-tag v-if="isAdmin" size="small" type="danger" style="margin-left: 8px;">
-                    管理员
-                  </el-tag>
-                  <el-icon><arrow-down /></el-icon>
-                </span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item>个人中心</el-dropdown-item>
-                    <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </div>
-          </div>
-        </el-header>
-
-        <el-main class="app-main">
-          <div class="app-main-wrapper">
-            <router-view />
-          </div>
-        </el-main>
-      </el-container>
-    </el-container>
-  </div>
-</template>
-
 <style lang="scss" scoped>
 #bi-front-app {
   height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
 .app-aside {
   background: #001529;
-  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
   overflow: hidden;
   height: 100vh;
-  flex-shrink: 0;
+  transition: all 0.3s;
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
 
   &::-webkit-scrollbar {
@@ -337,15 +318,6 @@ const loadUnreadCount = async () => {
     }
   }
 
-  &.is-collapsed {
-    .logo-wrapper {
-      span {
-        opacity: 0;
-        width: 0;
-      }
-    }
-  }
-
   .logo-wrapper {
     height: 60px;
     display: flex;
@@ -354,12 +326,9 @@ const loadUnreadCount = async () => {
     gap: 10px;
     background: #002140;
     flex-shrink: 0;
-    overflow: hidden;
-    padding: 0 16px;
 
     img {
       height: 32px;
-      flex-shrink: 0;
     }
 
     span {
@@ -367,34 +336,54 @@ const loadUnreadCount = async () => {
       font-size: 16px;
       font-weight: 600;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      white-space: nowrap;
-      transition: all 0.3s;
-      opacity: 1;
     }
   }
 
   .side-menu {
     border-right: none;
-    max-height: calc(100vh - 60px);
+    height: calc(100vh - 60px);
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100vh - 60px);
 
-    :deep(.el-sub-menu__title) {
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-      }
+    :deep(.el-sub-menu__title:hover),
+    :deep(.el-menu-item:hover) {
+      background-color: rgba(255, 255, 255, 0.08) !important;
     }
 
-    :deep(.el-menu-item) {
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-      }
-
-      &.is-active {
-        background-color: #096dd9 !important;
-      }
+    :deep(.el-menu-item.is-active) {
+      background-color: #096dd9 !important;
     }
+  }
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  left: 220px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 48px;
+  background: #fff;
+  border: 1px solid #e4e7ed;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  font-size: 16px;
+  color: #606266;
+
+  &:hover {
+    background: #f5f7fa;
+    color: #409eff;
+  }
+
+  &:active {
+    background: #e4e7ed;
   }
 }
 
@@ -403,7 +392,6 @@ const loadUnreadCount = async () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 0;
   height: 60px;
-  flex-shrink: 0;
 
   .header-content {
     display: flex;
@@ -416,22 +404,6 @@ const loadUnreadCount = async () => {
       display: flex;
       align-items: center;
       gap: 15px;
-
-      .collapse-btn {
-        font-size: 20px;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 4px;
-        transition: all 0.2s;
-
-        &:hover {
-          background-color: #f5f7fa;
-        }
-
-        &:active {
-          background-color: #e4e7ed;
-        }
-      }
     }
 
     .user-info {
@@ -442,13 +414,6 @@ const loadUnreadCount = async () => {
       .message-badge {
         cursor: pointer;
         font-size: 20px;
-        padding: 8px;
-        border-radius: 4px;
-        transition: all 0.2s;
-
-        &:hover {
-          background-color: #f5f7fa;
-        }
       }
 
       .user-name {
@@ -457,13 +422,9 @@ const loadUnreadCount = async () => {
         display: flex;
         align-items: center;
         gap: 4px;
-        padding: 8px 12px;
-        border-radius: 4px;
-        transition: all 0.2s;
 
         &:hover {
           color: #1890ff;
-          background-color: #f5f7fa;
         }
       }
     }
@@ -474,7 +435,6 @@ const loadUnreadCount = async () => {
   background: #f0f2f5;
   padding: 0;
   overflow-y: auto;
-  overflow-x: hidden;
   height: calc(100vh - 60px);
 
   &::-webkit-scrollbar {
