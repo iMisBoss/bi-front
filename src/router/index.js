@@ -218,11 +218,6 @@ const routes = [
         component: () => import('@/views/Empty.vue')
     },
     {
-        path: '/office/org/contacts/external',
-        name: 'OfficeOrgContactsExternal',
-        component: () => import('@/views/Empty.vue')
-    },
-    {
         path: '/office/org/contacts/my-card',
         name: 'OfficeOrgContactsMyCard',
         component: () => import('@/views/Empty.vue')
@@ -246,14 +241,14 @@ const routes = [
         meta: { title: '会议室预约', icon: 'OfficeBuilding' }
     },
     {
-        path: '/office/meeting/notifications',
-        name: 'OfficeMeetingNotifications',
-        component: () => import('@/views/Empty.vue')
+        path: '/office/meeting/notification',
+        name: 'OfficeMeetingNotification',
+        component: () => import('@/views/office/meeting/notification/Index.vue'),
     },
     {
-        path: '/office/meeting/minutes',
-        name: 'OfficeMeetingMinutes',
-        component: () => import('@/views/Empty.vue')
+        path: '/office/meeting/agenda',
+        name: 'OfficeMeetingAgenda',
+        component: () => import('@/views/office/meeting/agenda/Index.vue')
     },
     {
         path: '/office/meeting/statistics',

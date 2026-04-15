@@ -33,8 +33,8 @@ export const frontMenus = [
                     { title: '我的会议', path:  '/office/meeting/my-meetings' },
                     { title: '发起会议', path: '/office/meeting/create-meeting' },
                     { title: '会议室预约', path: '/office/meeting/room-booking' },
-                    { title: '会议通知', path: '/office/meeting/notifications' },
-                    { title: '会议纪要', path: '/office/meeting/minutes' },
+                    { title: '会议通知', path: '/office/meeting/notification' },
+                    { title: '会议纪要', path: '/office/meeting/agenda' },
                     { title: '会议统计分析', path: '/office/meeting/meeting/statistics' }
                 ]
             },
@@ -42,8 +42,7 @@ export const frontMenus = [
                 title: '组织通讯录',
                 children: [
                     { title: '组织架构通讯录', path: '/office/org/contacts/employee' },
-                    { title: '我的常用联系人', path: '/office/org/contacts/favorites' },
-                    { title: '外部联系人', path: '/office/org/contacts/external' },
+                    { title: '个人联系人', path: '/office/org/contacts/favorites' },
                     { title: '个人名片维护', path: '/office/org/contacts/my-card' }
                 ]
             },

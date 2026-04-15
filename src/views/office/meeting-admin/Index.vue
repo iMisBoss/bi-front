@@ -82,7 +82,17 @@
           />
         </el-tab-pane>
 
-        <!-- Tab3: 会议参数配置 -->
+        <!-- Tab3: 审批规则配置 -->
+        <el-tab-pane label="审批规则配置" name="approval">
+          <ApprovalRuleManagement ref="approvalRef" />
+        </el-tab-pane>
+
+        <!-- Tab4: 会议类型配置 -->
+        <el-tab-pane label="会议类型配置" name="meetingTypes">
+          <MeetingTypeManagement ref="meetingTypeRef" />
+        </el-tab-pane>
+
+        <!-- Tab5: 会议参数配置 -->
         <el-tab-pane label="会议参数配置" name="config">
           <ConfigManagement ref="configRef" />
         </el-tab-pane>
@@ -124,6 +134,8 @@ import RecordManagement from './components/RecordManagement.vue'
 import ConfigManagement from './components/ConfigManagement.vue'
 import RoomDrawer from './components/RoomDrawer.vue'
 import MeetingRecordDetail from './components/MeetingRecordDetail.vue'
+import ApprovalRuleManagement from './components/ApprovalRuleManagement.vue'
+import MeetingTypeManagement from './components/MeetingTypeManagement.vue'
 
 const activeTab = ref('rooms')
 const drawerVisible = ref(false)
@@ -135,6 +147,8 @@ const selectedRows = ref([])
 const roomRef = ref(null)
 const recordRef = ref(null)
 const configRef = ref(null)
+const approvalRef = ref(null)
+const meetingTypeRef = ref(null)
 
 const searchForm = reactive({
   keyword: '',
@@ -292,6 +306,10 @@ const handleRefresh = () => {
     roomRef.value?.loadData()
   } else if (activeTab.value === 'records') {
     recordRef.value?.loadData()
+  } else if (activeTab.value === 'approval') {
+    approvalRef.value?.loadData()
+  } else if (activeTab.value === 'meetingTypes') {
+    meetingTypeRef.value?.loadData()
   }
   ElMessage.success('刷新成功')
 }

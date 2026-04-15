@@ -69,6 +69,9 @@
         <el-header class="app-header">
           <div class="header-content">
             <div class="header-left">
+              <!-- 切换门户 -->
+              <PortalSwitcher @portal-change="handlePortalChange" />
+
               <el-breadcrumb separator="/">
                 <el-breadcrumb-item :to="{ path: isAdmin ? '/admin/home' : '/' }">
                   {{ isAdmin ? '后台首页' : '首页' }}
@@ -116,6 +119,7 @@ import { useUserStore } from '@/stores/user'
 import { getMenusByRole } from '@/config/menus'
 import PortalSwitcher from '@/components/PortalSwitcher.vue'
 import { Fold, Expand, OfficeBuilding, Bell, ArrowDown } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
@@ -258,6 +262,11 @@ const toggleSidebar = () => {
 
 const goToMessage = () => {
   router.push('/message/station')
+}
+
+const handlePortalChange = (portal: any, oldPortal: any) => {
+  console.log('门户切换:', oldPortal.name, '→', portal.name)
+  ElMessage.success(`已切换到 ${portal.name}`)
 }
 
 const handleLogout = async () => {

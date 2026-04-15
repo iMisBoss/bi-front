@@ -49,9 +49,6 @@
             批量导出
           </el-button>
           <el-button @click="handleRefresh" icon="Refresh">刷新</el-button>
-          <el-button v-if="canViewStatistics" @click="handleStatistics" icon="DataAnalysis">
-            会议统计
-          </el-button>
         </div>
       </div>
 
@@ -848,10 +845,6 @@ const handleBatchExport = () => {
     return
   }
   ElMessage.success('导出成功')
-}
-
-const handleStatistics = () => {
-  ElMessage.info('会议统计功能开发中')
 }
 
 const handleSubmitMeeting = () => {
