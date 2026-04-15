@@ -393,12 +393,12 @@ const routes = [
     {
         path: '/personal/info',
         name: 'PersonalInfo',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/personal/info/Index.vue')
     },
     {
         path: '/personal/security/password',
         name: 'PersonalSecurityPassword',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/personal/security/password/Index.vue')
     },
     {
         path: '/personal/security/phone',
@@ -413,12 +413,12 @@ const routes = [
     {
         path: '/personal/security/login-log',
         name: 'PersonalSecurityLoginLog',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/personal/security/login-log/Index.vue')
     },
     {
         path: '/personal/security/settings',
         name: 'PersonalSecuritySettings',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/personal/security/settings/Index.vue')
     },
     {
         path: '/personal/favorites',
@@ -433,9 +433,8 @@ const routes = [
     {
         path: '/personal/preferences',
         name: 'PersonalPreferences',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/personal/preferences/Index.vue')
     },
-
     // ========== 系统管理 ==========
     {
         path: '/system/permission',

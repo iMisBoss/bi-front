@@ -5,12 +5,10 @@
         <div class="page-header">
           <div class="header-left">
             <h2>流程报表汇总</h2>
-            <el-tag type="danger" size="small">监管合规专用</el-tag>
-            <el-tag type="info" size="small">审计/合规/管理员专属</el-tag>
           </div>
           <div class="header-right">
-            <el-button @click="refreshData" icon="Refresh" :loading="loading">刷新数据</el-button>
-            <el-button @click="showOperationLog" icon="Document">操作日志</el-button>
+            <el-button @click="refreshData" icon="Refresh" :loading="loading" size="default">刷新数据</el-button>
+            <el-button @click="showOperationLog" icon="Document" size="default">操作日志</el-button>
           </div>
         </div>
       </template>
@@ -367,16 +365,19 @@ onMounted(() => {
   console.log('流程报表汇总页面加载')
 })
 </script>
-
-<style scoped lang="scss">
-.compliance-report-page {
-  padding: 20px;
+<style scoped lang="scss">.compliance-report-page {
+  padding: 16px;
   background: #f0f2f5;
   min-height: calc(100vh - 60px);
 
   .main-card {
     :deep(.el-card__header) {
-      padding: 16px 20px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e4e7ed;
+    }
+
+    :deep(.el-card__body) {
+      padding: 12px 16px 16px;
     }
 
     .page-header {
@@ -385,51 +386,73 @@ onMounted(() => {
       align-items: center;
 
       .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
         h2 {
-          margin: 0 0 8px 0;
+          margin: 0;
           font-size: 18px;
           font-weight: 600;
           color: #303133;
         }
 
-        .el-tag {
-          margin-right: 8px;
+        .header-tags {
+          display: flex;
+          gap: 8px;
         }
       }
 
       .header-right {
         display: flex;
-        gap: 12px;
+        gap: 8px;
       }
     }
 
     .process-tabs {
-      margin: 16px 0;
+      margin: 8px 0 12px;
+
+      :deep(.el-tabs__header) {
+        margin-bottom: 0;
+      }
     }
 
     .bottom-section {
-      margin-top: 24px;
+      margin-top: 16px;
 
       .stats-cards {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 16px;
-        margin-bottom: 20px;
+        gap: 12px;
+        margin-bottom: 12px;
 
         .stat-card {
           text-align: center;
+
+          :deep(.el-card__body) {
+            padding: 12px;
+          }
         }
       }
 
       .compliance-tips {
-        margin-bottom: 16px;
+        margin-bottom: 12px;
+
+        :deep(.el-alert) {
+          padding: 8px 12px;
+        }
+
+        p {
+          margin: 0;
+          font-size: 13px;
+        }
       }
 
       .export-actions {
         display: flex;
-        gap: 12px;
+        gap: 8px;
         justify-content: flex-end;
-        padding-top: 16px;
+        padding-top: 12px;
         border-top: 1px solid #e8e8e8;
       }
     }
