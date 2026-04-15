@@ -213,9 +213,9 @@ const routes = [
         component: () => import('@/views/office/org/contacts/employee/Index.vue')
     },
     {
-        path: '/office/org/contacts/favorites',
-        name: 'OfficeOrgContactsFavorites',
-        component: () => import('@/views/Empty.vue')
+        path: '/office/org/contacts/personal',
+        name: 'OfficeOrgContactsPersonal',
+        component: () => import('@/views/office/org/contacts/personal/Index.vue')
     },
     {
         path: '/office/org/contacts/my-card',
@@ -253,7 +253,7 @@ const routes = [
     {
         path: '/office/meeting/statistics',
         name: 'OfficeMeetingStatistics',
-        component: () => import('@/views/Empty.vue')
+        component: () => import('@/views/office/meeting/statistics/Index.vue')
     },
     {
         path: '/office/meeting-admin',

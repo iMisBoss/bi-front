@@ -35,14 +35,14 @@ export const frontMenus = [
                     { title: '会议室预约', path: '/office/meeting/room-booking' },
                     { title: '会议通知', path: '/office/meeting/notification' },
                     { title: '会议纪要', path: '/office/meeting/agenda' },
-                    { title: '会议统计分析', path: '/office/meeting/meeting/statistics' }
+                    { title: '会议统计分析', path: '/office/meeting/statistics' }
                 ]
             },
             {
                 title: '组织通讯录',
                 children: [
                     { title: '组织架构通讯录', path: '/office/org/contacts/employee' },
-                    { title: '个人联系人', path: '/office/org/contacts/favorites' },
+                    { title: '个人联系人', path: '/office/org/contacts/personal' },
                     { title: '个人名片维护', path: '/office/org/contacts/my-card' }
                 ]
             },
@@ -89,14 +89,10 @@ export const frontMenus = [
                 title: '账号安全',
                 children: [
                     { title: '登录密码修改', path: '/personal/security/password' },
-                    { title: '手机号绑定', path: '/personal/security/phone' },
-                    { title: '登录设备管理', path: '/personal/security/devices' },
                     { title: '个人登录日志', path: '/personal/security/login-log' },
                     { title: '账号安全设置', path: '/personal/security/settings' }
                 ]
             },
-            { title: '我的收藏', path: '/personal/favorites' },
-            { title: '我的下载', path: '/personal/downloads' },
             { title: '系统偏好设置', path: '/personal/preferences' }
         ]
     }
