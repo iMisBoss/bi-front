@@ -1,113 +1,169 @@
 <template>
-  <div class="integration-admin-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>集成中心</el-breadcrumb-item>
-      <el-breadcrumb-item>集成管理中心</el-breadcrumb-item>
-    </el-breadcrumb>
+  <div class="app-integration">
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <el-input v-model="searchKeyword" placeholder="搜索应用名称" clearable style="width: 200px" />
+        <el-select v-model="filterType" placeholder="对接类型" clearable style="width: 150px">
+          <el-option label="组织人员同步" value="组织人员同步" />
+          <el-option label="数据对接" value="数据对接" />
+          <el-option label="消息推送" value="消息推送" />
+        </el-select>
+        <el-select v-model="filterStatus" placeholder="状态" clearable style="width: 120px">
+          <el-option label="启用" value="enabled" />
+          <el-option label="禁用" value="disabled" />
+        </el-select>
+      </div>
+      <div class="toolbar-right">
+        <el-button type="primary" @click="handleAdd" icon="Plus">新增应用</el-button>
+      </div>
+    </div>
 
-    <el-card class="main-card" shadow="never">
-      <!-- Tab导航栏 -->
-      <el-tabs v-model="activeTab" class="integration-tabs">
-        <!-- Tab1: 应用集成管理 -->
-        <el-tab-pane label="应用集成管理" name="appIntegration">
-          <AppIntegration ref="appRef" />
-        </el-tab-pane>
+    <!-- 应用列表 -->
+    <el-table
+        :data="integrations"
+        border
+        row-key="id"
+        :header-cell-style="{ background: '#f5f7fa', color: '#606266', fontWeight: '600' }"
+        style="flex: 1"
+    >
+      <el-table-column prop="name" label="应用名称" min-width="180" />
+      <el-table-column prop="type" label="对接类型" width="150" align="center">
+        <template #default="{ row }">
+          <el-tag size="small">{{ row.type }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="url" label="对接地址" min-width="250" show-overflow-tooltip />
+      <el-table-column prop="authType" label="鉴权方式" width="120" align="center">
+        <template #default="{ row }">
+          <el-tag size="small">{{ row.authType }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="syncCycle" label="同步周期" width="120" align="center" />
+      <el-table-column prop="status" label="状态" width="100" align="center">
+        <template #default="{ row }">
+          <el-tag :type="row.status === 'enabled' ? 'success' : 'info'" size="small">
+            {{ row.status === 'enabled' ? '启用' : '禁用' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="240" align="center" fixed="right">
+        <template #default="{ row }">
+          <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+          <el-button link type="success" size="small" @click="handleTest(row)">测试</el-button>
+          <el-button link :type="row.status === 'enabled' ? 'warning' : 'success'" size="small" @click="handleToggle(row)">
+            {{ row.status === 'enabled' ? '禁用' : '启用' }}
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
 
-        <!-- Tab2: 定时任务配置 -->
-        <el-tab-pane label="定时任务配置" name="taskConfig">
-          <TaskConfig ref="taskConfigRef" />
-        </el-tab-pane>
+    <div class="pagination-wrapper">
+      <el-pagination
+          :total="integrations.length"
+          :page-size="20"
+          layout="total, prev, pager, next, jumper"
+      />
+    </div>
 
-        <!-- Tab3: 任务执行日志 -->
-        <el-tab-pane label="任务执行日志" name="taskLog">
-          <TaskExecutionLog ref="taskLogRef" />
-        </el-tab-pane>
-
-        <!-- Tab4: 公共接口管理 -->
-        <el-tab-pane label="公共接口管理" name="apiManage">
-          <ApiManagement ref="apiRef" />
-        </el-tab-pane>
-
-        <!-- Tab5: 接口调用日志 -->
-        <el-tab-pane label="接口调用日志" name="apiLog">
-          <ApiCallLog ref="apiLogRef" />
-        </el-tab-pane>
-
-        <!-- Tab6: 组件包管理（JAR） -->
-        <el-tab-pane label="组件包管理" name="jarManage">
-          <JarManagement ref="jarRef" />
-        </el-tab-pane>
-      </el-tabs>
-    </el-card>
+    <!-- 应用编辑对话框 -->
+    <IntegrationDialog
+        v-model="showDialog"
+        :type="dialogType"
+        :data="currentIntegration"
+        @confirm="handleConfirmSave"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import AppIntegration from './components/AppIntegration.vue'
-import TaskConfig from './components/TaskConfig.vue'
-import TaskExecutionLog from './components/TaskExecutionLog.vue'
-import ApiManagement from './components/ApiManagement.vue'
-import ApiCallLog from './components/ApiCallLog.vue'
-import JarManagement from './components/JarManagement.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import IntegrationDialog from './IntegrationDialog.vue'
 
-const activeTab = ref('appIntegration')
+const searchKeyword = ref('')
+const filterType = ref('')
+const filterStatus = ref('')
+const showDialog = ref(false)
+const dialogType = ref('add')
+const currentIntegration = ref(null)
+
+const integrations = ref([
+  { id: 1, name: '人力资源系统对接', type: '组织人员同步', url: 'http://10.0.0.50:8081/api/sync', authType: 'Token', syncCycle: '每小时', status: 'enabled', remark: '同步HR系统的组织架构和人员数据' },
+  { id: 2, name: '财务数据对接', type: '数据对接', url: 'http://10.0.0.60:9090/api/data', authType: '密钥', syncCycle: '每日 02:00', status: 'enabled', remark: '同步财务报表和审批数据' },
+  { id: 3, name: '钉钉消息推送', type: '消息推送', url: 'https://oapi.dingtalk.com/robot/send', authType: 'Token', syncCycle: '实时', status: 'enabled', remark: '推送审批消息和通知' }
+])
+
+const handleAdd = () => {
+  dialogType.value = 'add'
+  currentIntegration.value = null
+  showDialog.value = true
+}
+
+const handleEdit = (row) => {
+  dialogType.value = 'edit'
+  currentIntegration.value = { ...row }
+  showDialog.value = true
+}
+
+const handleTest = (row) => {
+  ElMessage.info(`正在测试对接地址：${row.url}`)
+}
+
+const handleToggle = (row) => {
+  const action = row.status === 'enabled' ? '禁用' : '启用'
+  ElMessageBox.confirm(`确定要${action}应用「${row.name}」吗？${action === '禁用' ? '禁用后将停止同步和推送。' : ''}`, `${action}确认`, {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    row.status = row.status === 'enabled' ? 'disabled' : 'enabled'
+    ElMessage.success(`${action}成功`)
+  }).catch(() => {})
+}
+
+const handleConfirmSave = (formData) => {
+  if (formData.id) {
+    const index = integrations.value.findIndex(item => item.id === formData.id)
+    if (index !== -1) {
+      integrations.value[index] = { ...integrations.value[index], ...formData }
+    }
+    ElMessage.success('编辑成功')
+  } else {
+    formData.id = Date.now()
+    formData.status = 'enabled'
+    integrations.value.push(formData)
+    ElMessage.success('新增成功')
+  }
+  showDialog.value = false
+}
 </script>
 
 <style lang="scss" scoped>
-.integration-admin-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+.app-integration {
   display: flex;
   flex-direction: column;
-  background: #f5f7fa;
+  height: 100%;
 
-  .breadcrumb {
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 16px;
-    font-size: 14px;
-  }
 
-  .main-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 8px;
-
-    :deep(.el-card__body) {
-      flex: 1;
+    .toolbar-left,
+    .toolbar-right {
       display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 20px;
+      gap: 8px;
+      align-items: center;
     }
   }
 
-  .integration-tabs {
-    flex: 1;
+  .pagination-wrapper {
+    margin-top: 16px;
     display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    :deep(.el-tabs__header) {
-      margin: 0 0 20px 0;
-      padding-bottom: 0;
-      border-bottom: 1px solid #ebeef5;
-    }
-
-    :deep(.el-tabs__content) {
-      flex: 1;
-      overflow: hidden;
-      padding: 0;
-    }
-
-    :deep(.el-tab-pane) {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
+    justify-content: flex-end;
+    flex-shrink: 0;
   }
 }
 </style>

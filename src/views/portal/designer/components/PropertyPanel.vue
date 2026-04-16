@@ -336,7 +336,8 @@ const loadSavedTemplate = () => {
 loadSavedTemplate()
 </script>
 
-<style scoped lang="scss">.property-panel {
+<style scoped lang="scss">
+.property-panel {
   height: 100%;
   display: flex;
   flex-direction: column;

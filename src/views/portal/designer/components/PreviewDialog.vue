@@ -65,16 +65,50 @@ const previewStyle = computed(() => ({
 defineExpose({ open })
 </script>
 
-<style scoped lang="scss">.preview-container {
-  .preview-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #fff; border-bottom: 1px solid #ebeef5;
-    .preview-title { font-size: 16px; font-weight: 500; }
+<style scoped lang="scss">
+.preview-container {
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #fff;
+    border-bottom: 1px solid #ebeef5;
+    .preview-title {
+      font-size: 16px;
+      font-weight: 500;
+    }
   }
-  .preview-body { padding: 20px; }
-  .preview-component { margin-bottom: 16px; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
-    .comp-header { padding: 12px 16px; border-bottom: 1px solid #f2f6fc; font-weight: 500; font-size: 14px; }
-    .comp-content { padding: 20px; min-height: 80px; color: #909399; }
-    .grid-placeholder { display: flex; gap: 10px;
-      .grid-cell { flex: 1; height: 60px; background: #f5f7fa; border: 1px dashed #dcdfe6; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #c0c4cc; }
+  .preview-body {
+    padding: 20px;
+  }
+  .preview-component {
+    margin-bottom: 16px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
+    .comp-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f2f6fc;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .comp-content {
+      padding: 20px;
+      min-height: 80px;
+      color: #909399;
+    }
+    .grid-placeholder {
+      display: flex; gap: 10px;
+      .grid-cell { flex: 1;
+        height: 60px;
+        background: #f5f7fa;
+        border: 1px dashed #dcdfe6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #c0c4cc; }
     }
   }
 }

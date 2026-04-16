@@ -169,7 +169,8 @@ const handleConfirm = async () => {
   }
 }
 </script>
-<style scoped lang="scss">.delete-dialog {
+<style scoped lang="scss">
+.delete-dialog {
   .el-dialog__header {
     padding: 0;
     border-bottom: none;

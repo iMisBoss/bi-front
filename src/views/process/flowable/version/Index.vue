@@ -96,7 +96,8 @@ const handleTabChange = (tab) => {
 }
 </script>
 
-<style scoped lang="scss">.template-center {
+<style scoped lang="scss">
+.template-center {
   height: calc(100vh - 50px);
   background: #f5f7fa;
   display: flex;

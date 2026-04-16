@@ -204,7 +204,8 @@ const handlePublish = async () => {
   }
 }
 </script>
-<style scoped lang="scss">.publish-dialog {
+<style scoped lang="scss">
+.publish-dialog {
   .el-dialog__header {
     padding: 0;
     border-bottom: none;

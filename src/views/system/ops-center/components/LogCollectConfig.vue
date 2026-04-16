@@ -34,7 +34,7 @@
     </el-card>
 
     <!-- 采集源管理 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <div class="card-header">
           <span class="card-title">采集源管理</span>
@@ -44,7 +44,7 @@
           </div>
         </div>
       </template>
-      <el-table :data="collectSources" border>
+      <el-table :data="collectSources" border :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="name" label="采集类型" min-width="200" />
         <el-table-column prop="system" label="系统核心" width="100" align="center">
           <template #default="{ row }">
@@ -66,18 +66,22 @@
       <template #header>
         <span class="card-title">采集粒度配置</span>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="采集模式">
-          <el-radio-group v-model="collectConfig.granularity">
-            <el-radio label="simple" value="simple">精简模式（仅核心字段，省性能）</el-radio>
-            <el-radio label="full" value="full">完整模式（全参数+请求链路）</el-radio>
-          </el-radio-group>
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="12">
+            <el-form-item label="采集模式">
+              <el-radio-group v-model="collectConfig.granularity">
+                <el-radio label="simple" value="simple">精简模式（仅核心字段，省性能）</el-radio>
+                <el-radio label="full" value="full">完整模式（全参数+请求链路）</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="过滤规则">
           <el-input
               v-model="collectConfig.filterRules"
               type="textarea"
-              :rows="3"
+              :rows="2"
               placeholder="每行一个过滤规则，例：页面刷新、心跳检测"
           />
         </el-form-item>
@@ -89,18 +93,24 @@
       <template #header>
         <span class="card-title">存储与清理规则</span>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="日志保留时长">
-          <el-input-number v-model="collectConfig.retentionDays" :min="30" :max="365" />
-          <span style="margin-left: 10px">天</span>
-        </el-form-item>
-        <el-form-item label="存储上限">
-          <el-input-number v-model="collectConfig.storageLimit" :min="1" :max="100" />
-          <span style="margin-left: 10px">GB</span>
-        </el-form-item>
-        <el-form-item label="超期自动归档">
-          <el-switch v-model="collectConfig.autoArchive" />
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="日志保留时长">
+              <el-input-number v-model="collectConfig.retentionDays" :min="30" :max="365" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="存储上限">
+              <el-input-number v-model="collectConfig.storageLimit" :min="1" :max="100" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="超期自动归档">
+              <el-switch v-model="collectConfig.autoArchive" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
@@ -110,8 +120,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive } from 'vue'
+<script setup>import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const collectStatus = reactive({
@@ -160,15 +169,20 @@ const handleSave = () => {
 }
 </script>
 
-<style lang="scss" scoped>
-.log-collect-config {
+<style lang="scss" scoped>.log-collect-config {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 20px;
 
   .config-card {
     border-radius: 8px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-header {
       display: flex;
@@ -177,8 +191,20 @@ const handleSave = () => {
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+    }
+  }
+
+  .config-card-table {
+    flex-shrink: 0;
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      .el-table__body-wrapper {
+        min-height: 200px;
+      }
     }
   }
 
@@ -195,7 +221,7 @@ const handleSave = () => {
     }
 
     .stat-value {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 600;
       color: #303133;
     }

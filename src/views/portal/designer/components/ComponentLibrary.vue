@@ -274,7 +274,8 @@ const handleDragStart = (component, event) => {
 }
 </script>
 
-<style scoped lang="scss">.component-library {
+<style scoped lang="scss">
+.component-library {
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -44,7 +44,8 @@
         border
         @selection-change="handleSelectionChange"
         row-key="id"
-        style="flex: 1"
+        style="margin-top: 16px"
+        :header-cell-style="{background: '#f5f7fa', color: '#606266'}"
     >
       <el-table-column type="selection" width="50" />
       <el-table-column prop="ip" label="IP地址/段" min-width="200" />
@@ -74,11 +75,11 @@
     </el-table>
 
     <!-- 拦截记录 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <span class="card-title">拦截记录（最近10条）</span>
       </template>
-      <el-table :data="blockRecords" border>
+      <el-table :data="blockRecords" border :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="time" label="访问时间" width="160" />
         <el-table-column prop="ip" label="被拦截IP" width="160" />
         <el-table-column prop="account" label="尝试账号" width="120" />
@@ -217,9 +218,16 @@ const handleConfirmSave = (formData) => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow-y: auto;
+  padding-bottom: 20px;
 
   .config-card {
     border-radius: 8px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-header {
       display: flex;
@@ -228,8 +236,20 @@ const handleConfirmSave = (formData) => {
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+    }
+  }
+
+  .config-card-table {
+    flex-shrink: 0;
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      .el-table__body-wrapper {
+        min-height: 200px;
+      }
     }
   }
 

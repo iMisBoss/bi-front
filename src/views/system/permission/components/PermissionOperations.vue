@@ -1,12 +1,6 @@
+
 <template>
   <div class="permission-operations">
-    <el-alert
-        title="权限运维说明：所有运维操作实时生效，高危操作需要二次确认，全程留痕"
-        type="info"
-        :closable="false"
-        style="margin-bottom: 20px"
-    />
-
     <!-- 缓存管理 -->
     <el-card class="config-card" shadow="never">
       <template #header>
@@ -15,17 +9,25 @@
           <el-button type="primary" size="small" @click="handleClearCache">一键清理缓存</el-button>
         </div>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="当前缓存状态">
-          <span>正常</span>
-          <el-tag type="success" style="margin-left: 12px">运行中</el-tag>
-        </el-form-item>
-        <el-form-item label="缓存大小">
-          <span>128MB</span>
-        </el-form-item>
-        <el-form-item label="最后清理时间">
-          <span>2026-04-15 09:00:00</span>
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="当前缓存状态">
+              <span>正常</span>
+              <el-tag type="success" style="margin-left: 8px">运行中</el-tag>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="缓存大小">
+              <span>128MB</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="最后清理时间">
+              <span>2026-04-15 09:00:00</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
@@ -37,33 +39,39 @@
           <el-button type="primary" size="small" @click="handleCheckPermission" :loading="checking">一键校验</el-button>
         </div>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="校验结果">
-          <el-tag type="success">权限数据一致，无异常</el-tag>
-        </el-form-item>
-        <el-form-item label="异常记录数">
-          <span>0 条</span>
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="校验结果">
+              <el-tag type="success">权限数据一致，无异常</el-tag>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="异常记录数">
+              <span>0 条</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
     <!-- 操作审计日志 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <span class="card-title">权限变更审计日志</span>
       </template>
       <div class="filter-bar" style="margin-bottom: 16px">
-        <el-input placeholder="搜索操作人/内容" prefix-icon="Search" clearable style="width: 240px" />
-        <el-select placeholder="操作类型" style="width: 150px" clearable>
+        <el-input placeholder="搜索操作人/内容" clearable style="width: 200px" />
+        <el-select placeholder="操作类型" style="width: 140px" clearable>
           <el-option label="角色授权" value="role_auth" />
           <el-option label="菜单修改" value="menu_edit" />
           <el-option label="导航配置" value="nav_config" />
         </el-select>
-        <el-date-picker type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 240px" />
-        <el-button @click="handleExportAudit" icon="Download">导出日志</el-button>
+        <el-date-picker type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 220px" />
+        <el-button @click="handleExportAudit">导出日志</el-button>
       </div>
 
-      <el-table :data="auditLogs" border style="flex: 1">
+      <el-table :data="auditLogs" border style="width: 100%" :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="time" label="操作时间" width="160" />
         <el-table-column prop="user" label="操作人" width="100" />
         <el-table-column prop="action" label="操作类型" width="120" />
@@ -86,8 +94,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script setup>import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const checking = ref(false)
@@ -156,9 +163,15 @@ const handleResetAllPermission = () => {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 20px;
 
   .config-card {
     border-radius: 8px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-header {
       display: flex;
@@ -167,14 +180,35 @@ const handleResetAllPermission = () => {
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
     }
+  }
+
+  .config-card-table {
+    flex-shrink: 0;
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      .el-table__body-wrapper {
+        min-height: 200px;
+      }
+    }
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: center;
   }
 
   .sync-actions {
     display: flex;
     gap: 12px;
+    flex-wrap: nowrap;
+    padding: 10px 0;
   }
 }
 </style>

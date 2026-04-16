@@ -727,7 +727,8 @@ onMounted(() => {
 })
 </script>
 
-<style scoped lang="scss">.global-config {
+<style scoped lang="scss">
+.global-config {
   padding: 16px;
   background: #f0f2f5;
   min-height: calc(100vh - 50px);

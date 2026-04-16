@@ -61,6 +61,7 @@ const activeTab = ref('model')
   .breadcrumb {
     margin-bottom: 16px;
     font-size: 14px;
+    flex-shrink: 0;
   }
 
   .main-card {
@@ -89,18 +90,17 @@ const activeTab = ref('model')
       margin: 0 0 20px 0;
       padding-bottom: 0;
       border-bottom: 1px solid #ebeef5;
+      flex-shrink: 0;
     }
 
     :deep(.el-tabs__content) {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
       padding: 0;
     }
 
     :deep(.el-tab-pane) {
       height: 100%;
-      display: flex;
-      flex-direction: column;
     }
   }
 }

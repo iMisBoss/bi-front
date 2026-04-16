@@ -19,7 +19,7 @@
           </template>
         </el-tab-pane>
         <el-tab-pane label="公文督办" name="supervision" />
-        <el-tab-pane label="流程跟踪" name="tracking" />
+<!--        <el-tab-pane label="流程跟踪" name="tracking" />-->
       </el-tabs>
 
       <div v-if="activeTab === 'circulation'" class="tab-content">

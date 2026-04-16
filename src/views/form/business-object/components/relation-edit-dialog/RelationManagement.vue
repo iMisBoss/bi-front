@@ -787,7 +787,8 @@ const handleCascadeDeleteChange = async (row) => {
 }
 </script>
 
-<style scoped lang="scss">.relation-management {
+<style scoped lang="scss">
+.relation-management {
   .tab-toolbar {
     display: flex;
     justify-content: space-between;

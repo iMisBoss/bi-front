@@ -12,19 +12,29 @@
       <template #header>
         <span class="card-title">全局开关</span>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="审计总开关">
-          <el-switch v-model="globalSwitch.auditEnabled" />
-        </el-form-item>
-        <el-form-item label="登录日志开关">
-          <el-switch v-model="globalSwitch.loginLogEnabled" :disabled="!globalSwitch.auditEnabled" />
-        </el-form-item>
-        <el-form-item label="操作日志开关">
-          <el-switch v-model="globalSwitch.operationLogEnabled" :disabled="!globalSwitch.auditEnabled" />
-        </el-form-item>
-        <el-form-item label="参数记录开关">
-          <el-switch v-model="globalSwitch.paramLogEnabled" :disabled="!globalSwitch.auditEnabled" />
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="6">
+            <el-form-item label="审计总开关">
+              <el-switch v-model="globalSwitch.auditEnabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="登录日志开关">
+              <el-switch v-model="globalSwitch.loginLogEnabled" :disabled="!globalSwitch.auditEnabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="操作日志开关">
+              <el-switch v-model="globalSwitch.operationLogEnabled" :disabled="!globalSwitch.auditEnabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="参数记录开关">
+              <el-switch v-model="globalSwitch.paramLogEnabled" :disabled="!globalSwitch.auditEnabled" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
@@ -33,33 +43,43 @@
       <template #header>
         <span class="card-title">日志采集规则</span>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="采集范围">
-          <el-radio-group v-model="collectionRule.scope">
-            <el-radio label="all" value="all">全模块采集</el-radio>
-            <el-radio label="custom" value="custom">指定模块采集</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="指定模块" v-if="collectionRule.scope === 'custom'">
-          <el-checkbox-group v-model="collectionRule.modules">
-            <el-checkbox label="审批">审批</el-checkbox>
-            <el-checkbox label="权限">权限</el-checkbox>
-            <el-checkbox label="AI">AI</el-checkbox>
-            <el-checkbox label="内容">内容</el-checkbox>
-            <el-checkbox label="系统配置">系统配置</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="采集粒度">
-          <el-radio-group v-model="collectionRule.granularity">
-            <el-radio label="simple" value="simple">精简记录（仅行为）</el-radio>
-            <el-radio label="full" value="full">完整记录（含参数）</el-radio>
-          </el-radio-group>
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="12">
+            <el-form-item label="采集范围">
+              <el-radio-group v-model="collectionRule.scope">
+                <el-radio label="all" value="all">全模块采集</el-radio>
+                <el-radio label="custom" value="custom">指定模块采集</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="采集粒度">
+              <el-radio-group v-model="collectionRule.granularity">
+                <el-radio label="simple" value="simple">精简记录（仅行为）</el-radio>
+                <el-radio label="full" value="full">完整记录（含参数）</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="40" v-if="collectionRule.scope === 'custom'">
+          <el-col :span="24">
+            <el-form-item label="指定模块">
+              <el-checkbox-group v-model="collectionRule.modules">
+                <el-checkbox label="审批">审批</el-checkbox>
+                <el-checkbox label="权限">权限</el-checkbox>
+                <el-checkbox label="AI">AI</el-checkbox>
+                <el-checkbox label="内容">内容</el-checkbox>
+                <el-checkbox label="系统配置">系统配置</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="免审计白名单">
           <el-input
               v-model="collectionRule.whitelist"
               type="textarea"
-              :rows="3"
+              :rows="2"
               placeholder="每行一个操作，例：页面刷新、鼠标移动"
           />
         </el-form-item>
@@ -67,7 +87,7 @@
     </el-card>
 
     <!-- 敏感操作定义 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <div class="card-header">
           <span class="card-title">敏感操作定义</span>
@@ -75,7 +95,7 @@
         </div>
       </template>
 
-      <el-table :data="sensitiveOperations" border>
+      <el-table :data="sensitiveOperations" border :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="name" label="操作名称" min-width="200" />
         <el-table-column prop="module" label="所属模块" width="120" />
         <el-table-column prop="riskLevel" label="风险等级" width="120" align="center">
@@ -177,9 +197,15 @@ const handleSave = () => {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 20px;
 
   .config-card {
     border-radius: 8px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-header {
       display: flex;
@@ -188,8 +214,20 @@ const handleSave = () => {
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+    }
+  }
+
+  .config-card-table {
+    flex-shrink: 0;
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      .el-table__body-wrapper {
+        min-height: 200px;
+      }
     }
   }
 

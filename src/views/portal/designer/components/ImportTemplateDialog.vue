@@ -87,6 +87,16 @@ const handleClose = () => {
 defineExpose({ open })
 </script>
 
-<style scoped lang="scss">.upload-area { :deep(.el-upload) { width: 100%; .el-upload-dragger { width: 100%; } } }
-.import-preview { margin-top: 20px; }
+<style scoped lang="scss">
+.upload-area {
+  :deep(.el-upload) {
+    width: 100%;
+    .el-upload-dragger {
+      width: 100%;
+    }
+  }
+}
+.import-preview {
+  margin-top: 20px;
+}
 </style>

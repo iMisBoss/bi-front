@@ -1,4 +1,3 @@
-NEW_FILE_CODE
 <template>
   <div class="personal-contacts">
     <!-- 顶部操作栏 -->

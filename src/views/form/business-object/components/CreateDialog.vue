@@ -204,7 +204,8 @@ const handleConfirm = async () => {
   }
 }
 </script>
-<style scoped lang="scss">.create-dialog {
+<style scoped lang="scss">
+.create-dialog {
   .el-dialog__header {
     padding: 0;
     border-bottom: none;

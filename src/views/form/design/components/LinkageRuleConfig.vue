@@ -297,7 +297,8 @@ const handleClose = () => {
 }
 </script>
 
-<style scoped lang="scss">.linkage-config-dialog {
+<style scoped lang="scss">
+.linkage-config-dialog {
   .linkage-header {
     display: flex;
     justify-content: space-between;

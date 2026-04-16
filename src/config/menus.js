@@ -46,8 +46,7 @@ export const frontMenus = [
                     { title: '个人名片维护', path: '/office/org/contacts/my-card' }
                 ]
             },
-            { title: '内部邮件', path: '/message/email' },
-            { title: '报表汇总', path: '/office/reports' }
+            { title: '内部邮件', path: '/message/email' }
         ]
     },
     {
@@ -139,7 +138,8 @@ export const backMenus = [
                 title: '实例运维',
                 children: [
                     { title: '流程实例中心', path: '/process/flowable/handle-query' },
-                    { title: '审批委托管控', path: '/process/flowable/delegate-control' }
+                    { title: '审批委托管控', path: '/process/flowable/delegate-control' },
+                    { title: '报表汇总', path: '/office/reports' }
                 ]
             }
         ]

@@ -33,7 +33,8 @@ defineProps({
 defineEmits(['change'])
 </script>
 
-<style lang="scss" scoped>.category-navigation {
+<style lang="scss" scoped>
+.category-navigation {
   width: 200px;
   min-width: 200px;
   background: #fff;

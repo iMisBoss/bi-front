@@ -672,7 +672,8 @@ const removeOption = (index) => {
 }
 </script>
 
-<style scoped lang="scss">.property-panel {
+<style scoped lang="scss">
+.property-panel {
   width: 100%;
   background: #fff;
   border-left: 1px solid #e8e8e8;

@@ -1411,7 +1411,8 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="scss">.field-definition {
+<style scoped lang="scss">
+.field-definition {
   .tab-toolbar {
     display: flex;
     justify-content: space-between;
@@ -1588,7 +1589,8 @@ defineExpose({
 </style>
 
 // 全局样式（废弃确认弹窗）
-<style lang="scss">.deprecate-confirm-dialog {
+<style lang="scss">
+.deprecate-confirm-dialog {
   border-radius: 12px;
   overflow: hidden;
 

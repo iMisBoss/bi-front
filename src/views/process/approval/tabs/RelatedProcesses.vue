@@ -171,7 +171,8 @@ const handleDelete = (row) => {
 }
 </script>
 
-<style scoped lang="scss">.related-processes {
+<style scoped lang="scss">
+.related-processes {
   height: calc(100vh - 280px);
   overflow-y: auto;
 

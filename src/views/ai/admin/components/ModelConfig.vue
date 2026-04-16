@@ -22,34 +22,26 @@
         <h3>模型运行状态</h3>
         <el-button type="primary" @click="handleSelfCheck" :loading="checking">一键自检</el-button>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <div class="status-item">
-            <div class="status-label">AI总开关</div>
-            <el-switch v-model="config.globalEnabled" size="large" />
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="status-item">
-            <div class="status-label">服务状态</div>
-            <el-tag :type="modelStatus === 'running' ? 'success' : 'danger'" size="large">
-              {{ modelStatus === 'running' ? '运行中' : '已停止' }}
-            </el-tag>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="status-item">
-            <div class="status-label">算力占用</div>
-            <el-progress :percentage="cpuUsage" :color="getProgressColor" />
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="status-item">
-            <div class="status-label">低算力模式</div>
-            <el-switch v-model="config.lowComputeMode" size="large" />
-          </div>
-        </el-col>
-      </el-row>
+      <div class="status-row">
+        <div class="status-item">
+          <div class="status-label">AI总开关</div>
+          <el-switch v-model="config.globalEnabled" size="large" />
+        </div>
+        <div class="status-item">
+          <div class="status-label">服务状态</div>
+          <el-tag :type="modelStatus === 'running' ? 'success' : 'danger'" size="large">
+            {{ modelStatus === 'running' ? '运行中' : '已停止' }}
+          </el-tag>
+        </div>
+        <div class="status-item">
+          <div class="status-label">算力占用</div>
+          <el-progress :percentage="cpuUsage" :color="getProgressColor" />
+        </div>
+        <div class="status-item">
+          <div class="status-label">低算力模式</div>
+          <el-switch v-model="config.lowComputeMode" size="large" />
+        </div>
+      </div>
     </el-card>
 
     <!-- 基础启停控制 -->
@@ -214,12 +206,14 @@ const handleReset = () => {
   height: 100%;
   overflow-y: auto;
   padding-right: 8px;
+  padding-bottom: 20px;
 
   .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    flex-shrink: 0;
 
     .toolbar-left,
     .toolbar-right {
@@ -230,36 +224,62 @@ const handleReset = () => {
 
   .status-card {
     margin-bottom: 16px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 12px 16px;
+    }
 
     .status-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
 
       h3 {
         margin: 0;
-        font-size: 16px;
+        font-size: 15px;
       }
     }
 
-    .status-item {
-      text-align: center;
-      padding: 10px;
+    .status-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: nowrap;
 
-      .status-label {
-        font-size: 14px;
-        color: #606266;
-        margin-bottom: 8px;
+      .status-item {
+        flex: 1;
+        text-align: center;
+        padding: 12px 8px;
+        background: #f5f7fa;
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-width: 0;
+
+        .status-label {
+          font-size: 13px;
+          color: #606266;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
       }
     }
   }
 
   .config-section {
     margin-bottom: 16px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-header {
       font-weight: 600;
+      font-size: 15px;
     }
 
     .form-tip {

@@ -51,7 +51,11 @@ const props = defineProps({
   }
 })
 
-const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2UwZTBlMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjQwIiBmaWxsPSIjOTk5IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7kuIg8L3RleHQ+PC9zdmc+'
+const defaultAvatar = computed(() => {
+  const initial = props.userData.name ? props.userData.name.charAt(0) : '用'
+  const svg = `<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#e0e0e0"/><text x="50%" y="50%" font-size="40" fill="#999" dominant-baseline="middle" text-anchor="middle">${initial}</text></svg>`
+  return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
+})
 
 const shouldShowMobile = computed(() => {
   return props.privacySettings.showMobile

@@ -38,29 +38,36 @@
       <template #header>
         <span class="card-title">自动归档配置</span>
       </template>
-      <el-form label-width="150px">
-        <el-form-item label="归档周期">
-          <el-select v-model="archiveConfig.archiveCycle" style="width: 200px">
-            <el-option label="按日归档" value="daily" />
-            <el-option label="按周归档" value="weekly" />
-            <el-option label="按月归档" value="monthly" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="归档阈值">
-          <el-input-number v-model="archiveConfig.archiveThreshold" :min="10000" :max="1000000" />
-          <span style="margin-left: 10px">条</span>
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="归档周期">
+              <el-select v-model="archiveConfig.archiveCycle" style="width: 100%">
+                <el-option label="按日归档" value="daily" />
+                <el-option label="按周归档" value="weekly" />
+                <el-option label="按月归档" value="monthly" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="归档阈值">
+              <el-input-number v-model="archiveConfig.archiveThreshold" :min="10000" :max="1000000" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="加密存储">
+              <el-switch v-model="archiveConfig.encrypted" />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="存储路径">
           <el-input v-model="archiveConfig.storagePath" placeholder="/data/archive" disabled />
-        </el-form-item>
-        <el-form-item label="加密存储">
-          <el-switch v-model="archiveConfig.encrypted" />
         </el-form-item>
       </el-form>
     </el-card>
 
     <!-- 归档文件管理 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <div class="card-header">
           <span class="card-title">归档文件管理</span>
@@ -68,7 +75,7 @@
         </div>
       </template>
 
-      <el-table :data="archiveFiles" border style="flex: 1">
+      <el-table :data="archiveFiles" border :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="name" label="归档包名称" min-width="250" />
         <el-table-column prop="date" label="归档日期" width="120" />
         <el-table-column prop="recordCount" label="记录数" width="120" align="center" />
@@ -99,20 +106,26 @@
           :closable="false"
           style="margin-bottom: 16px"
       />
-      <el-form label-width="150px">
-        <el-form-item label="清理周期">
-          <el-select v-model="cleanConfig.cleanCycle" style="width: 200px">
-            <el-option label="按日清理" value="daily" />
-            <el-option label="按周清理" value="weekly" />
-            <el-option label="按月清理" value="monthly" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="清理范围">
-          <el-radio-group v-model="cleanConfig.cleanScope">
-            <el-radio label="archived" value="archived">仅清理已归档日志</el-radio>
-            <el-radio label="all" value="all">清理全部历史日志</el-radio>
-          </el-radio-group>
-        </el-form-item>
+      <el-form label-width="120px">
+        <el-row :gutter="40">
+          <el-col :span="12">
+            <el-form-item label="清理周期">
+              <el-select v-model="cleanConfig.cleanCycle" style="width: 100%">
+                <el-option label="按日清理" value="daily" />
+                <el-option label="按周清理" value="weekly" />
+                <el-option label="按月清理" value="monthly" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="清理范围">
+              <el-radio-group v-model="cleanConfig.cleanScope">
+                <el-radio label="archived" value="archived">仅清理已归档日志</el-radio>
+                <el-radio label="all" value="all">清理全部历史日志</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <el-button type="danger" @click="handleCleanNow">立即清理</el-button>
     </el-card>
@@ -214,9 +227,15 @@ const handleSave = () => {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 20px;
 
   .config-card {
     border-radius: 8px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-header {
       display: flex;
@@ -225,8 +244,20 @@ const handleSave = () => {
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+    }
+  }
+
+  .config-card-table {
+    flex-shrink: 0;
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      .el-table__body-wrapper {
+        min-height: 200px;
+      }
     }
   }
 

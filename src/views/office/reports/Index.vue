@@ -365,7 +365,8 @@ onMounted(() => {
   console.log('流程报表汇总页面加载')
 })
 </script>
-<style scoped lang="scss">.compliance-report-page {
+<style scoped lang="scss">
+.compliance-report-page {
   padding: 16px;
   background: #f0f2f5;
   min-height: calc(100vh - 60px);

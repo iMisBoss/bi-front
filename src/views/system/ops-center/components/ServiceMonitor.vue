@@ -33,11 +33,11 @@
     </el-card>
 
     <!-- 核心服务监控 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <span class="card-title">核心服务监控</span>
       </template>
-      <el-table :data="coreServices" border>
+      <el-table :data="coreServices" border :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="name" label="服务名称" min-width="200" />
         <el-table-column prop="status" label="运行状态" width="120" align="center">
           <template #default="{ row }">
@@ -57,11 +57,11 @@
     </el-card>
 
     <!-- 接口性能监控 -->
-    <el-card class="config-card" shadow="never" style="margin-top: 20px">
+    <el-card class="config-card config-card-table" shadow="never" style="margin-top: 20px">
       <template #header>
         <span class="card-title">接口性能监控（TOP5慢接口）</span>
       </template>
-      <el-table :data="slowInterfaces" border>
+      <el-table :data="slowInterfaces" border :header-cell-style="{background: '#f5f7fa', color: '#606266'}">
         <el-table-column prop="name" label="接口名称" min-width="250" />
         <el-table-column prop="avgTime" label="平均响应时间" width="150">
           <template #default="{ row }">
@@ -160,13 +160,31 @@ const handleViewDetail = (row) => {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 20px;
 
   .config-card {
     border-radius: 8px;
+    flex-shrink: 0;
+
+    :deep(.el-card__body) {
+      padding: 20px;
+    }
 
     .card-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+    }
+  }
+
+  .config-card-table {
+    flex-shrink: 0;
+
+    :deep(.el-table) {
+      font-size: 14px;
+
+      .el-table__body-wrapper {
+        min-height: 200px;
+      }
     }
   }
 

@@ -27,7 +27,7 @@
         :header-cell-style="{ background: '#fafafa', color: '#333', fontWeight: '600' }"
         style="flex: 1"
     >
-      <el-table-column prop="code" label="任务编码" width="150" />
+      <el-table-column prop="code" label="任务编码" width="170" />
       <el-table-column prop="name" label="任务名称" min-width="180" />
       <el-table-column prop="className" label="任务类名" min-width="250" show-overflow-tooltip />
       <el-table-column prop="cron" label="Cron表达式" width="150" />
