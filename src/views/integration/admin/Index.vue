@@ -1,12 +1,5 @@
 <template>
   <div class="integration-admin-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>集成中心</el-breadcrumb-item>
-      <el-breadcrumb-item>集成管理中心</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <!-- Tab导航栏 -->
       <el-tabs v-model="activeTab" class="integration-tabs">
@@ -58,16 +51,10 @@ const activeTab = ref('appIntegration')
 
 <style lang="scss" scoped>
 .integration-admin-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;

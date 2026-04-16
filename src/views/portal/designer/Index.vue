@@ -1,14 +1,5 @@
 <template>
   <div class="portal-designer">
-    <!-- 顶部工具栏 -->
-    <div class="top-toolbar">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/admin/home' }">后台首页</el-breadcrumb-item>
-        <el-breadcrumb-item>门户中心</el-breadcrumb-item>
-        <el-breadcrumb-item>门户设计器</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-
     <!-- 配置行 -->
     <div class="config-row">
       <div class="config-left">
@@ -575,16 +566,6 @@ onUnmounted(() => {
   flex-direction: column;
   background: #f0f2f5;
   overflow: hidden;
-
-  .top-toolbar {
-    height: 48px;
-    padding: 0 16px;
-    background: #fff;
-    border-bottom: 1px solid #e4e7ed;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
 
   .config-row {
     height: 48px;

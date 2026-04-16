@@ -1,13 +1,5 @@
 <template>
   <div class="form-management">
-    <!-- 页面头部 -->
-    <div class="page-header">
-      <div class="header-left">
-        <h2>表单管理</h2>
-        <p class="subtitle">管理已发布的正式表单和可复用的表单模板</p>
-      </div>
-    </div>
-
     <!-- Tab页切换 -->
     <el-tabs v-model="activeTab" class="management-tabs" @tab-change="handleTabChange">
       <!-- Tab1: 表单管理 -->
@@ -1255,32 +1247,11 @@ const handleTabChange = (tab) => {
 
 <style scoped lang="scss">
 .form-management {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f5f7fa;
   padding: 20px;
-  background: #f0f2f5;
-  min-height: calc(100vh - 50px);
-
-  .page-header {
-    margin-bottom: 20px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-
-    .header-left {
-      h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-        color: #303133;
-        font-weight: 600;
-      }
-
-      .subtitle {
-        margin: 0;
-        font-size: 13px;
-        color: #909399;
-      }
-    }
-  }
 
   .management-tabs {
     background: #fff;

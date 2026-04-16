@@ -1,15 +1,5 @@
 <template>
   <div class="portal-components-lib">
-    <!-- 面包屑导航 -->
-    <div class="breadcrumb-bar">
-      <el-breadcrumb separator=">">
-        <el-breadcrumb-item :to="{ path: '/admin/home' }">后台首页</el-breadcrumb-item>
-        <el-breadcrumb-item>门户中心</el-breadcrumb-item>
-        <el-breadcrumb-item>基础配置</el-breadcrumb-item>
-        <el-breadcrumb-item>组件库管理</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-
     <!-- 查询区域 -->
     <div class="search-bar">
       <el-form :model="searchForm" inline size="small">
@@ -475,18 +465,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  .breadcrumb-bar {
-    background: #fff;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-
-    :deep(.el-breadcrumb__item) {
-      font-size: 13px;
-    }
-  }
 
   .search-bar {
     background: #fff;

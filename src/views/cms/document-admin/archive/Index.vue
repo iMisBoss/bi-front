@@ -1,12 +1,5 @@
 <template>
   <div class="archive-manage-page">
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>日常办公管理</el-breadcrumb-item>
-      <el-breadcrumb-item>公文管理</el-breadcrumb-item>
-      <el-breadcrumb-item>归档与数据管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <div class="toolbar">
         <div class="toolbar-left">
@@ -74,7 +67,7 @@
       >
         <el-table-column type="selection" width="50" />
         <el-table-column prop="title" label="公文标题" min-width="250" show-overflow-tooltip />
-        <el-table-column prop="docNumber" label="文号" width="150" />
+        <el-table-column prop="docNumber" label="文号" width="180" />
         <el-table-column prop="type" label="类型" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="getTypeTagType(row.type)" size="small">{{ row.type }}</el-tag>
@@ -198,7 +191,7 @@ const handleArchive = (row) => {
   ElMessageBox.confirm(`确定要归档公文「${row.title}」吗？归档后将锁定只读。`, '归档公文', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'info'
+    type: 'warning'
   }).then(() => {
     row.status = 'archived'
     row.archiveTime = new Date().toLocaleString()
@@ -207,17 +200,14 @@ const handleArchive = (row) => {
 }
 
 const handleBatchArchive = () => {
-  if (selectedRows.value.length === 0) return
-
   ElMessageBox.confirm(`确定要批量归档 ${selectedRows.value.length} 个公文吗？`, '批量归档', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'info'
+    type: 'warning'
   }).then(() => {
-    const now = new Date().toLocaleString()
     selectedRows.value.forEach(row => {
       row.status = 'archived'
-      row.archiveTime = now
+      row.archiveTime = new Date().toLocaleString()
     })
     ElMessage.success('批量归档成功')
     selectedRows.value = []
@@ -225,29 +215,19 @@ const handleBatchArchive = () => {
 }
 
 const handleBatchDelete = () => {
-  if (selectedRows.value.length === 0) return
-
-  const archivedDocs = selectedRows.value.filter(row => row.status === 'archived')
-  if (archivedDocs.length > 0) {
-    ElMessage.warning('已归档的公文禁止删除，请先取消归档')
-    return
-  }
-
-  ElMessageBox.confirm(`确定要删除 ${selectedRows.value.length} 个公文吗？`, '警告', {
+  ElMessageBox.confirm(`确定要删除 ${selectedRows.value.length} 个公文吗？此操作不可恢复！`, '批量删除', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'error'
   }).then(() => {
-    const ids = selectedRows.value.map(row => row.id)
-    documentData.value = documentData.value.filter(item => !ids.includes(item.id))
+    documentData.value = documentData.value.filter(item => !selectedRows.value.find(s => s.id === item.id))
     ElMessage.success('删除成功')
     selectedRows.value = []
-    total.value = documentData.value.length
   }).catch(() => {})
 }
 
 const handleExport = () => {
-  ElMessage.success('归档台账导出成功')
+  ElMessage.success('导出成功')
 }
 
 const handleRefresh = () => {
@@ -257,28 +237,16 @@ const handleRefresh = () => {
 
 const handleSearch = () => {}
 const handleFilter = () => {}
-
-const handleSizeChange = (val) => {
-  pageSize.value = val
-}
-
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-}
+const handleSizeChange = () => {}
+const handleCurrentChange = () => {}
 </script>
 
 <style lang="scss" scoped>
 .archive-manage-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;
@@ -315,6 +283,7 @@ const handleCurrentChange = (val) => {
     display: flex;
     gap: 12px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
 
   .pagination-wrapper {

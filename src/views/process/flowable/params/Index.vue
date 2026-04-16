@@ -1,12 +1,5 @@
 <template>
   <div class="global-process-params">
-    <!-- 面包屑导航 -->
-    <el-breadcrumb separator=">" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/admin' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>低代码设计平台</el-breadcrumb-item>
-      <el-breadcrumb-item>全局流程参数</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <!-- 标题区 -->
     <div class="page-header">
       <div class="header-left">
@@ -436,11 +429,6 @@ const handleResetDefaults = () => {
   padding: 20px;
   background-color: #f5f7fa;
   min-height: calc(100vh - 60px);
-
-  .breadcrumb {
-    margin-bottom: 20px;
-    font-size: 14px;
-  }
 
   .page-header {
     display: flex;

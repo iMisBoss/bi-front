@@ -1,15 +1,6 @@
 <template>
   <div class="template-manage-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>日常办公管理</el-breadcrumb-item>
-      <el-breadcrumb-item>公文管理</el-breadcrumb-item>
-      <el-breadcrumb-item>公文模板管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
-      <!-- 顶部工具栏 -->
       <div class="toolbar">
         <div class="toolbar-left">
           <el-button-group>
@@ -45,7 +36,6 @@
         </div>
       </div>
 
-      <!-- 搜索筛选 -->
       <div class="filter-bar">
         <el-input
             v-model="searchKeyword"
@@ -80,7 +70,6 @@
         </el-select>
       </div>
 
-      <!-- 模板列表 -->
       <el-table
           :data="filteredTemplates"
           border
@@ -121,7 +110,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- 底部分页 -->
       <div class="pagination-wrapper">
         <el-pagination
             v-model:current-page="currentPage"
@@ -135,7 +123,6 @@
       </div>
     </el-card>
 
-    <!-- 新增/编辑抽屉 -->
     <TemplateDrawer
         v-model="showDrawer"
         :type="drawerType"
@@ -143,14 +130,12 @@
         @confirm="handleConfirmSave"
     />
 
-    <!-- 查看详情抽屉 -->
     <TemplateDetailDrawer
         v-model="showDetailDrawer"
         :data="currentTemplate"
         @edit="handleEdit"
     />
 
-    <!-- 导入对话框 -->
     <TemplateImportDialog
         v-model="showImportDialog"
         @confirm-import="handleConfirmImport"
@@ -239,11 +224,10 @@ const handleEdit = (row) => {
   drawerType.value = 'edit'
   currentTemplate.value = { ...row }
   showDrawer.value = true
-  showDetailDrawer.value = false
 }
 
 const handleView = (row) => {
-  currentTemplate.value = row
+  currentTemplate.value = { ...row }
   showDetailDrawer.value = true
 }
 
@@ -260,57 +244,31 @@ const handleToggleStatus = (row) => {
 }
 
 const handleBatchEnable = () => {
-  if (selectedRows.value.length === 0) return
-
-  ElMessageBox.confirm(`确定要批量启用 ${selectedRows.value.length} 个模板吗？`, '批量启用', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'info'
-  }).then(() => {
-    selectedRows.value.forEach(row => { row.status = 'enabled' })
-    ElMessage.success('批量启用成功')
-    selectedRows.value = []
-  }).catch(() => {})
+  selectedRows.value.forEach(row => { row.status = 'enabled' })
+  ElMessage.success('批量启用成功')
+  selectedRows.value = []
 }
 
 const handleBatchDisable = () => {
-  if (selectedRows.value.length === 0) return
-
-  ElMessageBox.confirm(`确定要批量禁用 ${selectedRows.value.length} 个模板吗？`, '批量禁用', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    selectedRows.value.forEach(row => { row.status = 'disabled' })
-    ElMessage.success('批量禁用成功')
-    selectedRows.value = []
-  }).catch(() => {})
+  selectedRows.value.forEach(row => { row.status = 'disabled' })
+  ElMessage.success('批量禁用成功')
+  selectedRows.value = []
 }
 
 const handleBatchDelete = () => {
-  if (selectedRows.value.length === 0) return
-
-  const usedTemplates = selectedRows.value.filter(row => row.usage > 0)
-  if (usedTemplates.length > 0) {
-    ElMessage.warning('选中的模板中包含了已被使用的模板，无法删除，请先禁用')
-    return
-  }
-
-  ElMessageBox.confirm(`确定要删除 ${selectedRows.value.length} 个模板吗？`, '警告', {
+  ElMessageBox.confirm(`确定要删除 ${selectedRows.value.length} 个模板吗？`, '批量删除', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'error'
   }).then(() => {
-    const ids = selectedRows.value.map(row => row.id)
-    templateData.value = templateData.value.filter(item => !ids.includes(item.id))
+    templateData.value = templateData.value.filter(item => !selectedRows.value.find(s => s.id === item.id))
     ElMessage.success('删除成功')
     selectedRows.value = []
-    total.value = templateData.value.length
   }).catch(() => {})
 }
 
 const handleExport = () => {
-  ElMessage.success('模板数据导出成功')
+  ElMessage.success('导出成功')
 }
 
 const handleRefresh = () => {
@@ -320,6 +278,8 @@ const handleRefresh = () => {
 
 const handleSearch = () => {}
 const handleFilter = () => {}
+const handleSizeChange = () => {}
+const handleCurrentChange = () => {}
 
 const handleConfirmSave = (formData) => {
   if (formData.id) {
@@ -330,42 +290,23 @@ const handleConfirmSave = (formData) => {
     ElMessage.success('编辑成功')
   } else {
     formData.id = Date.now()
-    formData.version = 'V1.0'
-    formData.usage = 0
     templateData.value.push(formData)
     ElMessage.success('新增成功')
   }
   showDrawer.value = false
-  total.value = templateData.value.length
 }
 
 const handleConfirmImport = () => {
   ElMessage.success('导入成功')
-  showImportDialog.value = false
-  loadTemplateData()
-}
-
-const handleSizeChange = (val) => {
-  pageSize.value = val
-}
-
-const handleCurrentChange = (val) => {
-  currentPage.value = val
 }
 </script>
 
 <style lang="scss" scoped>
 .template-manage-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;
@@ -402,6 +343,7 @@ const handleCurrentChange = (val) => {
     display: flex;
     gap: 12px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
 
   .pagination-wrapper {

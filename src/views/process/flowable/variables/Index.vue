@@ -1,21 +1,5 @@
 <template>
   <div class="variables-management">
-    <!-- 面包屑导航 -->
-    <el-breadcrumb separator=">" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/admin' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>低代码设计平台</el-breadcrumb-item>
-      <el-breadcrumb-item>基础能力配置</el-breadcrumb-item>
-      <el-breadcrumb-item>变量管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
-    <!-- 标题区 -->
-    <div class="page-header">
-      <div class="header-left">
-        <h2>变量管理</h2>
-        <p class="subtitle">管理系统内置变量和业务自定义变量，支撑表单绑定、流程条件、审批规则配置</p>
-      </div>
-    </div>
-
     <!-- Tab导航栏 -->
     <el-tabs v-model="activeTab" class="variable-tabs">
       <!-- Tab1：流程变量管理 -->
@@ -79,11 +63,6 @@ const systemVariableCount = ref(16)
   padding: 20px;
   background-color: #f5f7fa;
   min-height: calc(100vh - 60px);
-
-  .breadcrumb {
-    margin-bottom: 20px;
-    font-size: 14px;
-  }
 
   .page-header {
     margin-bottom: 24px;

@@ -1,24 +1,5 @@
 <template>
   <div class="data-resources-management">
-    <!-- 面包屑导航 -->
-    <el-breadcrumb separator=">" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/admin' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>低代码设计平台</el-breadcrumb-item>
-      <el-breadcrumb-item>基础能力配置</el-breadcrumb-item>
-      <el-breadcrumb-item>数据资源管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
-    <!-- 标题区 -->
-    <div class="page-header">
-      <div class="header-left">
-        <h2>数据资源管理</h2>
-        <p class="subtitle">管理全局数据字典、外部数据源、API接口，支撑表单下拉与数据自动联动</p>
-      </div>
-      <div class="header-right">
-        <el-button icon="Refresh" @click="handleRefresh">刷新</el-button>
-      </div>
-    </div>
-
     <!-- 功能区 -->
     <div class="function-section">
       <div class="search-area">
@@ -1180,37 +1161,6 @@ const getMethodTag = (method) => {
   padding: 20px;
   background-color: #f5f7fa;
   min-height: calc(100vh - 60px);
-
-  .breadcrumb {
-    margin-bottom: 20px;
-    font-size: 14px;
-  }
-
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-    .header-left {
-      h2 {
-        margin: 0 0 8px;
-        font-size: 22px;
-        color: #303133;
-        font-weight: 600;
-      }
-
-      .subtitle {
-        margin: 0;
-        font-size: 14px;
-        color: #909399;
-      }
-    }
-  }
 
   .function-section {
     display: flex;

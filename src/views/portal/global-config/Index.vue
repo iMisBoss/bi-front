@@ -1,13 +1,5 @@
 <template>
   <div class="global-config">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/admin/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>门户中心</el-breadcrumb-item>
-      <el-breadcrumb-item>基础配置</el-breadcrumb-item>
-      <el-breadcrumb-item>全局配置</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <!-- 顶部操作栏（固定） -->
     <div class="top-actions">
       <el-button type="primary" @click="handleSave" :loading="saving">
@@ -734,10 +726,6 @@ onMounted(() => {
   min-height: calc(100vh - 50px);
   padding-bottom: 120px;
   position: relative;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-  }
 
   .top-actions {
     position: sticky;

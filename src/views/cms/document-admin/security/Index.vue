@@ -1,12 +1,5 @@
 <template>
   <div class="security-control-page">
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>日常办公管理</el-breadcrumb-item>
-      <el-breadcrumb-item>公文管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限与涉密管控</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <div class="config-container">
         <el-form
@@ -136,16 +129,10 @@ const handleReset = () => {
 
 <style lang="scss" scoped>
 .security-control-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;

@@ -1,26 +1,5 @@
 <template>
   <div class="form-designer">
-    <!-- 面包屑导航 -->
-    <div class="top-header">
-      <el-breadcrumb separator=">" class="breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/admin' }">后台首页</el-breadcrumb-item>
-        <el-breadcrumb-item>低代码设计平台</el-breadcrumb-item>
-        <el-breadcrumb-item>表单中心</el-breadcrumb-item>
-        <el-breadcrumb-item>表单可视化设计</el-breadcrumb-item>
-      </el-breadcrumb>
-
-      <!-- 折叠/展开按钮 -->
-      <div class="header-actions">
-        <div class="header-toggle" @click="topPanelCollapsed = !topPanelCollapsed" :title="topPanelCollapsed ? '展开查询区域' : '收起查询区域'">
-          <el-icon>
-            <ArrowUp v-if="!topPanelCollapsed" />
-            <ArrowDown v-else />
-          </el-icon>
-          <span class="toggle-text">{{ topPanelCollapsed ? '展开' : '收起' }}</span>
-        </div>
-      </div>
-    </div>
-
     <!-- 顶部操作区（可折叠） -->
     <div class="top-toolbar" v-show="!topPanelCollapsed">
       <div class="toolbar-content">
@@ -842,15 +821,6 @@ onUnmounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    .breadcrumb {
-      font-size: 13px;
-      color: #606266;
-
-      :deep(.el-breadcrumb__item) {
-        font-size: 13px;
-      }
-    }
 
     .header-actions {
       display: flex;

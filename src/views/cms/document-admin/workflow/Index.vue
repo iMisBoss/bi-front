@@ -1,11 +1,5 @@
 <template>
   <div class="workflow-config-page">
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>公文管理</el-breadcrumb-item>
-      <el-breadcrumb-item>公文流程配置</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <div class="toolbar">
         <div class="toolbar-left">
@@ -155,16 +149,10 @@ const handleConfirmSave = (formData) => {
 
 <style lang="scss" scoped>
 .workflow-config-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;

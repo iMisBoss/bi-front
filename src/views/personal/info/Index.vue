@@ -16,7 +16,9 @@
               :before-upload="beforeAvatarUpload"
               :http-request="handleAvatarUpload"
           >
-            <el-avatar :size="120" :src="userInfo.avatar || defaultAvatar" />
+            <el-avatar :size="120" :src="userInfo.avatar">
+              <span class="avatar-text">{{ avatarText }}</span>
+            </el-avatar>
             <div class="avatar-overlay">
               <el-icon><Camera /></el-icon>
               <span>更换头像</span>
@@ -100,14 +102,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Camera } from '@element-plus/icons-vue'
 
 const formRef = ref(null)
 const saving = ref(false)
-
-const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2UwZTBlMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjQ4IiBmaWxsPSIjOTk5IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7kuIg8L3RleHQ+PC9zdmc+'
 
 const userInfo = reactive({
   avatar: '',
@@ -120,6 +120,11 @@ const userInfo = reactive({
   officePhone: '010-88888888',
   workstation: 'A座5层-508',
   signature: '专注OA系统开发'
+})
+
+// 计算头像显示文字（取姓名第一个字）
+const avatarText = computed(() => {
+  return userInfo.name ? userInfo.name.charAt(0) : '用'
 })
 
 const rules = {
@@ -233,6 +238,12 @@ onMounted(() => {
             font-size: 12px;
           }
         }
+      }
+
+      .avatar-text {
+        font-size: 48px;
+        font-weight: 500;
+        color: #409eff;
       }
     }
 

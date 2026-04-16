@@ -1,24 +1,5 @@
 
 <template>
-  <div class="top-header">
-    <!-- 面包屑导航 -->
-    <el-breadcrumb separator=">" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/admin' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>低代码设计平台</el-breadcrumb-item>
-      <el-breadcrumb-item>流程中心</el-breadcrumb-item>
-      <el-breadcrumb-item>BPMN 可视化设计</el-breadcrumb-item>
-    </el-breadcrumb>
-
-    <!-- 折叠/展开按钮 -->
-    <div class="header-toggle" @click="$emit('toggle-top')" :title="collapsed ? '展开查询区域' : '收起查询区域'">
-      <el-icon>
-        <ArrowUp v-if="!collapsed" />
-        <ArrowDown v-else />
-      </el-icon>
-      <span class="toggle-text">{{ collapsed ? '展开' : '收起' }}</span>
-    </div>
-  </div>
-
   <!-- 顶部操作区（可折叠） -->
   <div class="top-toolbar" v-show="!collapsed">
     <div class="toolbar-content">
@@ -136,32 +117,6 @@ const handleUpdate = () => {
   padding: 12px 20px;
   background: #fff;
   border-bottom: 1px solid #e4e7ed;
-
-  .breadcrumb {
-    font-size: 14px;
-  }
-
-  .header-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #f5f7fa;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 13px;
-    color: #606266;
-
-    &:hover {
-      background: #ecf5ff;
-      color: #409eff;
-    }
-
-    .toggle-text {
-      font-size: 12px;
-    }
-  }
 }
 
 .top-toolbar {

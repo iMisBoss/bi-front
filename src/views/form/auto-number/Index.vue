@@ -1,19 +1,12 @@
 <template>
   <div class="auto-number-management">
-    <!-- 页面标题 -->
-    <div class="page-header">
-      <h2>自动编号规则管理</h2>
-      <p class="subtitle">配置业务对象的单据编号自动生成规则</p>
-    </div>
-
     <!-- 工具栏 -->
     <div class="toolbar">
       <div class="toolbar-left">
         <el-input
             v-model="searchKeyword"
             placeholder="搜索规则名称、业务对象"
-            clearable
-            style="width: 300px"
+            clearable            style="width: 300px"
             @keyup.enter="handleSearch"
         >
           <template #prefix>
@@ -1182,22 +1175,6 @@ const handleCurrentChange = (page) => {
 <style scoped lang="scss">
 .auto-number-management {
   padding: 20px;
-
-  .page-header {
-    margin-bottom: 24px;
-
-    h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
-      color: #303133;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: 14px;
-      color: #909399;
-    }
-  }
 
   .toolbar {
     display: flex;

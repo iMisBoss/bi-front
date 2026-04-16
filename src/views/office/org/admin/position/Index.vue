@@ -1,12 +1,5 @@
 <template>
   <div class="job-level-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>组织人事管理</el-breadcrumb-item>
-      <el-breadcrumb-item>职务职级管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <!-- 顶部工具栏 -->
       <JobToolbar
@@ -612,11 +605,6 @@ const handleConfirmImport = () => {
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;

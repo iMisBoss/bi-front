@@ -1,12 +1,5 @@
 <template>
   <div class="meeting-admin-container">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>日常办公管理</el-breadcrumb-item>
-      <el-breadcrumb-item>会议管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <!-- 顶部操作栏 -->
     <el-card class="toolbar-card" shadow="hover">
       <div class="toolbar-content">
@@ -320,11 +313,6 @@ const handleRefresh = () => {
   padding: 20px;
   background: #f5f7fa;
   min-height: calc(100vh - 60px);
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .toolbar-card {
     margin-bottom: 16px;

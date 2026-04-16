@@ -1,12 +1,5 @@
 <template>
   <div class="portal-category-management">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/admin/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>门户中心</el-breadcrumb-item>
-      <el-breadcrumb-item>基础配置</el-breadcrumb-item>
-      <el-breadcrumb-item>门户分类管理</el-breadcrumb-item>
-    </el-breadcrumb>
 
     <!-- 顶部操作栏 -->
     <div class="top-actions">
@@ -488,10 +481,6 @@ onMounted(() => {
   padding: 16px;
   background: #f0f2f5;
   min-height: calc(100vh - 50px);
-
-  .breadcrumb {
-    margin-bottom: 16px;
-  }
 
   .top-actions {
     margin-bottom: 16px;

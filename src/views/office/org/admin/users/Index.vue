@@ -1,12 +1,5 @@
 <template>
   <div class="user-management-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>组织人事管理</el-breadcrumb-item>
-      <el-breadcrumb-item>人员用户管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <!-- 内容区：左右分栏 -->
       <div class="content-wrapper">
@@ -961,11 +954,6 @@ const startResize = (e) => {
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;

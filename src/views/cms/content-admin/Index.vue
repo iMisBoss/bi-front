@@ -1,16 +1,7 @@
 <template>
   <div class="cms-admin-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>公文与内容管理</el-breadcrumb-item>
-      <el-breadcrumb-item>内容管理中心</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
-      <!-- 左侧组织树 + 右侧内容区 -->
       <div class="content-wrapper">
-        <!-- 左侧：组织架构树 -->
         <div class="left-panel">
           <el-tree
               :data="orgTree"
@@ -28,35 +19,28 @@
           </el-tree>
         </div>
 
-        <!-- 右侧：Tab内容区 -->
         <div class="right-panel">
           <el-tabs v-model="activeTab" class="content-tabs">
-            <!-- Tab1: 栏目管理 -->
             <el-tab-pane label="栏目管理" name="column">
               <ColumnManage ref="columnRef" :org-data="selectedOrg" />
             </el-tab-pane>
 
-            <!-- Tab2: 内容管理 -->
             <el-tab-pane label="内容管理" name="content">
               <ContentManage ref="contentRef" :org-data="selectedOrg" />
             </el-tab-pane>
 
-            <!-- Tab3: 知识库管理 -->
             <el-tab-pane label="知识库管理" name="knowledge">
               <KnowledgeManage ref="knowledgeRef" :org-data="selectedOrg" />
             </el-tab-pane>
 
-            <!-- Tab4: 全局权限配置 -->
             <el-tab-pane label="全局权限配置" name="permission">
               <PermissionConfig />
             </el-tab-pane>
 
-            <!-- Tab5: 发布审批配置 -->
             <el-tab-pane label="发布审批配置" name="approval">
               <ApprovalConfig />
             </el-tab-pane>
 
-            <!-- Tab6: 内容运维中心 -->
             <el-tab-pane label="内容运维中心" name="operations">
               <OperationsCenter />
             </el-tab-pane>
@@ -104,16 +88,10 @@ const handleOrgNodeClick = (data) => {
 
 <style lang="scss" scoped>
 .cms-admin-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
 
   .main-card {
     flex: 1;

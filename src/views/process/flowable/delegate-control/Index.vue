@@ -1,14 +1,5 @@
 <template>
   <div class="delegate-control">
-    <!-- 面包屑 -->
-    <div class="page-header">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/admin/home' }">后台首页</el-breadcrumb-item>
-        <el-breadcrumb-item>流程中心</el-breadcrumb-item>
-        <el-breadcrumb-item>审批委托管控</el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-
     <!-- 查询区 -->
     <div class="search-area">
       <el-form :inline="true" :model="query">
@@ -357,23 +348,6 @@ const handleCurrentChange = (page) => {
   background: #f5f7fa;
   display: flex;
   flex-direction: column;
-
-  .page-header {
-    background: #fff;
-    border-bottom: 1px solid #dee0e3;
-    padding: 12px 24px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-
-    :deep(.el-breadcrumb__inner) {
-      font-size: 14px;
-      color: #646a73;
-    }
-
-    :deep(.el-breadcrumb__separator) {
-      color: #c0c4cc;
-      margin: 0 8px;
-    }
-  }
 
   .search-area {
     background: #fff;

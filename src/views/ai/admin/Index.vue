@@ -1,12 +1,5 @@
 <template>
   <div class="ai-admin-page">
-    <!-- 面包屑 -->
-    <el-breadcrumb separator="/" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">后台首页</el-breadcrumb-item>
-      <el-breadcrumb-item>AI智能助手</el-breadcrumb-item>
-      <el-breadcrumb-item>AI管理中心</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <el-card class="main-card" shadow="never">
       <!-- Tab导航栏 -->
       <el-tabs v-model="activeTab" class="ai-tabs">
@@ -52,17 +45,10 @@ const activeTab = ref('model')
 
 <style lang="scss" scoped>
 .ai-admin-page {
-  padding: 20px;
-  height: calc(100vh - 60px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
-
-  .breadcrumb {
-    margin-bottom: 16px;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
 
   .main-card {
     flex: 1;
